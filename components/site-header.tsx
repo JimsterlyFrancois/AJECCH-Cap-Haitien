@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import SiteLogo from "@/components/site-logo";
 
 const links = [
   { id: "accueil", hash: "#accueil", label: "Accueil" },
@@ -79,7 +80,7 @@ export default function SiteHeader({ active = "", logoUrl }: { active?: string; 
   }
 
   return (
-    <>
+    <div className="site-header-stack">
       <div className="topline">
         <div className="container topline-inner">
           <span>Association des Jeunes Chrétiens du Cap-Haïtien</span>
@@ -89,9 +90,7 @@ export default function SiteHeader({ active = "", logoUrl }: { active?: string; 
       <header className="site-header">
         <div className="container nav-wrap">
           <a className="brand" href="/" aria-label="AJECCH, accueil">
-            <span className="brand-mark brand-mark-image">
-              {logoUrl ? <img src={logoUrl} alt="Logo officiel de l’AJECCH" /> : <span aria-hidden="true">A<span>J</span></span>}
-            </span>
+            <SiteLogo logoUrl={logoUrl} />
             <span className="brand-copy">
               <strong>AJECCH</strong>
               <small>JEUNES CHRÉTIENS · CAP-HAÏTIEN</small>
@@ -121,6 +120,6 @@ export default function SiteHeader({ active = "", logoUrl }: { active?: string; 
           </div>
         </div>
       </header>
-    </>
+    </div>
   );
 }
