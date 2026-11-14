@@ -3872,3 +3872,9 @@ html[data-theme="day"] body main .contact-glass-panel .button-glass:hover {
   background: linear-gradient(135deg, #fff, #d9effd) !important;
   border-color: #287fb4 !important;
 }
+
+
+/* Navy first line in the light-mode contact heading only. */
+html[data-theme="day"] body main .contact-glass-panel h2 .contact-title-primary {
+  color: #0a2c59 !important;
+}
