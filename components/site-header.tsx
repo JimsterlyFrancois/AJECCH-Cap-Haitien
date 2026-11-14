@@ -33,25 +33,28 @@ export default function SiteHeader({ active = "", logoUrl }: { active?: string; 
   useEffect(() => {
     const supabase = createClient();
     let mounted = true;
-    const loadIdentity = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!mounted) return;
-      setGoogleEmail(user?.email ?? "");
-      if (!user) {
-        setAdminIdentity(null);
-        return;
-      }
+    const loadAdminIdentity = async (userId: string) => {
       const { data } = await supabase
         .from("ajecch_admins")
         .select("display_name, role")
-        .eq("user_id", user.id)
+        .eq("user_id", userId)
         .eq("is_active", true)
         .maybeSingle();
       if (mounted) setAdminIdentity(data as AdminIdentity);
     };
+    const loadIdentity = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!mounted) return;
+      setGoogleEmail(user?.email ?? "");
+      if (!user) setAdminIdentity(null);
+      else await loadAdminIdentity(user.id);
+    };
     void loadIdentity();
-    const { data: authListener } = supabase.auth.onAuthStateChange(() => {
-      void loadIdentity();
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!mounted) return;
+      setGoogleEmail(session?.user.email ?? "");
+      if (!session?.user) setAdminIdentity(null);
+      else queueMicrotask(() => { void loadAdminIdentity(session.user.id); });
     });
     return () => {
       mounted = false;
