@@ -2880,3 +2880,201 @@ html[data-theme="day"] .hero-nature-shade {
   html { scroll-behavior: auto; }
   .glass-card, .liquid-control, .button { transition: none !important; }
 }
+
+
+/* -------------------------------------------------------------------------
+   AJECCH stable glass masthead — fixed visual anchor and reliable branding
+   ------------------------------------------------------------------------- */
+.site-header-stack {
+  position: sticky;
+  top: 0;
+  z-index: 60;
+  isolation: isolate;
+  width: 100%;
+  box-shadow: 0 12px 34px rgba(25, 49, 36, .07);
+}
+.site-header-stack::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: -10px 3% -2px;
+  border-radius: 0 0 32px 32px;
+  background: radial-gradient(ellipse at 50% 0%, rgba(190, 213, 190, .24), transparent 72%);
+  filter: blur(22px);
+  opacity: .72;
+  pointer-events: none;
+}
+.site-header-stack .topline {
+  position: relative;
+  z-index: 2;
+  min-height: 31px;
+  color: #f2f5ef;
+  background: linear-gradient(100deg, rgba(29, 57, 43, .96), rgba(45, 76, 57, .94) 52%, rgba(29, 57, 43, .96));
+  border-bottom: 1px solid rgba(246, 249, 241, .13);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+}
+.site-header-stack .topline-inner { min-height: 31px; }
+.site-header-stack .site-header {
+  position: relative;
+  overflow: visible;
+  background: linear-gradient(112deg, rgba(255,255,251,.87), rgba(248,251,245,.76) 52%, rgba(255,255,251,.88));
+  border-bottom: 1px solid rgba(70, 98, 74, .14);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.94), 0 11px 30px rgba(30, 54, 39, .075);
+  backdrop-filter: blur(26px) saturate(165%);
+  -webkit-backdrop-filter: blur(26px) saturate(165%);
+}
+.site-header-stack .site-header::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: .56;
+  background:
+    radial-gradient(ellipse at 11% 0%, rgba(255,255,255,.94), transparent 35%),
+    radial-gradient(ellipse at 92% 100%, rgba(199,170,121,.12), transparent 34%),
+    linear-gradient(112deg, transparent 28%, rgba(255,255,255,.32) 48%, transparent 67%);
+  background-size: 100% 100%, 100% 100%, 230% 100%;
+  background-position: 0 0, 0 0, 115% 0;
+  animation: ajecch-glass-sheen 15s ease-in-out infinite;
+}
+.site-header-stack .nav-wrap {
+  position: relative;
+  z-index: 1;
+  min-height: 82px;
+}
+.brand-mark-image {
+  flex: 0 0 49px;
+  width: 49px;
+  height: 49px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  padding: 2px;
+  border: 1px solid rgba(178, 139, 78, .48);
+  border-radius: 50%;
+  background: linear-gradient(145deg, rgba(255,255,255,.96), rgba(241,245,237,.84));
+  box-shadow:
+    0 5px 15px rgba(30, 57, 40, .10),
+    inset 0 1px 0 rgba(255,255,255,.98),
+    0 0 0 3px rgba(185, 149, 91, .07);
+}
+.brand-mark-image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  border-radius: 50%;
+  filter: drop-shadow(0 1px 1px rgba(21, 38, 27, .12));
+}
+.liquid-control {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-color: rgba(255,255,255,.76);
+  box-shadow:
+    0 7px 20px rgba(35, 62, 45, .10),
+    inset 0 1px 0 rgba(255,255,255,.98),
+    inset 0 -1px 0 rgba(83, 110, 87, .07);
+  backdrop-filter: blur(22px) saturate(175%);
+  -webkit-backdrop-filter: blur(22px) saturate(175%);
+}
+.liquid-control::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: 1px;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(138deg, rgba(255,255,255,.57), rgba(255,255,255,.10) 42%, transparent 67%, rgba(255,255,255,.15));
+  opacity: .88;
+}
+.liquid-control::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  width: 42px;
+  height: 42px;
+  top: -30px;
+  left: 8%;
+  border-radius: 50%;
+  pointer-events: none;
+  background: rgba(255,255,255,.45);
+  filter: blur(13px);
+  opacity: .65;
+}
+.liquid-control > span,
+.liquid-control small { position: relative; z-index: 1; }
+.liquid-control:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255,255,255,.94);
+  box-shadow:
+    0 11px 26px rgba(35, 62, 45, .14),
+    inset 0 1px 0 rgba(255,255,255,1),
+    0 0 0 3px rgba(187, 154, 105, .07);
+}
+@keyframes ajecch-glass-sheen {
+  0%, 58%, 100% { background-position: 0 0, 0 0, 115% 0; }
+  76% { background-position: 0 0, 0 0, -15% 0; }
+}
+html[data-theme="night"] .site-header-stack {
+  box-shadow: 0 13px 36px rgba(0,0,0,.23);
+}
+html[data-theme="night"] .site-header-stack::before {
+  background: radial-gradient(ellipse at 50% 0%, rgba(150, 184, 158, .12), transparent 70%);
+  opacity: .9;
+}
+html[data-theme="night"] .site-header-stack .topline {
+  color: #e7eee6;
+  background: linear-gradient(100deg, rgba(9,20,16,.97), rgba(20,39,29,.96) 52%, rgba(9,20,16,.97));
+  border-bottom-color: rgba(224,239,222,.09);
+}
+html[data-theme="night"] .site-header-stack .site-header {
+  background: linear-gradient(112deg, rgba(19,34,27,.90), rgba(27,46,36,.84) 52%, rgba(16,31,24,.91));
+  border-bottom-color: rgba(224,239,222,.14);
+  box-shadow: inset 0 1px 0 rgba(240,248,236,.08), 0 11px 30px rgba(0,0,0,.20);
+}
+html[data-theme="night"] .site-header-stack .site-header::before {
+  opacity: .47;
+  background:
+    radial-gradient(ellipse at 11% 0%, rgba(225,239,222,.14), transparent 35%),
+    radial-gradient(ellipse at 92% 100%, rgba(211,177,120,.09), transparent 34%),
+    linear-gradient(112deg, transparent 28%, rgba(225,239,222,.11) 48%, transparent 67%);
+  background-size: 100% 100%, 100% 100%, 230% 100%;
+  background-position: 0 0, 0 0, 115% 0;
+}
+html[data-theme="night"] .brand-mark-image {
+  border-color: rgba(220, 189, 130, .46);
+  background: linear-gradient(145deg, rgba(244,247,237,.97), rgba(223,231,218,.91));
+  box-shadow: 0 5px 18px rgba(0,0,0,.30), inset 0 1px 0 rgba(255,255,255,.94), 0 0 0 3px rgba(220,189,130,.08);
+}
+html[data-theme="night"] .liquid-control {
+  border-color: rgba(229,241,226,.27);
+  box-shadow:
+    0 8px 22px rgba(0,0,0,.22),
+    inset 0 1px 0 rgba(242,249,239,.19),
+    inset 0 -1px 0 rgba(0,0,0,.12);
+}
+html[data-theme="night"] .liquid-control::before {
+  background: linear-gradient(138deg, rgba(241,248,237,.19), rgba(241,248,237,.045) 42%, transparent 67%, rgba(241,248,237,.08));
+}
+html[data-theme="night"] .liquid-control::after {
+  background: rgba(225,239,222,.22);
+}
+html[data-theme="night"] .liquid-control:hover {
+  border-color: rgba(233,243,230,.43);
+  box-shadow: 0 11px 26px rgba(0,0,0,.29), inset 0 1px 0 rgba(242,249,239,.23), 0 0 0 3px rgba(220,189,130,.06);
+}
+@media (max-width: 700px) {
+  .site-header-stack .nav-wrap { min-height: 68px; flex-wrap: nowrap; padding: 8px 0; gap: 10px; }
+  .brand-mark-image { flex-basis: 41px; width: 41px; height: 41px; }
+  .site-header-stack .brand-copy strong { font-size: 13px; }
+  .site-header-stack .brand-copy small { font-size: 6px; }
+  .site-header-stack .nav-actions { gap: 5px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .site-header-stack .site-header::before { animation: none; }
+  .liquid-control::before, .liquid-control::after { transition: none; }
+}
