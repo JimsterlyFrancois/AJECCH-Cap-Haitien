@@ -12,15 +12,12 @@ const links = [
   { id: "contact", hash: "#contact", label: "Contact" }
 ];
 
-type AdminIdentity = { display_name: string; role: "super_admin" | "publisher" } | null;
-
 export default function SiteHeader({ active = "", logoUrl }: { active?: string; logoUrl?: string | null }) {
   const pathname = usePathname();
   const isHome = pathname === "/";
   const [activeSection, setActiveSection] = useState("accueil");
   const [nightMode, setNightMode] = useState(false);
   const [googleEmail, setGoogleEmail] = useState("");
-  const [adminIdentity, setAdminIdentity] = useState<AdminIdentity>(null);
 
   useEffect(() => {
     const savedTheme = window.localStorage.getItem("ajecch-theme");
@@ -33,28 +30,11 @@ export default function SiteHeader({ active = "", logoUrl }: { active?: string; 
   useEffect(() => {
     const supabase = createClient();
     let mounted = true;
-    const loadAdminIdentity = async (userId: string) => {
-      const { data } = await supabase
-        .from("ajecch_admins")
-        .select("display_name, role")
-        .eq("user_id", userId)
-        .eq("is_active", true)
-        .maybeSingle();
-      if (mounted) setAdminIdentity(data as AdminIdentity);
-    };
-    const loadIdentity = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!mounted) return;
-      setGoogleEmail(user?.email ?? "");
-      if (!user) setAdminIdentity(null);
-      else await loadAdminIdentity(user.id);
-    };
-    void loadIdentity();
+    void supabase.auth.getUser().then(({ data: { user } }) => {
+      if (mounted) setGoogleEmail(user?.email ?? "");
+    });
     const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!mounted) return;
-      setGoogleEmail(session?.user.email ?? "");
-      if (!session?.user) setAdminIdentity(null);
-      else queueMicrotask(() => { void loadAdminIdentity(session.user.id); });
+      if (mounted) setGoogleEmail(session?.user.email ?? "");
     });
     return () => {
       mounted = false;
@@ -137,10 +117,6 @@ export default function SiteHeader({ active = "", logoUrl }: { active?: string; 
               <span className="google-g" aria-hidden="true">G</span>
               <small>{googleEmail ? "Connecté" : "Connecter Google"}</small>
             </button>
-            <a className="admin-access liquid-control" href="/administration/connexion" title={adminIdentity ? `Connecté : ${adminIdentity.display_name}` : "Accès réservé à l’équipe autorisée"}>
-              <span aria-hidden="true">♙</span>
-              <small>{adminIdentity ? (adminIdentity.role === "super_admin" ? "Super Admin" : "Publication") : "Administration"}</small>
-            </a>
             <a className="nav-cta" href={isHome ? "#contact" : "/#contact"}>Rejoindre <span>↗</span></a>
           </div>
         </div>
