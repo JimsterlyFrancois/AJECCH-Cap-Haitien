@@ -3779,3 +3779,78 @@ html[data-theme="night"] select:focus-visible { outline-color: rgba(139,208,255,
   .site-header-stack .site-header::before { animation: none; }
   .liquid-control::before, .liquid-control::after { transition: none; }
 }
+
+
+/* Final contrast overrides for full-width dark bands and the night masthead. */
+html[data-theme="day"] body main :is(.mission-band,.join-section,.contact-section) :is(h1,h2,h3,p,.section-kicker,.mission-label) {
+  color: #f3f9ff !important;
+}
+html[data-theme="day"] body main .contact-glass-panel :is(h1,h2,h3,p) { color: #103454 !important; }
+html[data-theme="day"] body main .contact-glass-panel h2 em { color: #287fb4 !important; }
+html[data-theme="day"] .hero-bottomline b,
+html[data-theme="day"] .nature-feature-overlay span,
+html[data-theme="day"] .site-footer .footer-label,
+html[data-theme="day"] .site-footer .verse-reference { color: #a9dcf8 !important; }
+html[data-theme="night"] body main :is(.mission-band,.join-section,.contact-section) :is(h1,h2,h3,p,.section-kicker,.mission-label) {
+  color: #f0f7ff !important;
+}
+html[data-theme="night"] body main .contact-glass-panel :is(h1,h2,h3,p) { color: #f0f7ff !important; }
+html[data-theme="night"] .site-header-stack::before {
+  background: radial-gradient(ellipse at 50% 0%, rgba(98,177,229,.2), transparent 72%);
+}
+html[data-theme="night"] .site-header-stack .topline {
+  color: #e9f5ff;
+  background: linear-gradient(100deg, rgba(5,19,37,.98), rgba(10,48,82,.97) 52%, rgba(5,19,37,.98));
+  border-bottom-color: rgba(188,220,245,.13);
+}
+html[data-theme="night"] .site-header-stack .site-header {
+  color: #edf7ff;
+  background: linear-gradient(112deg, rgba(7,26,47,.94), rgba(14,46,75,.9) 52%, rgba(7,26,47,.94));
+  border-bottom-color: rgba(188,220,245,.17);
+  box-shadow: inset 0 1px 0 rgba(232,246,255,.09), 0 12px 32px rgba(0,0,0,.24);
+}
+html[data-theme="night"] .site-header-stack .site-header::before {
+  opacity: .53;
+  background:
+    radial-gradient(ellipse at 11% 0%, rgba(214,239,255,.13), transparent 35%),
+    radial-gradient(ellipse at 92% 100%, rgba(91,170,223,.14), transparent 34%),
+    linear-gradient(112deg, transparent 28%, rgba(210,239,255,.13) 48%, transparent 67%);
+}
+html[data-theme="night"] .site-header-stack .brand-copy strong,
+html[data-theme="night"] .site-header-stack .main-nav a { color: #edf7ff; }
+html[data-theme="night"] .site-header-stack .brand-copy small { color: #b6cfe3; }
+html[data-theme="night"] .site-header-stack .main-nav a:hover,
+html[data-theme="night"] .site-header-stack .main-nav a.active { color: #9bd8ff; }
+html[data-theme="night"] .site-header-stack .nav-cta {
+  color: #06223c;
+  background: linear-gradient(135deg, #9bd8ff, #59afe8);
+  box-shadow: 0 7px 20px rgba(0,0,0,.24);
+}
+html[data-theme="night"] .site-header-stack .nav-cta:hover { background: linear-gradient(135deg, #b5e5ff, #78c2ef); }
+html[data-theme="night"] .scroll-sky {
+  background:
+    radial-gradient(ellipse at 15% 3%, rgba(97,163,211,.16), transparent 32rem),
+    linear-gradient(180deg, #07182d 0%, #0c2340 48%, #123454 100%);
+}
+html[data-theme="night"] .scroll-sky-clouds-distant {
+  opacity: .18;
+  filter: blur(17px);
+  background-image:
+    radial-gradient(ellipse 19% 17% at 13% 32%, rgba(194,224,247,.43) 0 45%, transparent 78%),
+    radial-gradient(ellipse 16% 14% at 23% 29%, rgba(151,204,238,.35) 0 45%, transparent 78%),
+    radial-gradient(ellipse 22% 18% at 72% 23%, rgba(194,224,247,.4) 0 44%, transparent 78%),
+    radial-gradient(ellipse 17% 15% at 84% 27%, rgba(151,204,238,.32) 0 45%, transparent 78%);
+}
+html[data-theme="night"] .scroll-sky-clouds-near {
+  opacity: .13;
+  filter: blur(22px);
+  background-image:
+    radial-gradient(ellipse 20% 18% at 5% 46%, rgba(194,224,247,.35) 0 42%, transparent 78%),
+    radial-gradient(ellipse 15% 14% at 17% 42%, rgba(151,204,238,.3) 0 45%, transparent 78%),
+    radial-gradient(ellipse 23% 19% at 91% 50%, rgba(194,224,247,.34) 0 43%, transparent 78%),
+    radial-gradient(ellipse 16% 14% at 78% 46%, rgba(151,204,238,.29) 0 44%, transparent 78%);
+}
+html[data-theme="night"] .hero-bottomline b,
+html[data-theme="night"] .nature-feature-overlay span,
+html[data-theme="night"] .site-footer .footer-label,
+html[data-theme="night"] .site-footer .verse-reference { color: #9bd8ff !important; }
