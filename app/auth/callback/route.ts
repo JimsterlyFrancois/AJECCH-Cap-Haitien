@@ -11,6 +11,14 @@ export async function GET(request: NextRequest) {
   if (code) {
     const supabase = await createClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
+
+    if (!error && url.searchParams.get("admin_request") === "1") {
+      const { error: requestError } = await supabase.rpc("ajecch_request_admin_access");
+      if (requestError) {
+        return NextResponse.redirect(new URL("/administration?request=error", origin));
+      }
+    }
+
     if (!error && url.searchParams.get("subscribe") === "1") {
       const { data: { user } } = await supabase.auth.getUser();
       if (user?.email) {
@@ -22,6 +30,7 @@ export async function GET(request: NextRequest) {
         }, { onConflict: "user_id" });
       }
     }
+
     if (!error) return NextResponse.redirect(new URL(next, origin));
   }
 
