@@ -41,15 +41,19 @@ alter table private.ajecch_bootstrap_tokens enable row level security;
 
 Aucune politique d’accès direct n’est nécessaire : les fonctions privées autorisées exécutent l’initialisation avec leurs privilèges contrôlés. L’accès direct à la table reste bloqué pour les clients.
 
-## Ajouter les deux autres comptes
+## Ajouter les autres administrateurs avec Google
 
-Après la première activation, le Super Admin :
+Après la première activation du Super Admin 1 :
 
-1. crée les deux autres comptes via **Supabase → Authentication → Users** ;
-2. copie l’UUID de chaque nouvel utilisateur ;
-3. dans **Administration → Équipe & accès**, attribue le siège Super Admin 2 au deuxième responsable et le rôle Publication & Médias au troisième.
+1. Le futur responsable ouvre le site AJECCH et clique sur **Connecter Google** (ou sur **Continuer avec Google** dans la page de connexion d’administration).
+2. Supabase Auth vérifie son compte Google puis enregistre une demande d’accès associée à son propre identifiant utilisateur.
+3. Un Super Admin ouvre **Administration → Équipe & accès**.
+4. La demande apparaît avec le nom et l’adresse e-mail du compte Google. Le Super Admin choisit **Super Admin · siège 2** ou **Publication & Médias**, puis approuve ou refuse.
+5. Après approbation, le nouvel administrateur clique sur **Mon accès admin** ou ouvre `/administration` pour accéder à son espace.
 
-La création directe des utilisateurs dans Auth est volontairement réservée au tableau de bord Supabase : aucun formulaire d’inscription public ne peut s’octroyer un rôle privilégié.
+La connexion Google ne confère jamais un rôle automatiquement. Seul un Super Admin déjà actif peut approuver une demande. Le compte du demandeur ne peut ni modifier son rôle ni approuver sa propre demande. Les identifiants Auth, les UUID et les clés de service ne doivent pas être copiés ou partagés manuellement.
+
+La migration `supabase/migrations/20261114040000_ajecch_admin_access_requests.sql` doit être appliquée à Supabase avant d’utiliser le nouveau circuit de demandes.
 
 ## Bibliothèque d’images
 
