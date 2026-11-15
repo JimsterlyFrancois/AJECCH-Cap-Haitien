@@ -180,11 +180,12 @@ export default function SiteHeader({ active = "", logoUrl }: { active?: string; 
               <span aria-hidden="true">{nightMode ? "☀" : "☾"}</span>
               <small>{nightMode ? "Jour" : "Nuit"}</small>
             </button>
-            {adminAccess ? (
-              <a className="nav-cta admin-dashboard-link" href="/administration" title={`Espace de gestion · ${accountEmail}`}>
-                Espace admin <span>↗</span>
+            {accountEmail && (
+              <a className="nav-cta admin-dashboard-link" href="/administration" title={`${adminAccess ? "Espace de gestion" : "Consulter mon accès AJECCH"} · ${accountEmail}`}>
+                {adminAccess ? "Espace admin" : "Mon espace"} <span>↗</span>
               </a>
-            ) : (
+            )}
+            {!adminAccess && (
               <button
                 className="google-connect liquid-control"
                 type="button"
