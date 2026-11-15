@@ -4,8 +4,9 @@ import { FormEvent, useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type { AjecchAdmin } from "@/lib/admin-auth";
+import QuizManager from "./quiz-manager";
 
-type Tab = "overview" | "media" | "posts" | "team";
+type Tab = "overview" | "media" | "posts" | "quizzes" | "team";
 type MediaItem = {
   id: string;
   slot: string;
@@ -73,7 +74,6 @@ export default function AdminConsole({ admin }: { admin: AjecchAdmin }) {
   const [accessRequests, setAccessRequests] = useState<AccessRequestItem[]>([]);
   const [registeredUsers, setRegisteredUsers] = useState<RegisteredUserItem[]>([]);
   const [registeredUserSearch, setRegisteredUserSearch] = useState("");
-  const [requestRoles, setRequestRoles] = useState<Record<string, "super_admin" | "publisher">>({});
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState("");
   const [error, setError] = useState("");
@@ -193,6 +193,7 @@ export default function AdminConsole({ admin }: { admin: AjecchAdmin }) {
     setBusy(true);
     setError("");
     setNotice("");
+    let uploadedPath: string | null = null;
     try {
       const title = String(form.get("title") ?? "").trim();
       const slug = String(form.get("slug") ?? "").trim().toLowerCase();
@@ -201,9 +202,37 @@ export default function AdminConsole({ admin }: { admin: AjecchAdmin }) {
       const category = String(form.get("category")) as PostItem["category"];
       const starts = String(form.get("event_starts_at") ?? "");
       const ends = String(form.get("event_ends_at") ?? "");
+      let coverMediaId = String(form.get("cover_media_id") ?? "") || null;
+      const file = form.get("cover_file");
+      if (file instanceof File && file.size > 0) {
+        if (file.size > 8 * 1024 * 1024) throw new Error("L’image dépasse la limite de 8 Mo.");
+        const extensions: Record<string, string> = {
+          "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp", "image/avif": "avif"
+        };
+        const extension = extensions[file.type];
+        if (!extension) throw new Error("Formats acceptés : JPG, PNG, WebP ou AVIF.");
+        uploadedPath = `posts/${crypto.randomUUID()}.${extension}`;
+        const { error: uploadError } = await supabase.storage.from("ajecch-public-media").upload(uploadedPath, file, {
+          upsert: false, contentType: file.type, cacheControl: "31536000"
+        });
+        if (uploadError) throw uploadError;
+        const slot = `post.${post.id ?? crypto.randomUUID()}`;
+        const { data: imageRecord, error: imageError } = await supabase
+          .from("ajecch_media")
+          .upsert({
+            slot, label: title, alt_text: title,
+            caption: String(form.get("excerpt") ?? "").trim() || null,
+            storage_path: uploadedPath, source_url: null,
+            is_visible: true, created_by: admin.user_id, updated_by: admin.user_id
+          }, { onConflict: "slot" })
+          .select("id")
+          .single();
+        if (imageError) throw imageError;
+        coverMediaId = imageRecord.id;
+      }
       const values = {
         slug,
-        cover_media_id: String(form.get("cover_media_id") ?? "") || null,
+        cover_media_id: coverMediaId,
         title,
         excerpt: String(form.get("excerpt") ?? "").trim(),
         body: String(form.get("body") ?? "").trim(),
@@ -224,12 +253,12 @@ export default function AdminConsole({ admin }: { admin: AjecchAdmin }) {
       setNotice(status === "published" ? "Publication mise en ligne." : "Brouillon enregistré.");
       await loadData();
     } catch (err) {
+      if (uploadedPath) await supabase.storage.from("ajecch-public-media").remove([uploadedPath]);
       setError(messageOf(err));
     } finally {
       setBusy(false);
     }
   }
-
   async function deletePost(post: PostItem) {
     if (!window.confirm(`Supprimer « ${post.title} » ?`)) return;
     setBusy(true);
@@ -243,14 +272,13 @@ export default function AdminConsole({ admin }: { admin: AjecchAdmin }) {
     setBusy(true);
     setError("");
     setNotice("");
-    const role = requestRoles[request.id] ?? "publisher";
     const { error: approveError } = await supabase.rpc("ajecch_approve_admin_access_request", {
       p_request_id: request.id,
-      p_role: role
+      p_role: "super_admin"
     });
     if (approveError) setError(approveError.message);
     else {
-      setNotice(`Accès attribué à ${request.display_name}.`);
+      setNotice(`Accès ADM activé pour ${request.display_name}.`);
       await loadData();
     }
     setBusy(false);
@@ -344,6 +372,7 @@ export default function AdminConsole({ admin }: { admin: AjecchAdmin }) {
           <button className={tab === "overview" ? "active" : ""} onClick={() => setTab("overview")}>Vue générale</button>
           <button className={tab === "media" ? "active" : ""} onClick={() => setTab("media")}>Images publiques</button>
           <button className={tab === "posts" ? "active" : ""} onClick={() => setTab("posts")}>Publications</button>
+          <button className={tab === "quizzes" ? "active" : ""} onClick={() => setTab("quizzes")}>Quiz</button>
           {isPrimaryAdmin && <button className={tab === "team" ? "active" : ""} onClick={() => setTab("team")}>Équipe & accès</button>}
         </nav>
         <div className="admin-sidebar-bottom">
@@ -354,7 +383,7 @@ export default function AdminConsole({ admin }: { admin: AjecchAdmin }) {
 
       <section className="admin-main">
         <header className="admin-topbar">
-          <div><span className="admin-eyebrow">AJECCH · CAP-HAÏTIEN</span><h1>{tab === "overview" ? "Tableau de bord" : tab === "media" ? "Gestion des images" : tab === "posts" ? "Publications" : "Équipe & autorisations"}</h1></div>
+          <div><span className="admin-eyebrow">AJECCH · CAP-HAÏTIEN</span><h1>{tab === "overview" ? "Tableau de bord" : tab === "media" ? "Gestion des images" : tab === "posts" ? "Publications" : tab === "quizzes" ? "Quiz & connaissances" : "Équipe & autorisations"}</h1></div>
           <span className="admin-role-chip">{isSuper ? "ADM" : "Publication & Médias"}</span>
         </header>
         {notice && <p className="admin-notice" role="status">{notice}</p>}
@@ -370,10 +399,11 @@ export default function AdminConsole({ admin }: { admin: AjecchAdmin }) {
             </div>
             <div className="admin-quick-grid">
               <button onClick={() => setTab("media")}><strong>Gérer les images</strong><span>Ajouter, remplacer, masquer ou supprimer les visuels du site public.</span><b>Ouvrir →</b></button>
-              <button onClick={() => setTab("posts")}><strong>Écrire une publication</strong><span>Préparer une actualité, une annonce ou un événement.</span><b>Ouvrir →</b></button>
+              <button onClick={() => setTab("posts")}><strong>Écrire une publication</strong><span>Préparer une actualité, une annonce ou un événement avec image et texte court ou long.</span><b>Ouvrir →</b></button>
+              <button onClick={() => setTab("quizzes")}><strong>Créer un quiz</strong><span>Rédiger des questions, proposer les choix et désigner les bonnes réponses.</span><b>Ouvrir →</b></button>
               {isPrimaryAdmin && <button onClick={() => setTab("team")}><strong>Gérer les accès</strong><span>Gérer le siège ADM 2, le responsable des médias et les comptes inscrits.</span><b>Ouvrir →</b></button>}
             </div>
-            <div className="admin-security-note"><strong>Règles d’accès</strong><p>Le compte ADM gère les accès de l’équipe. Le responsable des médias gère les publications et les visuels du site public.</p></div>
+            <div className="admin-security-note"><strong>Votre espace</strong><p>Vous pouvez gérer les images, publier des textes courts ou détaillés et créer des quiz. Les réponses correctes restent invisibles aux participants avant leur réponse.</p></div>
           </div>
         )}
 
@@ -416,9 +446,11 @@ export default function AdminConsole({ admin }: { admin: AjecchAdmin }) {
           </div>
         )}
 
+        {tab === "quizzes" && <div className="admin-content"><QuizManager /></div>}
+
         {tab === "team" && isPrimaryAdmin && (
           <div className="admin-content">
-            <div className="admin-section-intro"><h2>Trois accès administratifs</h2><p>Les deux sièges ADM disposent des accès de gestion du site. Seul ADM 1 peut gérer l’équipe et désigner le responsable des médias. Le rôle Publication & Médias gère les actualités et les images, sans accès à cette section.</p></div>
+            <div className="admin-section-intro"><h2>Accès administratifs</h2><p>Le siège ADM 2 est attribué après une demande d’inscription et une validation. Les deux comptes ADM peuvent publier des contenus et créer des quiz. La gestion des autorisations reste réservée à cette section.</p></div>
             <div className="admin-seat-grid">
               {([1, 2] as const).map((seat) => {
                 const person = team.find((item) => item.role === "super_admin" && item.seat === seat && item.is_active);
@@ -463,8 +495,8 @@ export default function AdminConsole({ admin }: { admin: AjecchAdmin }) {
               </div>
             </section>
             <div className="admin-team-list admin-access-requests">
-              <h3>Demandes d’accès en attente ({accessRequests.filter((request) => request.user_id !== admin.user_id).length})</h3>
-              <p>Cette liste peut contenir des demandes enregistrées par l’ancien parcours Google. Vérifiez chaque identité avant d’approuver ou de refuser une demande. Le site utilise désormais une connexion par e-mail et mot de passe.</p>
+              <h3>Candidature au second accès ADM ({accessRequests.filter((request) => request.user_id !== admin.user_id).length})</h3>
+              <p>Les demandes proviennent de comptes inscrits avec une adresse e-mail confirmée. La validation attribue le second accès ADM, avec les mêmes fonctions de publication et de quiz.</p>
               {accessRequests.filter((request) => request.user_id !== admin.user_id).map((request) => (
                 <div className="admin-team-row admin-request-row" key={request.id}>
                   <div>
@@ -472,18 +504,8 @@ export default function AdminConsole({ admin }: { admin: AjecchAdmin }) {
                     <small>{request.email} · Demande du {new Date(request.requested_at).toLocaleDateString("fr-FR")}</small>
                   </div>
                   <div className="admin-team-actions">
-                    <select
-                      aria-label={`Rôle demandé pour ${request.display_name}`}
-                      value={requestRoles[request.id] ?? "publisher"}
-                      onChange={(event) => setRequestRoles((current) => ({
-                        ...current,
-                        [request.id]: event.target.value as "super_admin" | "publisher"
-                      }))}
-                    >
-                      <option value="publisher">Publication & Médias</option>
-                      <option value="super_admin">ADM · siège 2</option>
-                    </select>
-                    <button type="button" disabled={busy} onClick={() => void approveAccessRequest(request)}>Approuver</button>
+                    <span className="admin-user-status">Candidature ADM</span>
+                    <button type="button" disabled={busy} onClick={() => void approveAccessRequest(request)}>Valider l’accès</button>
                     <button className="admin-danger-text" type="button" disabled={busy} onClick={() => void rejectAccessRequest(request)}>Refuser</button>
                   </div>
                 </div>
@@ -517,7 +539,8 @@ function PostEditor({ post, media, onSave, onDelete, busy }: {
         <span><strong>{post?.title ?? "Nouvelle publication"}</strong><small>{post ? `${CATEGORY_LABELS[post.category]} · ${post.status === "published" ? "En ligne" : "Brouillon"}` : "Créer une actualité, une annonce ou un événement"}</small></span><b>{expanded ? "−" : "+"}</b>
       </button>
       {expanded && <div className="admin-post-fields">
-        <label>Image de couverture<select name="cover_media_id" defaultValue={post?.cover_media_id ?? ""}><option value="">Aucune image</option>{media.filter((item) => item.id && item.is_visible).map((item) => <option value={item.id} key={item.id}>{item.label}</option>)}</select></label>
+        <label>Image existante (facultatif)<select name="cover_media_id" defaultValue={post?.cover_media_id ?? ""}><option value="">Aucune image</option>{media.filter((item) => item.id && item.is_visible).map((item) => <option value={item.id} key={item.id}>{item.label}</option>)}</select></label>
+        <label className="admin-file-field">Ou téléverser une image pour cette publication<input type="file" name="cover_file" accept="image/jpeg,image/png,image/webp,image/avif" /></label>
         <div className="admin-form-two">
           <label>Titre<input name="title" required defaultValue={post?.title ?? ""} /></label>
           <label>Identifiant URL (slug)<input name="slug" required pattern="[a-z0-9-]+" defaultValue={post?.slug ?? ""} placeholder="exemple-annonce-ajecch" /></label>
@@ -526,8 +549,8 @@ function PostEditor({ post, media, onSave, onDelete, busy }: {
           <label>Type<select name="category" defaultValue={post?.category ?? "news"}><option value="news">Actualité</option><option value="announcement">Annonce</option><option value="event">Événement</option></select></label>
           <label>Statut<select name="status" defaultValue={post?.status ?? "draft"}><option value="draft">Brouillon</option><option value="published">Publié</option></select></label>
         </div>
-        <label>Résumé<input name="excerpt" defaultValue={post?.excerpt ?? ""} /></label>
-        <label>Contenu<textarea name="body" rows={4} defaultValue={post?.body ?? ""} /></label>
+        <label>Texte court / résumé<input name="excerpt" maxLength={300} defaultValue={post?.excerpt ?? ""} placeholder="Une présentation courte pour les aperçus" /></label>
+        <label>Texte complet<textarea name="body" rows={7} maxLength={12000} defaultValue={post?.body ?? ""} placeholder="Rédigez le contenu détaillé de la publication…" /></label>
         <div className="admin-form-two">
           <label>Date de début (événement)<input type="datetime-local" name="event_starts_at" defaultValue={toLocalInput(post?.event_starts_at ?? null)} /></label>
           <label>Date de fin<input type="datetime-local" name="event_ends_at" defaultValue={toLocalInput(post?.event_ends_at ?? null)} /></label>
