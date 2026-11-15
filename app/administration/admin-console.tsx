@@ -194,6 +194,7 @@ export default function AdminConsole({ admin }: { admin: AjecchAdmin }) {
     setError("");
     setNotice("");
     let uploadedPath: string | null = null;
+    let uploadedMediaId: string | null = null;
     try {
       const title = String(form.get("title") ?? "").trim();
       const slug = String(form.get("slug") ?? "").trim().toLowerCase();
@@ -216,18 +217,19 @@ export default function AdminConsole({ admin }: { admin: AjecchAdmin }) {
           upsert: false, contentType: file.type, cacheControl: "31536000"
         });
         if (uploadError) throw uploadError;
-        const slot = `post.${post.id ?? crypto.randomUUID()}`;
+        const slot = `post.${crypto.randomUUID()}`;
         const { data: imageRecord, error: imageError } = await supabase
           .from("ajecch_media")
-          .upsert({
+          .insert({
             slot, label: title, alt_text: title,
             caption: String(form.get("excerpt") ?? "").trim() || null,
             storage_path: uploadedPath, source_url: null,
             is_visible: true, created_by: admin.user_id, updated_by: admin.user_id
-          }, { onConflict: "slot" })
+          })
           .select("id")
           .single();
         if (imageError) throw imageError;
+        uploadedMediaId = imageRecord.id;
         coverMediaId = imageRecord.id;
       }
       const values = {
@@ -253,6 +255,7 @@ export default function AdminConsole({ admin }: { admin: AjecchAdmin }) {
       setNotice(status === "published" ? "Publication mise en ligne." : "Brouillon enregistré.");
       await loadData();
     } catch (err) {
+      if (uploadedMediaId) await supabase.from("ajecch_media").delete().eq("id", uploadedMediaId);
       if (uploadedPath) await supabase.storage.from("ajecch-public-media").remove([uploadedPath]);
       setError(messageOf(err));
     } finally {
