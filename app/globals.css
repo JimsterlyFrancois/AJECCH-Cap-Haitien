@@ -4220,8 +4220,8 @@ html[data-theme="night"] body main .join-inner p { color: #bfd2e5 !important; }
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 3.8em;
-  height: 3.8em;
+  width: 390%;
+  height: 390%;
   border-radius: 50%;
   transform: translate(-50%, -50%);
   background: conic-gradient(
