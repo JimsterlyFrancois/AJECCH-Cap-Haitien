@@ -64,13 +64,13 @@ export default async function AdministrationPage({
           <>
             <p className="admin-eyebrow">DEMANDE REFUSÉE</p>
             <h1>Accès non accordé</h1>
-            <p className="admin-auth-description">La demande liée à <strong>{accessRequest.email}</strong> a été refusée. Après échange avec un Super Admin, vous pouvez soumettre une nouvelle demande avec le bouton « Mon accès admin ».</p>
+            <p className="admin-auth-description">La demande liée à <strong>{accessRequest.email}</strong> a été refusée. Après échange avec un Super Admin, faites vérifier votre compte et l’attribution de vos droits d’accès.</p>
           </>
         ) : (
           <>
             <p className="admin-eyebrow">ACCÈS NON AUTORISÉ</p>
             <h1>Aucun rôle actif</h1>
-            <p className="admin-auth-description">Ce compte est connecté, mais aucune demande d’accès administrateur n’est enregistrée. Revenez au site public et utilisez « Connecter Google » pour envoyer une demande.</p>
+            <p className="admin-auth-description">Ce compte est connecté, mais aucun rôle administrateur actif ne lui est attribué. Contactez directement un Super Admin de l’AJECCH pour faire vérifier votre autorisation.</p>
           </>
         )}
         <a className="admin-primary-button admin-back-to-site" href="/">Retour au site public</a>
