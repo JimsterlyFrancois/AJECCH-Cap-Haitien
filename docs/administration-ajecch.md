@@ -12,7 +12,8 @@ Les sièges actifs sont uniques en base. Le système empêche la désactivation 
 
 ## 2. Connexion actuelle
 
-- Adresse : `/administration/connexion`
+- Adresse de connexion : `/administration/connexion`
+- Création du premier compte : `/administration/inscription`, affichée uniquement tant qu'aucun Super Admin actif n'existe.
 - Méthode : adresse e-mail et mot de passe via Supabase Auth.
 - L'accès à `/administration` exige une session authentifiée et un rôle actif dans `public.ajecch_admins`.
 - Une session authentifiée ne confère aucun privilège administratif à elle seule.
@@ -31,9 +32,11 @@ Ne jamais exposer une clé `service_role`, un jeton d'initialisation ou un secre
 
 Cette procédure est réservée au propriétaire technique ou à une personne autorisée à administrer le projet Supabase.
 
-1. Dans Supabase **Authentication → Users**, créer le compte du premier responsable avec son adresse e-mail et son mot de passe.
-2. Vérifier que l'adresse e-mail est confirmée selon la configuration Auth du projet.
-3. Dans le **SQL Editor** Supabase, récupérer le code privé non utilisé :
+1. Ouvrir `/administration/connexion` puis cliquer sur **Créer le premier compte administrateur**. Ce lien n'apparaît que tant que le système n'a pas de Super Admin actif.
+2. Saisir le nom, l'adresse e-mail et un mot de passe. Supabase crée le compte et envoie un e-mail de confirmation lorsque la confirmation d'adresse est activée.
+3. Ouvrir le message de confirmation et suivre le lien. Le retour sécurisé doit ramener à `/administration`.
+4. Si la création ne peut pas être réalisée depuis le site, le propriétaire technique peut créer le compte depuis Supabase **Authentication → Users** puis vérifier l'adresse e-mail.
+5. Dans le **SQL Editor** Supabase, récupérer le code privé non utilisé :
 
    ```sql
    select token
@@ -42,15 +45,15 @@ Cette procédure est réservée au propriétaire technique ou à une personne au
    limit 1;
    ```
 
-4. Transmettre ce code uniquement au premier responsable, par un canal privé et sûr. Ne pas le placer dans GitHub, dans le navigateur ou dans une variable publique.
-5. Le responsable se connecte sur `/administration/connexion`, ouvre `/administration`, indique son nom et saisit le code.
-6. Le code est consommé lors de l'activation du siège Super Admin 1. Il ne doit pas être réutilisé.
+6. Transmettre ce code uniquement au premier responsable, par un canal privé et sûr. Ne pas le placer dans GitHub, dans le navigateur ou dans une variable publique.
+7. Le responsable se connecte sur `/administration/connexion`, ouvre `/administration`, indique son nom et saisit le code.
+8. Le code est consommé lors de l'activation du siège Super Admin 1. Il ne doit pas être réutilisé.
 
 Si cette table avait été créée sur une ancienne base sans la protection attendue, le propriétaire doit vérifier son état avant toute initialisation et appliquer, si nécessaire, la commande de durcissement documentée dans la migration. Ne pas désactiver RLS pour faciliter l'activation.
 
 ## 5. Ajouter un responsable après l'initialisation
 
-Le parcours d'invitation automatisé n'est pas encore disponible dans l'interface. En attendant, le propriétaire Supabase doit effectuer l'attribution depuis le SQL Editor, après avoir créé le compte du responsable dans **Authentication → Users** et vérifié son identité.
+Le parcours d'invitation automatisé des autres responsables n'est pas encore disponible dans l'interface. En attendant, le propriétaire Supabase doit effectuer l'attribution depuis le SQL Editor, après avoir créé le compte du responsable dans **Authentication → Users** et vérifié son identité.
 
 Exemple pour attribuer le rôle **Publication & Médias** (siège unique disponible) :
 
