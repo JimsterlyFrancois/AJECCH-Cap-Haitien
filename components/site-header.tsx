@@ -133,13 +133,8 @@ export default function SiteHeader({ active = "", logoUrl }: { active?: string; 
               <span aria-hidden="true">{nightMode ? "☀" : "☾"}</span>
               <small>{nightMode ? "Jour" : "Nuit"}</small>
             </button>
-            {accountEmail && (
-              <a className="nav-cta admin-dashboard-link" href="/administration" title={`${adminAccess ? "Espace de gestion" : "Consulter mon accès AJECCH"} · ${accountEmail}`}>
-                {adminAccess ? "Espace admin" : "Mon espace"} <span>↗</span>
-              </a>
-            )}
             <a className="nav-cta admin-dashboard-link" href={accountEmail ? "/administration" : "/administration/connexion"} title={accountTitle}>
-              {accountEmail && adminAccess ? "Espace admin" : "Administration"} <span>↗</span>
+              {accountEmail ? (adminAccess ? "Espace admin" : "Mon espace") : "Administration"} <span>↗</span>
             </a>
             <a className="nav-cta" href={isHome ? "#contact" : "/#contact"}>Rejoindre <span>↗</span></a>
           </div>
