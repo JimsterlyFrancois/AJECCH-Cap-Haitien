@@ -5,19 +5,22 @@
 La gestion repose sur trois accès administratifs :
 
 - **ADM — siège 1** : contrôle complet du site et seul compte autorisé à gérer les accès administratifs, parcourir la liste des comptes inscrits et désigner ou révoquer le responsable des médias.
-- **ADM — siège 2** : gère les publications et les médias du site, mais ne peut pas consulter l'annuaire des comptes ni attribuer ou révoquer des rôles.
-- **Publication & Médias** : crée, publie, modifie et supprime les actualités, annonces et événements ; gère les images publiques. Ce rôle ne peut pas administrer l'équipe.
+- **ADM — siège 2** : s'inscrit depuis le site lorsque le siège est libre, confirme son adresse e-mail et attend la validation de sa candidature. Après acceptation, il dispose des mêmes outils de publication et de création de quiz que le siège 1, sans accès à l'annuaire ni à la gestion des rôles. L'écran de candidature et son espace ne révèlent pas l'identité du compte ADM 1.
+- **Publication & Médias** : rôle historique distinct, limité aux publications et aux images publiques. Il ne peut pas administrer l'équipe.
 
 Les sièges actifs sont uniques en base. Le système empêche la désactivation ou la suppression du dernier ADM actif. Le libellé visible des comptes Super Admin est simplement **ADM**.
 
 ## 2. Connexion actuelle
 
 - Adresse de connexion : `/administration/connexion`
-- Création du premier compte : `/administration/inscription`, affichée uniquement tant qu'aucun Super Admin actif n'existe.
+- Première activation : `/administration/inscription`, disponible tant qu'aucun ADM 1 n'existe.
+- Candidature au second accès ADM : la même adresse `/administration/inscription` affiche le formulaire de candidature uniquement quand le siège 2 est libre et qu'aucune autre candidature n'est en attente.
 - Méthode : adresse e-mail et mot de passe via Supabase Auth.
 - L'accès à `/administration` exige une session authentifiée et un rôle actif dans `public.ajecch_admins`.
 - Une session authentifiée ne confère aucun privilège administratif à elle seule.
-- La connexion Google n'est pas le parcours pris en charge actuellement. Les anciennes demandes enregistrées dans `ajecch_admin_access_requests` sont conservées à titre historique ; elles ne constituent pas un formulaire public actif.
+- La connexion Google n'est pas le parcours pris en charge actuellement.
+- L'ADM 2 doit confirmer son adresse e-mail. Après le retour du lien de confirmation, sa demande est enregistrée et le compte affiche « En attente de validation ». L'ADM 1 est le seul à pouvoir valider ou refuser cette candidature.
+- Le candidat ne reçoit pas l'identité de la personne qui examine la demande. Les fonctions SQL de consultation de sa demande ne retournent aucun identifiant de réviseur.
 
 ## 3. Variables Vercel
 
@@ -51,7 +54,18 @@ Cette procédure est réservée au propriétaire technique ou à une personne au
 
 Si cette table avait été créée sur une ancienne base sans la protection attendue, le propriétaire doit vérifier son état avant toute initialisation et appliquer, si nécessaire, la commande de durcissement documentée dans la migration. Ne pas désactiver RLS pour faciliter l'activation.
 
-## 5. Désigner ou révoquer le responsable des médias
+## 5. Validation du second accès ADM
+
+1. Le candidat ouvre `/administration/inscription` pendant que le siège 2 est libre.
+2. Il crée son compte avec son nom, son adresse e-mail et un mot de passe.
+3. Il confirme son adresse e-mail depuis le message envoyé par Supabase.
+4. Il revient automatiquement sur `/administration` et voit l'état « En attente de validation ».
+5. Dans **Équipe & accès**, ADM 1 examine la candidature et choisit **Valider l'accès** ou **Refuser**.
+6. Après validation, l'utilisateur reçoit le siège ADM 2 et peut se connecter à l'espace de gestion. Il n'a pas accès à l'annuaire des comptes ni à la section Équipe & accès.
+
+La base de données limite la candidature à un siège 2 et une demande en cours. L'accès ne devient actif qu'après confirmation de l'e-mail et approbation par ADM 1. L'interface et les fonctions de consultation du candidat ne révèlent pas le nom ni l'identifiant du compte ADM 1.
+
+## 6. Désigner ou révoquer le responsable des médias
 
 Cette gestion est disponible dans l'espace du compte **ADM** (siège 1) :
 
@@ -66,7 +80,7 @@ Un seul responsable des médias peut être actif à la fois. Pour le remplacer, 
 
 L'annuaire affiche uniquement le nom, l'adresse e-mail, l'état de confirmation et la date d'inscription. Son accès et les opérations d'attribution/révocation sont contrôlés par des fonctions SQL et des politiques RLS : le compte ADM 2, les éditeurs et les visiteurs ne peuvent pas utiliser ces opérations.
 
-## 6. Bibliothèque média et publications
+## 7. Bibliothèque média, publications et quiz
 
 Le bucket public `ajecch-public-media` sert les médias destinés au site. Les formats prévus sont JPG, PNG, WebP et AVIF, avec une limite applicative de 8 Mo.
 
@@ -78,9 +92,19 @@ Emplacements média connus :
 - `home.gallery`
 - `home.contact`
 
-Les publications utilisent les catégories actualité, annonce et événement. Seules les publications au statut publié sont visibles publiquement. Les brouillons restent réservés aux comptes administratifs autorisés.
+Les publications utilisent les catégories actualité, annonce et événement. Chaque publication peut inclure un texte court (résumé), un texte complet et une image de couverture téléversée directement. Les images sont limitées à 8 Mo et aux formats JPG, PNG, WebP et AVIF. Seules les publications au statut publié sont visibles publiquement. Les brouillons restent réservés aux comptes administratifs autorisés.
 
-## 7. Sécurité
+Les deux comptes ADM peuvent créer des quiz comportant de 1 à 12 questions, chacune avec 2 à 5 choix, et désigner une seule bonne réponse. La bonne réponse est conservée dans une table privée ; elle n'est pas incluse dans les données publiques du quiz. Après sa première participation, une question et sa correction ne peuvent plus être modifiées.
+
+## 8. Participation et score individuel
+
+- La page publique des quiz est accessible à `/quiz`.
+- Pour répondre et conserver ses points, chaque participant se connecte ou crée un compte participant distinct.
+- Une bonne réponse rapporte 1 point. Une réponse incorrecte rapporte 0 point.
+- Un compte ne peut répondre qu'une seule fois à une question donnée. Une tentative répétée ne rapporte aucun point supplémentaire.
+- Le score est calculé à partir des réponses de l'utilisateur connecté. Chaque participant ne peut consulter que ses propres réponses et son propre score ; aucun classement public n'est exposé.
+
+## 9. Sécurité
 
 - Supabase Auth authentifie les comptes.
 - `public.ajecch_admins` détermine les rôles actifs.
@@ -89,7 +113,7 @@ Les publications utilisent les catégories actualité, annonce et événement. S
 - Le contrôle visuel d'un bouton ou d'un lien n'est jamais considéré comme une mesure de sécurité.
 - Aucun secret privé ne doit apparaître dans le code client.
 
-## 8. Migrations
+## 10. Migrations
 
 Les migrations de référence sont conservées dans `supabase/migrations/`. Les migrations relatives aux anciennes demandes Google sont conservées pour assurer l'historique et la compatibilité des données ; elles ne signifient pas que le fournisseur Google est activé ou utilisé par l'interface actuelle.
 
