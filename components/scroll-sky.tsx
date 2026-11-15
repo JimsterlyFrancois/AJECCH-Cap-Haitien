@@ -215,13 +215,19 @@ export default function ScrollSky() {
         ? { cirrus: 2, mid: 3, near: 2 }
         : { cirrus: 3, mid: 4, near: 3 };
       clouds = [];
-      (Object.entries(counts) as [DayLayer, number][]).forEach(([layer, count]) => {
+      const layers: Array<[DayLayer, number]> = [
+        ["cirrus", counts.cirrus],
+        ["mid", counts.mid],
+        ["near", counts.near]
+      ];
+      layers.forEach(([layer, count]) => {
         for (let index = 0; index < count; index++) {
           const startX = (index / count) * (width + 430) - 215;
           clouds.push(makeDayCloud(layer, width, height, startX));
         }
       });
       clouds.sort((a, b) => a.depth - b.depth);
+      if (isDay) start();
     };
 
     const render = (advance: boolean) => {
@@ -285,8 +291,6 @@ export default function ScrollSky() {
     window.addEventListener("wheel", onWheel, { passive: true });
     window.addEventListener("touchstart", onTouchStart, { passive: true });
     window.addEventListener("touchmove", onTouchMove, { passive: true });
-    if (isDay) start();
-
     return () => {
       cancelAnimationFrame(frame);
       themeObserver.disconnect();
