@@ -64,7 +64,7 @@ export default async function AdministrationPage({
           <>
             <p className="admin-eyebrow">DEMANDE REFUSÉE</p>
             <h1>Accès non accordé</h1>
-            <p className="admin-auth-description">La demande liée à <strong>{accessRequest.email}</strong> a été refusée. Contactez un Super Admin de l’AJECCH avant de soumettre une nouvelle demande.</p>
+            <p className="admin-auth-description">La demande liée à <strong>{accessRequest.email}</strong> a été refusée. Après échange avec un Super Admin, vous pouvez soumettre une nouvelle demande avec le bouton « Mon accès admin ».</p>
           </>
         ) : (
           <>
