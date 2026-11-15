@@ -5,7 +5,16 @@ export async function GET(request: NextRequest) {
   const url = new URL(request.url);
   const code = url.searchParams.get("code");
   const requestedNext = url.searchParams.get("next") || "/";
-  const next = requestedNext.startsWith("/") && !requestedNext.startsWith("//") ? requestedNext : "/";
+  const hasUnsafeSeparator = requestedNext.includes("\\") || /%5c/i.test(requestedNext);
+  let next = "/";
+
+  if (requestedNext.startsWith("/") && !requestedNext.startsWith("//") && !hasUnsafeSeparator) {
+    const destination = new URL(requestedNext, url.origin);
+    if (destination.origin === url.origin) {
+      next = `${destination.pathname}${destination.search}${destination.hash}`;
+    }
+  }
+
   const origin = url.origin;
 
   if (code) {
