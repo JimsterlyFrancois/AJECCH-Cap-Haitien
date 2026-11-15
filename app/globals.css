@@ -2103,10 +2103,15 @@ body { isolation: isolate; }
 .scroll-sky {
   position: fixed;
   inset: 0;
-  z-index: -1;
+  z-index: 0;
   overflow: hidden;
   pointer-events: none;
   contain: strict;
+}
+/* Keep the procedural sky visible behind every page section. */
+body > :not(.scroll-sky) {
+  position: relative;
+  z-index: 1;
 }
 .scroll-sky-clouds {
   position: absolute;
@@ -2147,6 +2152,17 @@ body { isolation: isolate; }
   .scroll-sky-clouds { will-change: auto; }
 }
 
+
+
+/* Clear-day clouds: brighter, softer layers visible over the blue sky. */
+html[data-theme="day"] .scroll-sky-clouds-distant {
+  opacity: .48;
+  filter: blur(11px);
+}
+html[data-theme="day"] .scroll-sky-clouds-near {
+  opacity: .34;
+  filter: blur(16px);
+}
 
 /* Persistent liquid-glass controls in the site navigation */
 .nav-actions { display:flex; align-items:center; justify-content:flex-end; gap:8px; flex-shrink:0; }
