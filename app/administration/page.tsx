@@ -27,7 +27,7 @@ export default async function AdministrationPage({
           <a className="admin-auth-brand" href="/">AJECCH <span>· INITIALISATION</span></a>
           <p className="admin-eyebrow">CONFIGURATION INITIALE</p>
           <h1>Activer le premier Super Admin</h1>
-          <p className="admin-auth-description">Connectez-vous avec le compte Google du premier responsable, puis utilisez le code privé d’initialisation pour activer le siège Super Admin 1.</p>
+          <p className="admin-auth-description">Connectez-vous avec le compte e-mail et mot de passe du premier responsable, puis utilisez le code privé d’initialisation pour activer le siège Super Admin 1.</p>
           <BootstrapForm />
         </section>
       </main>
@@ -51,7 +51,7 @@ export default async function AdministrationPage({
           <>
             <p className="admin-eyebrow">DEMANDE NON ENREGISTRÉE</p>
             <h1>Action impossible</h1>
-            <p className="admin-auth-description">La demande Google n’a pas pu être enregistrée. Réessayez depuis le bouton « Connecter Google » du site public.</p>
+            <p className="admin-auth-description">La demande d’accès n’a pas pu être enregistrée. Contactez un Super Admin pour vérifier votre autorisation.</p>
           </>
         ) : accessRequest?.status === "pending" ? (
           <>
