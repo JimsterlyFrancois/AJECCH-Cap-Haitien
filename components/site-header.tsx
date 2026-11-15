@@ -127,6 +127,7 @@ export default function SiteHeader({ active = "", logoUrl }: { active?: string; 
                 </a>
               );
             })}
+            <a className={pathname === "/quiz" ? "active" : ""} href="/quiz" aria-current={pathname === "/quiz" ? "page" : undefined}>Quiz</a>
           </nav>
           <div className="nav-actions">
             <button className="theme-toggle liquid-control" type="button" onClick={toggleTheme} aria-label={nightMode ? "Activer le mode jour" : "Activer le mode nuit"} aria-pressed={nightMode}>
