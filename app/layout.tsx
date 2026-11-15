@@ -7,7 +7,10 @@ export const metadata: Metadata = {
   title: "AJECCH | Association des Jeunes Chrétiens du Cap-Haïtien",
   description:
     "L’AJECCH rassemble une jeunesse chrétienne autour de la foi, de la fraternité et de l’engagement communautaire au Cap-Haïtien.",
-  icons: { icon: "/ajecch-logo.webp" },
+  icons: {
+    icon: [{ url: "/favicon.webp", type: "image/webp" }],
+    shortcut: [{ url: "/favicon.webp", type: "image/webp" }]
+  },
 };
 
 export default function RootLayout({

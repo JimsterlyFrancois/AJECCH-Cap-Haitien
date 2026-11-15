@@ -17,7 +17,7 @@ export default function SiteFooter({ logoUrl }: { logoUrl?: string | null }) {
             <SiteLogo logoUrl={logoUrl} variant="footer" />
             <span className="brand-copy">
               <strong>AJECCH</strong>
-              <small>JEUNES CHRÉTIENS · CAP-HAÏTIEN</small>
+              <small>Association des Jeunes Chrétiens<br />du Cap-Haïtien</small>
             </span>
           </a>
           <p className="footer-description">

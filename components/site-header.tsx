@@ -160,7 +160,7 @@ export default function SiteHeader({ active = "", logoUrl }: { active?: string; 
             <SiteLogo logoUrl={logoUrl} variant="header" />
             <span className="brand-copy">
               <strong>AJECCH</strong>
-              <small>JEUNES CHRÉTIENS · CAP-HAÏTIEN</small>
+              <small>Association des Jeunes Chrétiens<br />du Cap-Haïtien</small>
             </span>
           </a>
           <nav className="main-nav" aria-label="Navigation principale">
