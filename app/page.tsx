@@ -53,7 +53,7 @@ export default async function Home() {
       <SiteHeader active="/" logoUrl={logoUrl} />
 
       <section className="hero-nature" id="accueil">
-        <div className="hero-nature-image" aria-hidden="true" style={{ backgroundImage: media["home.hero"] ? `url("${media["home.hero"]}")` : "none" }} />
+        <div className="hero-nature-image" aria-hidden="true" />
         <div className="hero-nature-shade" aria-hidden="true" />
         <div className="hero-orb hero-orb-one" aria-hidden="true" />
         <div className="hero-orb hero-orb-two" aria-hidden="true" />
@@ -232,7 +232,7 @@ export default async function Home() {
               <span className="voice-card-foot">TÉMOIGNAGES À VENIR</span>
             </article>
             <article className="glass-card voice-card voice-card-secondary" data-reveal>
-              <div className="gallery-preview" role="img" aria-label="Photographie de la vie associative AJECCH" style={{ backgroundImage: media["home.gallery"] ? `url("${media["home.gallery"]}")` : "none" }} />
+              <div className="gallery-preview" aria-hidden="true" />
               <div className="gallery-copy">
                 <span className="voice-card-foot">VISUELS OFFICIELS EN COURS D’INTÉGRATION</span>
                 <h3>Les moments qui nous rassemblent.</h3>
@@ -244,7 +244,7 @@ export default async function Home() {
       </section>
 
       <section className="contact-section" id="contact">
-        <div className="contact-backdrop" aria-hidden="true" style={{ backgroundImage: media["home.contact"] ? `url("${media["home.contact"]}")` : "none" }} />
+        <div className="contact-backdrop" aria-hidden="true" />
         <div className="contact-container container">
           <div className="contact-glass-panel" data-reveal>
             <span className="section-kicker">05 / PRENONS CONTACT</span>
