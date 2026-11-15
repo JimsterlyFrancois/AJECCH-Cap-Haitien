@@ -126,12 +126,11 @@ export default function SiteHeader({ active = "", logoUrl }: { active?: string; 
         return;
       }
 
+      const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || window.location.origin).replace(/\/+$/, "");
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          // A normal sign-in returns to the public homepage. Admin access is
-          // requested separately, only when the signed-in visitor asks for it.
-          redirectTo: `${window.location.origin}/auth/callback?next=%2F`,
+          redirectTo: `${siteUrl}/auth/callback?next=%2F`,
           scopes: "openid email profile"
         }
       });
