@@ -24,15 +24,16 @@ export async function middleware(request: NextRequest) {
   const { data } = await supabase.auth.getClaims();
   const signedIn = Boolean(data?.claims?.sub);
   const isLogin = request.nextUrl.pathname.startsWith("/administration/connexion");
+  const isFirstAdminSignup = request.nextUrl.pathname === "/administration/inscription";
 
-  if (!signedIn && !isLogin) {
+  if (!signedIn && !isLogin && !isFirstAdminSignup) {
     const destination = request.nextUrl.clone();
     destination.pathname = "/administration/connexion";
     destination.searchParams.set("next", request.nextUrl.pathname);
     return NextResponse.redirect(destination);
   }
 
-  if (signedIn && isLogin) {
+  if (signedIn && (isLogin || isFirstAdminSignup)) {
     const destination = request.nextUrl.clone();
     destination.pathname = "/administration";
     destination.search = "";
