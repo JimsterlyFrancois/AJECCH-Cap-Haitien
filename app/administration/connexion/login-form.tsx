@@ -37,10 +37,11 @@ export default function LoginForm() {
     setGoogleLoading(true);
     try {
       const supabase = createClient();
+      const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || window.location.origin).replace(/\/+$/, "");
       const { error: googleError } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/auth/callback?next=%2Fadministration&admin_request=1`,
+          redirectTo: `${siteUrl}/auth/callback?next=%2Fadministration&admin_request=1`,
           scopes: "openid email profile"
         }
       });
