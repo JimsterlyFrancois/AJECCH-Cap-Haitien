@@ -47,6 +47,7 @@ Les espaces publics à maintenir comprennent :
 - **À propos :** identité, mission, vision et orientations de l'association.
 - **Activités :** domaines d'action et initiatives.
 - **Actualités :** publications, annonces et événements confirmés.
+- **Quiz & connaissances :** questions à choix, réponses et score individuel des participants.
 - **Contact :** moyens de communication officiels.
 
 La page d'accueil peut présenter un aperçu des événements et des publications. Les informations doivent provenir de contenus validés et être gérées depuis le CMS lorsque le type de contenu est pris en charge.
@@ -58,12 +59,14 @@ L'espace **Administration** est privé et ne doit jamais être indexé comme une
 Le système actuel prévoit deux sièges ADM et un accès Publication & Médias.
 
 - **ADM — siège 1 :** contrôle les rôles, l'équipe et les contenus ; il est le seul compte autorisé à consulter l'annuaire des personnes inscrites et à désigner ou révoquer le responsable des médias.
-- **ADM — siège 2 :** dispose des accès de gestion des publications et des médias, mais ne peut pas consulter l'annuaire ni gérer les rôles de l'équipe.
+- **ADM — siège 2 :** demande son accès depuis le site, confirme son adresse e-mail et attend la validation du siège 1. Après acceptation, il possède les mêmes droits de publication et de quiz que le siège 1, mais ne peut ni consulter l'annuaire ni gérer les rôles. L'interface ne révèle pas au siège 2 l'identité du premier compte.
 - **Publication & Médias :** gère les actualités, annonces, événements et visuels publics, sans pouvoir attribuer des rôles.
 - Les autorisations doivent être vérifiées côté serveur et par les politiques RLS Supabase.
 - Une simple connexion ne donne pas automatiquement accès à l'administration.
 - Le premier compte peut être créé depuis `/administration/inscription`, lien visible uniquement pendant l'initialisation. Le premier ADM est ensuite activé avec le mécanisme protégé de code unique et après confirmation de l'adresse e-mail.
 - Le compte ADM 1 peut désigner comme responsable des médias une personne déjà inscrite avec une adresse confirmée ; aucun compte en double n'est créé.
+- Les deux ADM peuvent créer des publications avec résumé court, texte long et image, ainsi que des quiz de 1 à 12 questions et 2 à 5 choix par question.
+- Les réponses correctes des quiz sont stockées séparément des questions publiques. Une bonne réponse ajoute 1 point au score du participant connecté, une seule fois par question ; chaque utilisateur ne voit que son propre score.
 
 La connexion actuellement prise en charge est l'adresse e-mail et le mot de passe via Supabase Auth. Ne pas réintroduire un bouton Google tant que le fournisseur et son parcours complet n'ont pas été explicitement configurés et testés.
 
@@ -113,7 +116,8 @@ Une évolution est acceptable uniquement si :
 - Le site reste utilisable sur petit écran et avec réduction des animations.
 - Les comptes non autorisés ne peuvent ni consulter ni modifier les fonctions d'administration.
 - Les rôles sont contrôlés dans Supabase, pas seulement dans l'interface.
-- Les publications non publiées ne sont pas accessibles aux visiteurs anonymes.
+- Les publications et quiz non publiés ne sont pas accessibles aux visiteurs anonymes.
+- Les bonnes réponses des quiz ne sont jamais incluses dans le contenu public et les participants ne peuvent consulter que leurs propres réponses.
 - Aucun secret ou renseignement privé n'est ajouté au code.
 - Le build et les vérifications disponibles ne signalent pas de régression.
 
@@ -127,7 +131,7 @@ Toujours comparer les branches avant une intégration. Ne pas transférer une br
 
 ## 11. Documents complémentaires
 
-- `docs/administration-ajecch.md` : accès, rôles, activation du premier Super Admin et procédure provisoire d'attribution.
+- `docs/administration-ajecch.md` : accès, demande et validation du second ADM, publications, quiz et scores.
 - `supabase/migrations/` : historique des changements de base de données.
 - Les migrations et données historiques liées à Google peuvent rester présentes pour compatibilité ; elles ne doivent pas être présentées comme un parcours actuellement actif.
 
