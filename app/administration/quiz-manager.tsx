@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
 type QuizQuestion = {
@@ -34,7 +34,7 @@ function blankQuestion(): QuizQuestion {
 }
 
 export default function QuizManager() {
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
   const [quizzes, setQuizzes] = useState<QuizListItem[]>([]);
   const [draft, setDraft] = useState<QuizDraft | null>(null);
   const [busy, setBusy] = useState(false);
