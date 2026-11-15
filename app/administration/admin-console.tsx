@@ -31,6 +31,14 @@ type PostItem = {
   cover_media_id: string | null;
 };
 type TeamItem = AjecchAdmin;
+type AccessRequestItem = {
+  id: string;
+  user_id: string;
+  display_name: string;
+  email: string;
+  status: "pending" | "approved" | "rejected";
+  requested_at: string;
+};
 
 const SLOT_ORDER = ["brand.logo", "home.hero", "home.actions", "home.gallery", "home.contact"];
 const CATEGORY_LABELS = { news: "Actualité", announcement: "Annonce", event: "Événement" };
@@ -53,25 +61,32 @@ export default function AdminConsole({ admin }: { admin: AjecchAdmin }) {
   const [media, setMedia] = useState<MediaItem[]>([]);
   const [posts, setPosts] = useState<PostItem[]>([]);
   const [team, setTeam] = useState<TeamItem[]>([]);
+  const [accessRequests, setAccessRequests] = useState<AccessRequestItem[]>([]);
+  const [requestRoles, setRequestRoles] = useState<Record<string, "super_admin" | "publisher">>({});
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState("");
   const [error, setError] = useState("");
 
   const loadData = useCallback(async () => {
     setError("");
-    const [mediaResult, postResult, teamResult] = await Promise.all([
+    const [mediaResult, postResult, teamResult, requestResult] = await Promise.all([
       supabase.from("ajecch_media").select("*").order("slot"),
       supabase.from("ajecch_posts").select("*").order("created_at", { ascending: false }),
       isSuper
         ? supabase.from("ajecch_admins").select("id,user_id,display_name,email,role,seat,is_active").order("role").order("seat")
+        : Promise.resolve({ data: [], error: null }),
+      isSuper
+        ? supabase.from("ajecch_admin_access_requests").select("id,user_id,display_name,email,status,requested_at").eq("status", "pending").order("requested_at", { ascending: true })
         : Promise.resolve({ data: [], error: null })
     ]);
     if (mediaResult.error) setError(mediaResult.error.message);
     if (postResult.error) setError(postResult.error.message);
     if (teamResult.error) setError(teamResult.error.message);
+    if (requestResult.error) setError(requestResult.error.message);
     setMedia((mediaResult.data ?? []) as MediaItem[]);
     setPosts((postResult.data ?? []) as PostItem[]);
     setTeam((teamResult.data ?? []) as TeamItem[]);
+    setAccessRequests((requestResult.data ?? []) as AccessRequestItem[]);
   }, [isSuper, supabase]);
 
   useEffect(() => { void loadData(); }, [loadData]);
@@ -208,26 +223,36 @@ export default function AdminConsole({ admin }: { admin: AjecchAdmin }) {
     setBusy(false);
   }
 
-  async function assignAdmin(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const formElement = event.currentTarget;
-    const form = new FormData(formElement);
-    const role = String(form.get("role")) as "super_admin" | "publisher";
-    const seat = role === "super_admin" ? Number(form.get("seat")) : 1;
+  async function approveAccessRequest(request: AccessRequestItem) {
     setBusy(true);
     setError("");
     setNotice("");
-    const { error: insertError } = await supabase.from("ajecch_admins").insert({
-      user_id: String(form.get("user_id")).trim(),
-      display_name: String(form.get("display_name")).trim(),
-      email: String(form.get("email")).trim().toLowerCase(),
-      role,
-      seat,
-      is_active: true,
-      created_by: admin.user_id
+    const role = requestRoles[request.id] ?? "publisher";
+    const { error: approveError } = await supabase.rpc("ajecch_approve_admin_access_request", {
+      p_request_id: request.id,
+      p_role: role
     });
-    if (insertError) setError(insertError.message);
-    else { setNotice("Accès attribué."); formElement.reset(); await loadData(); }
+    if (approveError) setError(approveError.message);
+    else {
+      setNotice(`Accès attribué à ${request.display_name}.`);
+      await loadData();
+    }
+    setBusy(false);
+  }
+
+  async function rejectAccessRequest(request: AccessRequestItem) {
+    if (!window.confirm(`Refuser la demande d’accès de ${request.display_name} ?`)) return;
+    setBusy(true);
+    setError("");
+    setNotice("");
+    const { error: rejectError } = await supabase.rpc("ajecch_reject_admin_access_request", {
+      p_request_id: request.id
+    });
+    if (rejectError) setError(rejectError.message);
+    else {
+      setNotice(`Demande de ${request.display_name} refusée.`);
+      await loadData();
+    }
     setBusy(false);
   }
 
@@ -346,7 +371,7 @@ export default function AdminConsole({ admin }: { admin: AjecchAdmin }) {
 
         {tab === "team" && isSuper && (
           <div className="admin-content">
-            <div className="admin-section-intro"><h2>Trois accès administratifs</h2><p>Deux sièges Super Admin disposent du contrôle complet. Le rôle Publication & Médias gère les actualités et les images, sans accès à cette section.</p></div>
+            <div className="admin-section-intro"><h2>Trois accès administratifs</h2><p>Deux sièges Super Admin disposent du contrôle complet. Le rôle Publication & Médias gère les actualités et les images, sans accès à cette section. Tous les nouveaux accès sont validés ici après une connexion Google.</p></div>
             <div className="admin-seat-grid">
               {([1, 2] as const).map((seat) => {
                 const person = team.find((item) => item.role === "super_admin" && item.seat === seat && item.is_active);
@@ -357,16 +382,36 @@ export default function AdminConsole({ admin }: { admin: AjecchAdmin }) {
                 return <div className="admin-seat-card publisher"><span>PUBLICATION & MÉDIAS</span><strong>{person?.display_name ?? "Accès disponible"}</strong><small>{person?.email ?? "À attribuer"}</small></div>;
               })()}
             </div>
-            <form className="admin-team-form" onSubmit={assignAdmin}>
-              <div><span className="admin-eyebrow">ATTRIBUER UN ACCÈS</span><h3>Ajouter un responsable</h3></div>
-              <p>Créez d’abord le compte de la personne dans Supabase → Authentication → Users. Saisissez ensuite son User UID ici. Aucun compte utilisateur public ne peut s’attribuer un rôle.</p>
-              <label>User UID (UUID)<input name="user_id" required placeholder="Identifiant Auth de l’utilisateur" /></label>
-              <label>Nom à afficher<input name="display_name" required /></label>
-              <label>Adresse e-mail<input name="email" type="email" required /></label>
-              <label>Rôle<select name="role" defaultValue="publisher"><option value="publisher">Publication & Médias</option><option value="super_admin">Super Admin</option></select></label>
-              <label>Siège Super Admin<select name="seat" defaultValue="2"><option value="1">Siège 1</option><option value="2">Siège 2</option></select></label>
-              <button className="admin-primary-button" type="submit" disabled={busy}>Attribuer l’accès</button>
-            </form>
+            <div className="admin-team-list admin-access-requests">
+              <h3>Demandes Google en attente ({accessRequests.filter((request) => request.user_id !== admin.user_id).length})</h3>
+              <p>Les personnes utilisent « Connecter Google » sur le site public. Choisissez leur rôle, puis approuvez ou refusez leur demande.</p>
+              {accessRequests.filter((request) => request.user_id !== admin.user_id).map((request) => (
+                <div className="admin-team-row admin-request-row" key={request.id}>
+                  <div>
+                    <strong>{request.display_name}</strong>
+                    <small>{request.email} · Demande du {new Date(request.requested_at).toLocaleDateString("fr-FR")}</small>
+                  </div>
+                  <div className="admin-team-actions">
+                    <select
+                      aria-label={`Rôle demandé pour ${request.display_name}`}
+                      value={requestRoles[request.id] ?? "publisher"}
+                      onChange={(event) => setRequestRoles((current) => ({
+                        ...current,
+                        [request.id]: event.target.value as "super_admin" | "publisher"
+                      }))}
+                    >
+                      <option value="publisher">Publication & Médias</option>
+                      <option value="super_admin">Super Admin · siège 2</option>
+                    </select>
+                    <button type="button" disabled={busy} onClick={() => void approveAccessRequest(request)}>Approuver</button>
+                    <button className="admin-danger-text" type="button" disabled={busy} onClick={() => void rejectAccessRequest(request)}>Refuser</button>
+                  </div>
+                </div>
+              ))}
+              {accessRequests.filter((request) => request.user_id !== admin.user_id).length === 0 && (
+                <p className="admin-empty">Aucune demande en attente.</p>
+              )}
+            </div>
             <div className="admin-team-list">
               <h3>Accès enregistrés</h3>
               {team.map((person) => <div className="admin-team-row" key={person.id}><div><strong>{person.display_name}</strong><small>{person.email} · {person.role === "super_admin" ? `Super Admin · siège ${person.seat}` : "Publication & Médias"}</small></div><div className="admin-team-actions"><span className={person.is_active ? "admin-status-on" : "admin-status-off"}>{person.is_active ? "Actif" : "Désactivé"}</span>{person.user_id !== admin.user_id && <><select aria-label={`Rôle de ${person.display_name}`} value={person.role} onChange={(event) => void updateAdmin(person, { role: event.target.value as "super_admin" | "publisher", seat: event.target.value === "publisher" ? 1 : person.role === "super_admin" ? person.seat : 2 })}><option value="super_admin">Super Admin</option><option value="publisher">Publication & Médias</option></select>{person.role === "super_admin" && <select aria-label={`Siège de ${person.display_name}`} value={person.seat} onChange={(event) => void updateAdmin(person, { seat: Number(event.target.value) })}><option value={1}>Siège 1</option><option value={2}>Siège 2</option></select>}<button type="button" onClick={() => void updateAdmin(person, { is_active: !person.is_active })}>{person.is_active ? "Désactiver" : "Réactiver"}</button><button className="admin-danger-text" type="button" onClick={() => void revokeAdmin(person)}>Révoquer</button></>}</div></div>)}

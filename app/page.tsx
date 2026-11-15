@@ -248,7 +248,7 @@ export default async function Home() {
         <div className="contact-container container">
           <div className="contact-glass-panel" data-reveal>
             <span className="section-kicker">05 / PRENONS CONTACT</span>
-            <h2>Une idée, une envie de servir,<br /><em>un pas à faire ensemble.</em></h2>
+            <h2><span className="contact-title-primary">Une idée, une envie de servir,</span><br /><em>un pas à faire ensemble.</em></h2>
             <p>
               Vous souhaitez rejoindre l’AJECCH, en savoir plus sur ses initiatives ou proposer un appui ?
               Écrivez à l’association par sa page officielle.
