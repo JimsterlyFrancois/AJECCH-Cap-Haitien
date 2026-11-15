@@ -15,7 +15,6 @@ const links = [
 ];
 
 type AdminAccess = { role: "super_admin" | "publisher"; seat: number } | null;
-type AccessRequestStatus = "pending" | "approved" | "rejected" | null;
 
 export default function SiteHeader({ active = "", logoUrl }: { active?: string; logoUrl?: string | null }) {
   const pathname = usePathname();
@@ -25,10 +24,6 @@ export default function SiteHeader({ active = "", logoUrl }: { active?: string; 
   const [accountEmail, setAccountEmail] = useState("");
   const [accountName, setAccountName] = useState("");
   const [adminAccess, setAdminAccess] = useState<AdminAccess>(null);
-  const [accessRequestStatus, setAccessRequestStatus] = useState<AccessRequestStatus>(null);
-  const [googleBusy, setGoogleBusy] = useState(false);
-  const [googleError, setGoogleError] = useState("");
-  const [googleMessage, setGoogleMessage] = useState("");
 
   useEffect(() => {
     const savedTheme = window.localStorage.getItem("ajecch-theme");
@@ -48,31 +43,22 @@ export default function SiteHeader({ active = "", logoUrl }: { active?: string; 
           setAccountEmail("");
           setAccountName("");
           setAdminAccess(null);
-          setAccessRequestStatus(null);
         }
         return;
       }
 
       const name = user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split("@")[0] || "Compte connecté";
-      const [adminResult, requestResult] = await Promise.all([
-        supabase
-          .from("ajecch_admins")
-          .select("role,seat")
-          .eq("user_id", user.id)
-          .eq("is_active", true)
-          .maybeSingle(),
-        supabase
-          .from("ajecch_admin_access_requests")
-          .select("status")
-          .eq("user_id", user.id)
-          .maybeSingle()
-      ]);
+      const { data: adminResult } = await supabase
+        .from("ajecch_admins")
+        .select("role,seat")
+        .eq("user_id", user.id)
+        .eq("is_active", true)
+        .maybeSingle();
 
       if (!mounted) return;
       setAccountEmail(user.email ?? "");
       setAccountName(String(name));
-      setAdminAccess((adminResult.data as AdminAccess) ?? null);
-      setAccessRequestStatus((requestResult.data?.status as AccessRequestStatus) ?? null);
+      setAdminAccess((adminResult as AdminAccess) ?? null);
     }
 
     void supabase.auth.getUser().then(({ data: { user } }) => loadAccount(user));
@@ -111,40 +97,8 @@ export default function SiteHeader({ active = "", logoUrl }: { active?: string; 
     window.localStorage.setItem("ajecch-theme", next ? "night" : "day");
   }
 
-  async function connectGoogle() {
-    setGoogleError("");
-    setGoogleMessage("");
-    setGoogleBusy(true);
-    const supabase = createClient();
 
-    try {
-      if (accountEmail) {
-        const { error } = await supabase.rpc("ajecch_request_admin_access");
-        if (error) throw error;
-        setAccessRequestStatus("pending");
-        setGoogleMessage("Demande envoyée. Elle sera examinée par un Super Admin.");
-        return;
-      }
-
-      const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || window.location.origin).replace(/\/+$/, "");
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: {
-          redirectTo: `${siteUrl}/auth/callback?next=%2F`,
-          scopes: "openid email profile"
-        }
-      });
-      if (error) throw error;
-    } catch (err) {
-      setGoogleError(err instanceof Error ? err.message : "Connexion Google impossible.");
-    } finally {
-      setGoogleBusy(false);
-    }
-  }
-
-  const accountTitle = accountEmail
-    ? `${accountName} · ${accountEmail}`
-    : "Se connecter avec Google";
+  const accountTitle = accountEmail ? `${accountName} · ${accountEmail}` : "Connexion à l’administration";
 
   return (
     <div className="site-header-stack">
@@ -184,31 +138,10 @@ export default function SiteHeader({ active = "", logoUrl }: { active?: string; 
                 {adminAccess ? "Espace admin" : "Mon espace"} <span>↗</span>
               </a>
             )}
-            {!adminAccess && (
-              <button
-                className="google-connect liquid-control"
-                type="button"
-                onClick={connectGoogle}
-                disabled={googleBusy || accessRequestStatus === "pending"}
-                title={accountTitle}
-              >
-                <span className="google-g" aria-hidden="true">{accountEmail ? "✓" : "G"}</span>
-                <small>
-                  {googleBusy
-                    ? "Connexion…"
-                    : accountEmail
-                      ? (accessRequestStatus === "pending"
-                        ? "Demande envoyée"
-                        : accessRequestStatus === "rejected"
-                          ? "Renvoyer la demande"
-                          : "Demander un accès")
-                      : "Connecter Google"}
-                </small>
-              </button>
-            )}
+            <a className="nav-cta admin-dashboard-link" href={accountEmail ? "/administration" : "/administration/connexion"} title={accountTitle}>
+              {accountEmail && adminAccess ? "Espace admin" : "Administration"} <span>↗</span>
+            </a>
             <a className="nav-cta" href={isHome ? "#contact" : "/#contact"}>Rejoindre <span>↗</span></a>
-            {googleError && <span className="google-connect-error" role="alert">{googleError}</span>}
-            {googleMessage && <span className="google-connect-message" role="status">{googleMessage}</span>}
           </div>
         </div>
       </header>

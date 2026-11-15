@@ -11,7 +11,6 @@ export default function LoginForm() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [googleLoading, setGoogleLoading] = useState(false);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -32,25 +31,6 @@ export default function LoginForm() {
     }
   }
 
-  async function googleLogin() {
-    setError("");
-    setGoogleLoading(true);
-    try {
-      const supabase = createClient();
-      const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || window.location.origin).replace(/\/+$/, "");
-      const { error: googleError } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: {
-          redirectTo: `${siteUrl}/auth/callback?next=%2Fadministration&admin_request=1`,
-          scopes: "openid email profile"
-        }
-      });
-      if (googleError) throw googleError;
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Connexion Google impossible.");
-      setGoogleLoading(false);
-    }
-  }
 
   return (
     <form className="admin-auth-form" onSubmit={submit}>
@@ -59,13 +39,8 @@ export default function LoginForm() {
       <label htmlFor="admin-password">Mot de passe</label>
       <input id="admin-password" type="password" autoComplete="current-password" required value={password} onChange={(event) => setPassword(event.target.value)} placeholder="Votre mot de passe" />
       {error && <p className="admin-form-error" role="alert">{error}</p>}
-      <button className="admin-primary-button" type="submit" disabled={loading || googleLoading}>{loading ? "Connexion…" : "Accéder à l’administration"}</button>
-      <div className="admin-auth-divider"><span>ou</span></div>
-      <button className="admin-secondary-button admin-google-button" type="button" onClick={googleLogin} disabled={loading || googleLoading}>
-        <span className="google-g" aria-hidden="true">G</span>
-        {googleLoading ? "Connexion Google…" : "Continuer avec Google"}
-      </button>
-      <p className="admin-auth-hint">Un compte Google peut envoyer une demande. Un Super Admin doit ensuite autoriser l’accès.</p>
+      <button className="admin-primary-button" type="submit" disabled={loading}>{loading ? "Connexion…" : "Accéder à l’administration"}</button>
+      <p className="admin-auth-hint">L’accès est réservé aux comptes autorisés par l’AJECCH.</p>
     </form>
   );
 }

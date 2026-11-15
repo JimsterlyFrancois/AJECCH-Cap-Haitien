@@ -13,7 +13,7 @@ export default function AdminLoginPage() {
         <a className="admin-auth-brand" href="/">AJECCH <span>· ESPACE DE GESTION</span></a>
         <p className="admin-eyebrow">ACCÈS RÉSERVÉ</p>
         <h1>Administration</h1>
-        <p className="admin-auth-description">Connectez-vous avec votre compte autorisé, ou utilisez Google pour envoyer une demande d’accès à un Super Admin.</p>
+        <p className="admin-auth-description">Connectez-vous avec l’adresse e-mail et le mot de passe du compte administrateur autorisé.</p>
         <Suspense fallback={<p>Chargement du formulaire…</p>}><LoginForm /></Suspense>
         <a className="admin-back-link" href="/">← Retour au site public</a>
       </section>
