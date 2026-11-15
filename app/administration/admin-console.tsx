@@ -418,7 +418,7 @@ export default function AdminConsole({ admin }: { admin: AjecchAdmin }) {
 
         {tab === "team" && isPrimaryAdmin && (
           <div className="admin-content">
-            <div className="admin-section-intro"><h2>Trois accès administratifs</h2><p>Deux sièges Super Admin disposent du contrôle complet. Le rôle Publication & Médias gère les actualités et les images, sans accès à cette section. Toute attribution de rôle doit être vérifiée et approuvée par un Super Admin.</p></div>
+            <div className="admin-section-intro"><h2>Trois accès administratifs</h2><p>Les deux sièges ADM disposent des accès de gestion du site. Seul ADM 1 peut gérer l’équipe et désigner le responsable des médias. Le rôle Publication & Médias gère les actualités et les images, sans accès à cette section.</p></div>
             <div className="admin-seat-grid">
               {([1, 2] as const).map((seat) => {
                 const person = team.find((item) => item.role === "super_admin" && item.seat === seat && item.is_active);
@@ -481,7 +481,7 @@ export default function AdminConsole({ admin }: { admin: AjecchAdmin }) {
                       }))}
                     >
                       <option value="publisher">Publication & Médias</option>
-                      <option value="super_admin">Super Admin · siège 2</option>
+                      <option value="super_admin">ADM · siège 2</option>
                     </select>
                     <button type="button" disabled={busy} onClick={() => void approveAccessRequest(request)}>Approuver</button>
                     <button className="admin-danger-text" type="button" disabled={busy} onClick={() => void rejectAccessRequest(request)}>Refuser</button>
@@ -494,7 +494,7 @@ export default function AdminConsole({ admin }: { admin: AjecchAdmin }) {
             </div>
             <div className="admin-team-list">
               <h3>Accès enregistrés</h3>
-              {team.map((person) => <div className="admin-team-row" key={person.id}><div><strong>{person.display_name}</strong><small>{person.email} · {person.role === "super_admin" ? `Super Admin · siège ${person.seat}` : "Publication & Médias"}</small></div><div className="admin-team-actions"><span className={person.is_active ? "admin-status-on" : "admin-status-off"}>{person.is_active ? "Actif" : "Désactivé"}</span>{person.user_id !== admin.user_id && <><select aria-label={`Rôle de ${person.display_name}`} value={person.role} onChange={(event) => void updateAdmin(person, { role: event.target.value as "super_admin" | "publisher", seat: event.target.value === "publisher" ? 1 : person.role === "super_admin" ? person.seat : 2 })}><option value="super_admin">Super Admin</option><option value="publisher">Publication & Médias</option></select>{person.role === "super_admin" && <select aria-label={`Siège de ${person.display_name}`} value={person.seat} onChange={(event) => void updateAdmin(person, { seat: Number(event.target.value) })}><option value={1}>Siège 1</option><option value={2}>Siège 2</option></select>}<button type="button" onClick={() => void updateAdmin(person, { is_active: !person.is_active })}>{person.is_active ? "Désactiver" : "Réactiver"}</button><button className="admin-danger-text" type="button" onClick={() => void revokeAdmin(person)}>Révoquer</button></>}</div></div>)}
+              {team.map((person) => <div className="admin-team-row" key={person.id}><div><strong>{person.display_name}</strong><small>{person.email} · {person.role === "super_admin" ? `ADM · siège ${person.seat}` : "Publication & Médias"}</small></div><div className="admin-team-actions"><span className={person.is_active ? "admin-status-on" : "admin-status-off"}>{person.is_active ? "Actif" : "Désactivé"}</span>{person.user_id !== admin.user_id && <><select aria-label={`Rôle de ${person.display_name}`} value={person.role} onChange={(event) => void updateAdmin(person, { role: event.target.value as "super_admin" | "publisher", seat: event.target.value === "publisher" ? 1 : person.role === "super_admin" ? person.seat : 2 })}><option value="super_admin">ADM</option><option value="publisher">Publication & Médias</option></select>{person.role === "super_admin" && <select aria-label={`Siège de ${person.display_name}`} value={person.seat} onChange={(event) => void updateAdmin(person, { seat: Number(event.target.value) })}><option value={1}>Siège 1</option><option value={2}>Siège 2</option></select>}<button type="button" onClick={() => void updateAdmin(person, { is_active: !person.is_active })}>{person.is_active ? "Désactiver" : "Réactiver"}</button><button className="admin-danger-text" type="button" onClick={() => void revokeAdmin(person)}>Révoquer</button></>}</div></div>)}
             </div>
           </div>
         )}
