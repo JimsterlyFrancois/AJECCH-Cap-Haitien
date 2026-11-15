@@ -31,6 +31,14 @@ type PostItem = {
   cover_media_id: string | null;
 };
 type TeamItem = AjecchAdmin;
+type RegisteredUserItem = {
+  user_id: string;
+  display_name: string;
+  email: string;
+  email_confirmed: boolean;
+  created_at: string;
+  active_role: "super_admin" | "publisher" | null;
+};
 type AccessRequestItem = {
   id: string;
   user_id: string;
@@ -57,11 +65,14 @@ export default function AdminConsole({ admin }: { admin: AjecchAdmin }) {
   const router = useRouter();
   const supabase = createClient();
   const isSuper = admin.role === "super_admin";
+  const isPrimaryAdmin = isSuper && admin.seat === 1;
   const [tab, setTab] = useState<Tab>("overview");
   const [media, setMedia] = useState<MediaItem[]>([]);
   const [posts, setPosts] = useState<PostItem[]>([]);
   const [team, setTeam] = useState<TeamItem[]>([]);
   const [accessRequests, setAccessRequests] = useState<AccessRequestItem[]>([]);
+  const [registeredUsers, setRegisteredUsers] = useState<RegisteredUserItem[]>([]);
+  const [registeredUserSearch, setRegisteredUserSearch] = useState("");
   const [requestRoles, setRequestRoles] = useState<Record<string, "super_admin" | "publisher">>({});
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState("");
@@ -69,25 +80,30 @@ export default function AdminConsole({ admin }: { admin: AjecchAdmin }) {
 
   const loadData = useCallback(async () => {
     setError("");
-    const [mediaResult, postResult, teamResult, requestResult] = await Promise.all([
+    const [mediaResult, postResult, teamResult, requestResult, registeredUsersResult] = await Promise.all([
       supabase.from("ajecch_media").select("*").order("slot"),
       supabase.from("ajecch_posts").select("*").order("created_at", { ascending: false }),
-      isSuper
+      isPrimaryAdmin
         ? supabase.from("ajecch_admins").select("id,user_id,display_name,email,role,seat,is_active").order("role").order("seat")
         : Promise.resolve({ data: [], error: null }),
-      isSuper
+      isPrimaryAdmin
         ? supabase.from("ajecch_admin_access_requests").select("id,user_id,display_name,email,status,requested_at").eq("status", "pending").order("requested_at", { ascending: true })
+        : Promise.resolve({ data: [], error: null }),
+      isPrimaryAdmin
+        ? supabase.rpc("ajecch_list_registered_users")
         : Promise.resolve({ data: [], error: null })
     ]);
     if (mediaResult.error) setError(mediaResult.error.message);
     if (postResult.error) setError(postResult.error.message);
     if (teamResult.error) setError(teamResult.error.message);
     if (requestResult.error) setError(requestResult.error.message);
+    if (registeredUsersResult.error) setError(registeredUsersResult.error.message);
     setMedia((mediaResult.data ?? []) as MediaItem[]);
     setPosts((postResult.data ?? []) as PostItem[]);
     setTeam((teamResult.data ?? []) as TeamItem[]);
     setAccessRequests((requestResult.data ?? []) as AccessRequestItem[]);
-  }, [isSuper, supabase]);
+    setRegisteredUsers((registeredUsersResult.data ?? []) as RegisteredUserItem[]);
+  }, [isPrimaryAdmin, supabase]);
 
   useEffect(() => { void loadData(); }, [loadData]);
 
@@ -256,6 +272,30 @@ export default function AdminConsole({ admin }: { admin: AjecchAdmin }) {
     setBusy(false);
   }
 
+  async function assignMediaManager(person: RegisteredUserItem) {
+    if (!isPrimaryAdmin) return;
+    if (!person.email_confirmed) {
+      setError("Cette adresse e-mail doit être confirmée avant toute attribution.");
+      return;
+    }
+    if (!window.confirm(`Attribuer le rôle Publication & Médias à ${person.display_name} (${person.email}) ?`)) return;
+    setBusy(true);
+    setError("");
+    setNotice("");
+    try {
+      const { error: assignError } = await supabase.rpc("ajecch_assign_media_manager", {
+        p_user_id: person.user_id
+      });
+      if (assignError) throw assignError;
+      setNotice(`Le rôle Publication & Médias a été attribué à ${person.display_name}.`);
+      await loadData();
+    } catch (err) {
+      setError(messageOf(err));
+    } finally {
+      setBusy(false);
+    }
+  }
+
   async function updateAdmin(person: TeamItem, patch: Partial<TeamItem>) {
     setBusy(true);
     setError("");
@@ -272,8 +312,10 @@ export default function AdminConsole({ admin }: { admin: AjecchAdmin }) {
     }
     if (!window.confirm(`Révoquer l’accès de ${person.display_name} ?`)) return;
     setBusy(true);
-    const { error: revokeError } = await supabase.from("ajecch_admins").delete().eq("id", person.id);
-    if (revokeError) setError(revokeError.message);
+    const revokeResult = person.role === "publisher"
+      ? await supabase.rpc("ajecch_revoke_media_manager", { p_user_id: person.user_id })
+      : await supabase.from("ajecch_admins").delete().eq("id", person.id);
+    if (revokeResult.error) setError(revokeResult.error.message);
     else { setNotice("Accès révoqué."); await loadData(); }
     setBusy(false);
   }
@@ -283,6 +325,11 @@ export default function AdminConsole({ admin }: { admin: AjecchAdmin }) {
     published: posts.filter((item) => item.status === "published").length,
     drafts: posts.filter((item) => item.status === "draft").length
   };
+  const activePublisher = team.find((item) => item.role === "publisher" && item.is_active);
+  const filteredRegisteredUsers = registeredUsers.filter((person) => {
+    const query = registeredUserSearch.trim().toLocaleLowerCase("fr");
+    return !query || person.display_name.toLocaleLowerCase("fr").includes(query) || person.email.toLocaleLowerCase("fr").includes(query);
+  });
 
   return (
     <main className="admin-shell">
@@ -291,13 +338,13 @@ export default function AdminConsole({ admin }: { admin: AjecchAdmin }) {
         <div className="admin-user-card">
           <span className="admin-avatar">{admin.display_name.slice(0, 1).toUpperCase()}</span>
           <strong>{admin.display_name}</strong>
-          <small>{isSuper ? `SUPER ADMIN · SIÈGE ${admin.seat}` : "PUBLICATION & MÉDIAS"}</small>
+          <small>{isSuper ? "ADM" : "PUBLICATION & MÉDIAS"}</small>
         </div>
         <nav className="admin-nav" aria-label="Navigation administration">
           <button className={tab === "overview" ? "active" : ""} onClick={() => setTab("overview")}>Vue générale</button>
           <button className={tab === "media" ? "active" : ""} onClick={() => setTab("media")}>Images publiques</button>
           <button className={tab === "posts" ? "active" : ""} onClick={() => setTab("posts")}>Publications</button>
-          {isSuper && <button className={tab === "team" ? "active" : ""} onClick={() => setTab("team")}>Équipe & accès</button>}
+          {isPrimaryAdmin && <button className={tab === "team" ? "active" : ""} onClick={() => setTab("team")}>Équipe & accès</button>}
         </nav>
         <div className="admin-sidebar-bottom">
           <a href="/" target="_blank" rel="noreferrer">Voir le site public ↗</a>
@@ -308,7 +355,7 @@ export default function AdminConsole({ admin }: { admin: AjecchAdmin }) {
       <section className="admin-main">
         <header className="admin-topbar">
           <div><span className="admin-eyebrow">AJECCH · CAP-HAÏTIEN</span><h1>{tab === "overview" ? "Tableau de bord" : tab === "media" ? "Gestion des images" : tab === "posts" ? "Publications" : "Équipe & autorisations"}</h1></div>
-          <span className="admin-role-chip">{isSuper ? "Super Admin" : "Éditeur"}</span>
+          <span className="admin-role-chip">{isSuper ? "ADM" : "Publication & Médias"}</span>
         </header>
         {notice && <p className="admin-notice" role="status">{notice}</p>}
         {error && <p className="admin-alert" role="alert">{error}</p>}
@@ -324,9 +371,9 @@ export default function AdminConsole({ admin }: { admin: AjecchAdmin }) {
             <div className="admin-quick-grid">
               <button onClick={() => setTab("media")}><strong>Gérer les images</strong><span>Ajouter, remplacer, masquer ou supprimer les visuels du site public.</span><b>Ouvrir →</b></button>
               <button onClick={() => setTab("posts")}><strong>Écrire une publication</strong><span>Préparer une actualité, une annonce ou un événement.</span><b>Ouvrir →</b></button>
-              {isSuper && <button onClick={() => setTab("team")}><strong>Gérer les accès</strong><span>Attribuer les deux sièges Super Admin et le rôle éditeur.</span><b>Ouvrir →</b></button>}
+              {isPrimaryAdmin && <button onClick={() => setTab("team")}><strong>Gérer les accès</strong><span>Gérer le siège ADM 2, le responsable des médias et les comptes inscrits.</span><b>Ouvrir →</b></button>}
             </div>
-            <div className="admin-security-note"><strong>Règles d’accès</strong><p>Les éditeurs gèrent les contenus et les images. Seuls les Super Admin peuvent attribuer, modifier ou révoquer les rôles de l’équipe.</p></div>
+            <div className="admin-security-note"><strong>Règles d’accès</strong><p>Le compte ADM gère les accès de l’équipe. Le responsable des médias gère les publications et les visuels du site public.</p></div>
           </div>
         )}
 
@@ -369,19 +416,52 @@ export default function AdminConsole({ admin }: { admin: AjecchAdmin }) {
           </div>
         )}
 
-        {tab === "team" && isSuper && (
+        {tab === "team" && isPrimaryAdmin && (
           <div className="admin-content">
             <div className="admin-section-intro"><h2>Trois accès administratifs</h2><p>Deux sièges Super Admin disposent du contrôle complet. Le rôle Publication & Médias gère les actualités et les images, sans accès à cette section. Toute attribution de rôle doit être vérifiée et approuvée par un Super Admin.</p></div>
             <div className="admin-seat-grid">
               {([1, 2] as const).map((seat) => {
                 const person = team.find((item) => item.role === "super_admin" && item.seat === seat && item.is_active);
-                return <div className="admin-seat-card" key={seat}><span>SUPER ADMIN · SIÈGE {seat}</span><strong>{person?.display_name ?? "Siège disponible"}</strong><small>{person?.email ?? "À attribuer"}</small></div>;
+                return <div className="admin-seat-card" key={seat}><span>{seat === 1 ? "ADM" : "ADM · SIÈGE 2"}</span><strong>{person?.display_name ?? "Siège disponible"}</strong><small>{person?.email ?? "À attribuer"}</small></div>;
               })}
-              {(() => {
-                const person = team.find((item) => item.role === "publisher" && item.is_active);
-                return <div className="admin-seat-card publisher"><span>PUBLICATION & MÉDIAS</span><strong>{person?.display_name ?? "Accès disponible"}</strong><small>{person?.email ?? "À attribuer"}</small></div>;
-              })()}
+              <div className="admin-seat-card publisher">
+                <span>RESPONSABLE DES MÉDIAS</span>
+                <strong>{activePublisher?.display_name ?? "Aucun responsable désigné"}</strong>
+                <small>{activePublisher?.email ?? "Sélectionner un compte déjà inscrit ci-dessous"}</small>
+                {activePublisher && <button className="admin-danger-text" type="button" disabled={busy} onClick={() => void revokeAdmin(activePublisher)}>Révoquer cet accès</button>}
+              </div>
             </div>
+            <section className="admin-team-list admin-user-directory">
+              <h3>Comptes inscrits sur le site ({registeredUsers.length})</h3>
+              <p>Recherchez les personnes par nom ou adresse e-mail. Seuls les comptes dont l’adresse e-mail est confirmée peuvent recevoir le rôle Publication & Médias.</p>
+              <label className="admin-user-directory-search">Rechercher un nom ou un e-mail
+                <input
+                  type="search"
+                  value={registeredUserSearch}
+                  onChange={(event) => setRegisteredUserSearch(event.target.value)}
+                  placeholder="Nom ou adresse e-mail…"
+                />
+              </label>
+              <div className="admin-user-directory-list" role="list" aria-label="Comptes inscrits">
+                {filteredRegisteredUsers.map((person) => (
+                  <article className="admin-user-directory-row" role="listitem" key={person.user_id}>
+                    <div className="admin-user-directory-identity">
+                      <strong>{person.display_name}</strong>
+                      <small>{person.email}</small>
+                      <small>{person.email_confirmed ? "Adresse confirmée" : "Adresse non confirmée"} · Inscription le {new Date(person.created_at).toLocaleDateString("fr-FR")}</small>
+                    </div>
+                    <div className="admin-user-directory-actions">
+                      {person.active_role === "super_admin" && <span className="admin-user-status">ADM</span>}
+                      {person.active_role === "publisher" && <span className="admin-user-status">Responsable des médias</span>}
+                      {person.active_role === null && !person.email_confirmed && <span className="admin-user-muted">Confirmation e-mail requise</span>}
+                      {person.active_role === null && person.email_confirmed && activePublisher && <span className="admin-user-muted">Le poste est déjà occupé</span>}
+                      {person.active_role === null && person.email_confirmed && !activePublisher && <button className="admin-primary-button" type="button" disabled={busy} onClick={() => void assignMediaManager(person)}>Désigner responsable</button>}
+                    </div>
+                  </article>
+                ))}
+                {filteredRegisteredUsers.length === 0 && <p className="admin-empty">{registeredUsers.length ? "Aucun compte ne correspond à votre recherche." : "Aucun compte inscrit trouvé."}</p>}
+              </div>
+            </section>
             <div className="admin-team-list admin-access-requests">
               <h3>Demandes d’accès en attente ({accessRequests.filter((request) => request.user_id !== admin.user_id).length})</h3>
               <p>Cette liste peut contenir des demandes enregistrées par l’ancien parcours Google. Vérifiez chaque identité avant d’approuver ou de refuser une demande. Le site utilise désormais une connexion par e-mail et mot de passe.</p>
