@@ -371,7 +371,7 @@ export default function AdminConsole({ admin }: { admin: AjecchAdmin }) {
 
         {tab === "team" && isSuper && (
           <div className="admin-content">
-            <div className="admin-section-intro"><h2>Trois accès administratifs</h2><p>Deux sièges Super Admin disposent du contrôle complet. Le rôle Publication & Médias gère les actualités et les images, sans accès à cette section. Tous les nouveaux accès sont validés ici après une connexion Google.</p></div>
+            <div className="admin-section-intro"><h2>Trois accès administratifs</h2><p>Deux sièges Super Admin disposent du contrôle complet. Le rôle Publication & Médias gère les actualités et les images, sans accès à cette section. Toute attribution de rôle doit être vérifiée et approuvée par un Super Admin.</p></div>
             <div className="admin-seat-grid">
               {([1, 2] as const).map((seat) => {
                 const person = team.find((item) => item.role === "super_admin" && item.seat === seat && item.is_active);
@@ -383,8 +383,8 @@ export default function AdminConsole({ admin }: { admin: AjecchAdmin }) {
               })()}
             </div>
             <div className="admin-team-list admin-access-requests">
-              <h3>Demandes Google en attente ({accessRequests.filter((request) => request.user_id !== admin.user_id).length})</h3>
-              <p>Les personnes utilisent « Connecter Google » sur le site public. Choisissez leur rôle, puis approuvez ou refusez leur demande.</p>
+              <h3>Demandes d’accès en attente ({accessRequests.filter((request) => request.user_id !== admin.user_id).length})</h3>
+              <p>Cette liste peut contenir des demandes enregistrées par l’ancien parcours Google. Vérifiez chaque identité avant d’approuver ou de refuser une demande. Le site utilise désormais une connexion par e-mail et mot de passe.</p>
               {accessRequests.filter((request) => request.user_id !== admin.user_id).map((request) => (
                 <div className="admin-team-row admin-request-row" key={request.id}>
                   <div>
