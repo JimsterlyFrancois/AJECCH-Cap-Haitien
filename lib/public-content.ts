@@ -34,7 +34,9 @@ export async function getSiteMedia() {
     .select("slot,source_url,storage_path,is_visible,alt_text");
 
   if (error) {
-    return Object.fromEntries(Object.entries(DEFAULT_MEDIA).map(([slot, item]) => [slot, item.url || null])) as Record<string, string | null>;
+    // Do not resurrect default images when the database is temporarily unavailable:
+    // an administrator may have intentionally hidden or replaced those assets.
+    return Object.fromEntries(Object.keys(DEFAULT_MEDIA).map((slot) => [slot, null])) as Record<string, string | null>;
   }
 
   const result: Record<string, string | null> = {};
