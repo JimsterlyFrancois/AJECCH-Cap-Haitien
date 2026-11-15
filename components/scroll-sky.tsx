@@ -8,8 +8,9 @@ type Cloud = { x: number; y: number; speed: number; scale: number; puffs: CloudP
 
 function makeCloud(width: number, height: number, x?: number): Cloud {
   const scale = 0.55 + Math.random() * 0.8;
-  const puffs = Array.from({ length: 8 + Math.floor(Math.random() * 5) }, (_, index, all) => {
-    const t = index / Math.max(1, all.length - 1);
+  const puffCount = 8 + Math.floor(Math.random() * 5);
+  const puffs = Array.from({ length: puffCount }, (_, index) => {
+    const t = index / Math.max(1, puffCount - 1);
     const envelope = Math.sin(t * Math.PI);
     return {
       x: (t - 0.5) * (180 + Math.random() * 95) * scale,
@@ -86,8 +87,9 @@ export default function ScrollSky() {
       canvas.width = Math.round(width * dpr);
       canvas.height = Math.round(height * dpr);
       context.setTransform(dpr, 0, 0, dpr, 0, 0);
-      clouds = Array.from({ length: width < 640 ? 7 : 12 }, (_, index, all) =>
-        makeCloud(width, height, (index / all.length) * (width + 380) - 160)
+      const cloudCount = width < 640 ? 7 : 12;
+      clouds = Array.from({ length: cloudCount }, (_, index) =>
+        makeCloud(width, height, (index / cloudCount) * (width + 380) - 160)
       );
     };
 
