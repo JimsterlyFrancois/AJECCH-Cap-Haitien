@@ -55,14 +55,15 @@ L'espace **Administration** est privé et ne doit jamais être indexé comme une
 
 ## 5. Administration et rôles
 
-Le système actuel prévoit deux sièges Super Admin et un accès Publication & Médias.
+Le système actuel prévoit deux sièges ADM et un accès Publication & Médias.
 
-- Les Super Admin contrôlent l'équipe, les rôles, les publications et les médias.
-- Publication & Médias gère les actualités, annonces, événements et visuels publics, sans pouvoir attribuer des rôles.
+- **ADM — siège 1 :** contrôle les rôles, l'équipe et les contenus ; il est le seul compte autorisé à consulter l'annuaire des personnes inscrites et à désigner ou révoquer le responsable des médias.
+- **ADM — siège 2 :** dispose des accès de gestion des publications et des médias, mais ne peut pas consulter l'annuaire ni gérer les rôles de l'équipe.
+- **Publication & Médias :** gère les actualités, annonces, événements et visuels publics, sans pouvoir attribuer des rôles.
 - Les autorisations doivent être vérifiées côté serveur et par les politiques RLS Supabase.
 - Une simple connexion ne donne pas automatiquement accès à l'administration.
-- Le premier compte peut être créé depuis `/administration/inscription`, lien visible uniquement pendant l'initialisation. Le premier Super Admin est ensuite activé avec le mécanisme protégé de code unique et après confirmation de l'adresse e-mail.
-- Le parcours d'invitation automatisé des nouveaux responsables n'est pas encore disponible ; la procédure provisoire est décrite dans `docs/administration-ajecch.md`.
+- Le premier compte peut être créé depuis `/administration/inscription`, lien visible uniquement pendant l'initialisation. Le premier ADM est ensuite activé avec le mécanisme protégé de code unique et après confirmation de l'adresse e-mail.
+- Le compte ADM 1 peut désigner comme responsable des médias une personne déjà inscrite avec une adresse confirmée ; aucun compte en double n'est créé.
 
 La connexion actuellement prise en charge est l'adresse e-mail et le mot de passe via Supabase Auth. Ne pas réintroduire un bouton Google tant que le fournisseur et son parcours complet n'ont pas été explicitement configurés et testés.
 
