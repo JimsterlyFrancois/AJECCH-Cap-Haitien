@@ -14,7 +14,7 @@ export default function SiteFooter({ logoUrl }: { logoUrl?: string | null }) {
       <div className="container footer-main">
         <div className="footer-brand-column">
           <a className="brand footer-brand" href="/" aria-label="AJECCH, accueil">
-            <SiteLogo logoUrl={logoUrl} />
+            <SiteLogo logoUrl={logoUrl} variant="footer" />
             <span className="brand-copy">
               <strong>AJECCH</strong>
               <small>JEUNES CHRÉTIENS · CAP-HAÏTIEN</small>
