@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
 
   if (requestedNext.startsWith("/") && !requestedNext.startsWith("//") && !hasUnsafeSeparator) {
     const destination = new URL(requestedNext, url.origin);
-    if (destination.origin === url.origin) {
+    if (destination.origin === url.origin && !destination.pathname.startsWith("//")) {
       next = `${destination.pathname}${destination.search}${destination.hash}`;
     }
   }
