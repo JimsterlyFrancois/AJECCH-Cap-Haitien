@@ -624,7 +624,7 @@ h1, h2, h3, .footer-message, .footer-verse-column blockquote {
   position: absolute;
   inset: 0;
   z-index: -3;
-  background-image: url("https://images.unsplash.com/photo-1664975154056-7369ad5ed779?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000");
+  background-image: none;
   background-size: cover;
   background-position: center 48%;
   transform: scale(1.015);
@@ -1015,7 +1015,7 @@ h1, h2, h3, .footer-message, .footer-verse-column blockquote {
   position: absolute;
   inset: 0;
   z-index: -2;
-  background-image: url("https://images.unsplash.com/photo-1743776469194-464913c8d604?auto=format&fit=crop&fm=jpg&ixid=NHwxMjA3fDA%3D&ixlib=rb-4.1.0&q=60&w=3000");
+  background-image: none;
   background-size: cover;
   background-position: center 44%;
   filter: saturate(.82);
@@ -1380,7 +1380,7 @@ h1, h2, h3 { color: #1B3B2B; }
   background: #DDE6DC;
 }
 .hero-nature-image {
-  background-image: url("https://images.pexels.com/photos/8868160/pexels-photo-8868160.jpeg?auto=compress&cs=tinysrgb&w=2600");
+  background-image: none;
   background-size: cover;
   background-position: center 54%;
   transform: scale(1.015);
@@ -1713,16 +1713,7 @@ h1, h2, h3 { color: #1B3B2B; }
   padding: 0;
   background: rgba(255,255,255,.55);
 }
-.gallery-preview {
-  position: relative;
-  min-height: 190px;
-  flex: 1 1 auto;
-  background-image:
-    linear-gradient(180deg, rgba(27,59,43,.04), rgba(27,59,43,.12)),
-    url("https://images.pexels.com/photos/8868160/pexels-photo-8868160.jpeg?auto=compress&cs=tinysrgb&w=1400");
-  background-size: cover;
-  background-position: center 60%;
-}
+.gallery-preview { position: relative; min-height: 190px; flex: 1 1 auto; background: linear-gradient(145deg, rgba(91,164,213,.48), rgba(8,48,84,.72)), radial-gradient(ellipse at 70% 20%, rgba(255,255,255,.32), transparent 45%); }
 .gallery-copy { padding: 24px 30px 28px; }
 .gallery-copy .voice-card-foot { margin-top: 0; }
 .gallery-copy h3 { margin: 13px 0 8px; }
@@ -1737,7 +1728,7 @@ h1, h2, h3 { color: #1B3B2B; }
     linear-gradient(130deg, #244855, #1B3B2B);
 }
 .contact-backdrop {
-  background-image: url("https://images.pexels.com/photos/8868160/pexels-photo-8868160.jpeg?auto=compress&cs=tinysrgb&w=2200");
+  background-image: none;
   background-position: center 55%;
   filter: saturate(.75);
 }
@@ -3880,17 +3871,15 @@ html[data-theme="day"] body main .contact-glass-panel h2 .contact-title-primary 
 }
 
 
-/* AJECCH — continuous sky background from locally bundled repository assets. */
+/* AJECCH — continuous procedural sky background; no photographic background assets. */
 .scroll-sky {
-  background-image:
-    linear-gradient(180deg, rgba(5, 55, 91, .10), rgba(5, 55, 91, .18)),
-    url("/ajecch-sky-background.webp");
+  background-image: linear-gradient(180deg, #0b5ed7 0%, #2b8cee 32%, #6ec1ff 68%, #bfe6ff 92%, #e8f7ff 100%);
   background-size: cover;
   background-position: center 44%;
   background-repeat: no-repeat;
   background-attachment: fixed;
 }
-.scroll-sky-clouds { display: none; }
+.scroll-sky-clouds { display: block; }
 body { background: transparent !important; }
 
 html[data-theme="day"] body main > section:not(.hero-nature):not(.contact-section) {
@@ -3901,23 +3890,13 @@ html[data-theme="night"] body main > section:not(.hero-nature):not(.contact-sect
 }
 
 .hero-nature { background: transparent !important; }
-.hero-nature-image {
-  background-image: url("/ajecch-sky-background.webp") !important;
-  background-size: cover;
-  background-position: center 48%;
-  filter: none;
-}
+.hero-nature-image { background: transparent !important; background-image: none !important; filter: none; }
 .hero-nature-shade {
   background:
     linear-gradient(180deg, rgba(4, 39, 71, .16), rgba(4, 39, 71, .08) 35%, rgba(4, 39, 71, .27) 100%),
     linear-gradient(90deg, rgba(4, 39, 71, .12), transparent 72%) !important;
 }
-.contact-backdrop {
-  background-image: url("/ajecch-sky-background.webp") !important;
-  background-size: cover;
-  background-position: center 52%;
-  filter: saturate(.92);
-}
+.contact-backdrop { background: transparent !important; background-image: none !important; filter: none; }
 html[data-theme="day"] .contact-section:before {
   background: linear-gradient(115deg, rgba(6, 43, 77, .34), rgba(24, 104, 155, .28)) !important;
 }
@@ -3952,9 +3931,7 @@ html[data-theme="night"] footer {
 
 /* Night mode uses the same bundled sky, dimmed for text and panel contrast. */
 html[data-theme="night"] .scroll-sky {
-  background-image:
-    linear-gradient(180deg, rgba(2, 13, 29, .66), rgba(3, 21, 41, .78)),
-    url("/ajecch-sky-background.webp");
+  background-image: radial-gradient(ellipse at 75% 18%, #162854 0%, #09122b 45%, #030612 100%);
   background-size: cover, cover;
   background-position: center, center 44%;
   background-repeat: no-repeat, no-repeat;
