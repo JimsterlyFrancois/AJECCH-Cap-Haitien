@@ -261,7 +261,7 @@ body { background: var(--paper); }
 .hill-front { background: #112a22; }
 .visual-stamp { background: #b58a55; border-color: #edf1e9; }
 .mission-band { background: #17382f; }
-.engagement-section { background: #f1f2eb; }
+
 .join-section { background: linear-gradient(120deg, #244b3e, #102820); }
 footer { background: #102820; }
 .page-hero { background: linear-gradient(112deg, #faf8f1, #e8ede5); }
@@ -1065,7 +1065,7 @@ h1, h2, h3, .footer-message, .footer-verse-column blockquote {
 .footer-brand-column { max-width: 390px; }
 .footer-brand .brand-copy strong { color: #fff; }
 .footer-brand .brand-copy small { color: #c3d0c2; }
-.footer-brand .brand-mark { color: white; }
+
 .footer-description { max-width: 350px; margin: 20px 0 16px; color: rgba(250,249,246,.69); font-size: 11px; line-height: 1.85; }
 .footer-social-link { color: #e8c78e; font-size: 10px; font-weight: 700; }
 .footer-social-link span { margin-left: 8px; }
@@ -4339,7 +4339,7 @@ body {
   color: rgba(247, 250, 255, .92);
   border-top: 1px solid rgba(255,255,255,.16);
 }
-.footer-brand .brand-copy strong { color: #fff; }
+
 .footer-brand .brand-copy small { color: rgba(236,244,255,.82); }
 .footer-verse-column {
   border-color: rgba(255,255,255,.22);
