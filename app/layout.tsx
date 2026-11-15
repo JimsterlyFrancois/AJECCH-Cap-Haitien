@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import ScrollReveal from "@/components/scroll-reveal";
+import ScrollSky from "@/components/scroll-sky";
 
 export const metadata: Metadata = {
   title: "AJECCH | Association des Jeunes Chrétiens du Cap-Haïtien",
@@ -18,6 +19,7 @@ export default function RootLayout({
   return (
     <html lang="fr">
       <body>
+        <ScrollSky />
         {children}
         <ScrollReveal />
       </body>

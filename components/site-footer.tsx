@@ -1,3 +1,5 @@
+import SiteLogo from "@/components/site-logo";
+
 const footerLinks = [
   { href: "/#mission", label: "Notre mission" },
   { href: "/#actions", label: "Nos actions" },
@@ -6,22 +8,13 @@ const footerLinks = [
   { href: "/actualites", label: "Actualités" }
 ];
 
-export default function SiteFooter() {
+export default function SiteFooter({ logoUrl }: { logoUrl?: string | null }) {
   return (
     <footer className="site-footer" id="footer">
       <div className="container footer-main">
         <div className="footer-brand-column">
           <a className="brand footer-brand" href="/" aria-label="AJECCH, accueil">
-            <span className="brand-mark brand-mark-image">
-              <img
-                src="/ajecch-logo.webp"
-                alt="Logo officiel de l’AJECCH"
-                width={192}
-                height={192}
-                loading="lazy"
-                decoding="async"
-              />
-            </span>
+            <SiteLogo logoUrl={logoUrl} variant="footer" />
             <span className="brand-copy">
               <strong>AJECCH</strong>
               <small>Association des Jeunes Chrétiens<br />du Cap-Haïtien</small>
