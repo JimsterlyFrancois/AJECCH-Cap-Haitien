@@ -4,11 +4,11 @@
 
 La gestion repose sur trois accès administratifs :
 
-- **Super Admin — siège 1** : contrôle complet du site, des publications, des médias, de l’équipe et des rôles.
-- **Super Admin — siège 2** : mêmes autorisations que le siège 1.
-- **Publication & Médias** : crée, publie, modifie et supprime les actualités, annonces et événements ; gère les images publiques. Ce rôle ne peut pas attribuer de rôles ni administrer l’équipe.
+- **ADM — siège 1** : contrôle complet du site et seul compte autorisé à gérer les accès administratifs, parcourir la liste des comptes inscrits et désigner ou révoquer le responsable des médias.
+- **ADM — siège 2** : gère les publications et les médias du site, mais ne peut pas consulter l'annuaire des comptes ni attribuer ou révoquer des rôles.
+- **Publication & Médias** : crée, publie, modifie et supprime les actualités, annonces et événements ; gère les images publiques. Ce rôle ne peut pas administrer l'équipe.
 
-Les sièges actifs sont uniques en base. Le système empêche la désactivation ou la suppression du dernier Super Admin actif.
+Les sièges actifs sont uniques en base. Le système empêche la désactivation ou la suppression du dernier ADM actif. Le libellé visible des comptes Super Admin est simplement **ADM**.
 
 ## 2. Connexion actuelle
 
@@ -51,40 +51,20 @@ Cette procédure est réservée au propriétaire technique ou à une personne au
 
 Si cette table avait été créée sur une ancienne base sans la protection attendue, le propriétaire doit vérifier son état avant toute initialisation et appliquer, si nécessaire, la commande de durcissement documentée dans la migration. Ne pas désactiver RLS pour faciliter l'activation.
 
-## 5. Ajouter un responsable après l'initialisation
+## 5. Désigner ou révoquer le responsable des médias
 
-Le parcours d'invitation automatisé des autres responsables n'est pas encore disponible dans l'interface. En attendant, le propriétaire Supabase doit effectuer l'attribution depuis le SQL Editor, après avoir créé le compte du responsable dans **Authentication → Users** et vérifié son identité.
+Cette gestion est disponible dans l'espace du compte **ADM** (siège 1) :
 
-Exemple pour attribuer le rôle **Publication & Médias** (siège unique disponible) :
+1. Ouvrir **Équipe & accès**.
+2. Consulter la rubrique **Comptes inscrits sur le site**.
+3. Rechercher la personne par son nom ou son adresse e-mail.
+4. Vérifier l'identité affichée et confirmer que l'adresse e-mail est validée.
+5. Cliquer sur **Désigner responsable**. Le compte existant reçoit alors le rôle **Publication & Médias**, sans nouvelle inscription.
+6. Pour retirer l'accès, utiliser **Révoquer cet accès** dans la carte du responsable actuel.
 
-```sql
-insert into public.ajecch_admins (
-  user_id, display_name, email, role, seat, is_active, created_by
-)
-select
-  u.id,
-  'NOM DU RESPONSABLE',
-  u.email,
-  'publisher',
-  1,
-  true,
-  (
-    select user_id
-    from public.ajecch_admins
-    where role = 'super_admin' and seat = 1 and is_active = true
-    limit 1
-  )
-from auth.users as u
-where lower(u.email) = lower('adresse@example.com')
-  and not exists (
-    select 1 from public.ajecch_admins as existing
-    where existing.user_id = u.id
-  );
-```
+Un seul responsable des médias peut être actif à la fois. Pour le remplacer, révoquer d'abord son accès, puis désigner un autre compte inscrit. La révocation désactive l'accès et conserve l'historique du compte ; elle ne supprime pas le compte Auth.
 
-Pour attribuer le siège Super Admin 2, remplacer `'publisher'` par `'super_admin'` et conserver `seat = 2`. Ne jamais attribuer le siège 1 à un autre compte. Si le siège demandé est déjà occupé, vérifier d'abord les responsables actifs ; ne pas contourner l'index unique ou le déclencheur de protection du dernier Super Admin.
-
-Cette opération est réservée au propriétaire autorisé de la base. Ne pas demander aux utilisateurs de s'attribuer eux-mêmes un rôle et ne jamais insérer un rôle depuis le navigateur.
+L'annuaire affiche uniquement le nom, l'adresse e-mail, l'état de confirmation et la date d'inscription. Son accès et les opérations d'attribution/révocation sont contrôlés par des fonctions SQL et des politiques RLS : le compte ADM 2, les éditeurs et les visiteurs ne peuvent pas utiliser ces opérations.
 
 ## 6. Bibliothèque média et publications
 
@@ -104,7 +84,7 @@ Les publications utilisent les catégories actualité, annonce et événement. S
 
 - Supabase Auth authentifie les comptes.
 - `public.ajecch_admins` détermine les rôles actifs.
-- Les politiques RLS et les fonctions SQL vérifient les droits côté base.
+- Les politiques RLS et les fonctions SQL vérifient les droits côté base. Seul le siège ADM 1 peut lire l'annuaire des inscrits et gérer les rôles administratifs.
 - Le middleware protège les routes d'administration contre les visiteurs non connectés ; la page serveur vérifie ensuite le rôle.
 - Le contrôle visuel d'un bouton ou d'un lien n'est jamais considéré comme une mesure de sécurité.
 - Aucun secret privé ne doit apparaître dans le code client.
