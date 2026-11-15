@@ -130,7 +130,7 @@ begin
     raise exception 'Seul un Super Admin actif peut approuver une demande.';
   end if;
 
-  if p_role not in ('super_admin', 'publisher') then
+  if p_role is null or p_role not in ('super_admin', 'publisher') then
     raise exception 'Rôle administratif invalide.';
   end if;
 
