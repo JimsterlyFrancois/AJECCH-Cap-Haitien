@@ -375,7 +375,7 @@ export default function AdminConsole({ admin }: { admin: AjecchAdmin }) {
           <button className={tab === "overview" ? "active" : ""} onClick={() => setTab("overview")}>Vue générale</button>
           <button className={tab === "media" ? "active" : ""} onClick={() => setTab("media")}>Images publiques</button>
           <button className={tab === "posts" ? "active" : ""} onClick={() => setTab("posts")}>Publications</button>
-          <button className={tab === "quizzes" ? "active" : ""} onClick={() => setTab("quizzes")}>Quiz</button>
+          {isSuper && <button className={tab === "quizzes" ? "active" : ""} onClick={() => setTab("quizzes")}>Quiz</button>}
           {isPrimaryAdmin && <button className={tab === "team" ? "active" : ""} onClick={() => setTab("team")}>Équipe & accès</button>}
         </nav>
         <div className="admin-sidebar-bottom">
