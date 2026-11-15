@@ -195,9 +195,15 @@ export default function SiteHeader({ active = "", logoUrl }: { active?: string; 
               >
                 <span className="google-g" aria-hidden="true">{accountEmail ? "✓" : "G"}</span>
                 <small>
-                  {googleBusy ? "Connexion…" : accountEmail
-                    ? accessRequestStatus === "pending" ? "Demande envoyée" : accessRequestStatus === "rejected" ? "Renvoyer la demande" : "Demander un accès"}
-                    : "Connecter Google"}
+                  {googleBusy
+                    ? "Connexion…"
+                    : accountEmail
+                      ? (accessRequestStatus === "pending"
+                        ? "Demande envoyée"
+                        : accessRequestStatus === "rejected"
+                          ? "Renvoyer la demande"
+                          : "Demander un accès")
+                      : "Connecter Google"}
                 </small>
               </button>
             )}
