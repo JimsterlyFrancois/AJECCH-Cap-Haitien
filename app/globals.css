@@ -2177,7 +2177,6 @@ html[data-theme="day"] .scroll-sky-clouds-near {
 .liquid-control:hover { transform:translateY(-2px); box-shadow:0 11px 26px rgba(25,58,43,.14),inset 0 1px 0 #fff; }
 .liquid-control > span { font-size:17px; line-height:1; }
 .liquid-control small { font-size:9px; font-weight:800; letter-spacing:.025em; }
-.google-g { color:#4285f4; font-family:Arial,sans-serif; font-weight:800; }
 .theme-toggle[aria-pressed="true"] { color:#f4dfad; background:linear-gradient(145deg,rgba(25,43,75,.9),rgba(10,20,43,.72)); border-color:rgba(231,215,176,.38); }
 @media(max-width:960px) {
   .nav-actions { gap:6px; }
@@ -2606,7 +2605,6 @@ html[data-theme="day"] .theme-toggle[aria-pressed="false"] {
   color: #425e4b;
   background: linear-gradient(145deg, rgba(255,255,255,.96), rgba(235,242,233,.82));
 }
-html[data-theme="day"] .google-connect { color: #315442; }
 
 /* Night: deep green-charcoal, moonlit sage and warm champagne accents. */
 html[data-theme="night"] body main {
@@ -2837,8 +2835,6 @@ html[data-theme="night"] .theme-toggle[aria-pressed="true"] {
   background: linear-gradient(145deg, rgba(64,78,91,.88), rgba(33,47,51,.92));
   border-color: rgba(229,203,155,.28);
 }
-html[data-theme="night"] .google-connect { color: #edf4eb; }
-html[data-theme="night"] .google-g { color: #9fc2ff; }
 html[data-theme="night"] .hero-bottomline,
 html[data-theme="night"] .hero-bottomline a,
 html[data-theme="night"] .hero-photo-note { color: rgba(250,252,247,.9); text-shadow: 0 1px 12px rgba(0,0,0,.35); }
@@ -3413,7 +3409,6 @@ html[data-theme="day"] .liquid-control:hover {
   background: linear-gradient(145deg, #fff, #e6f5ff);
 }
 html[data-theme="day"] .theme-toggle[aria-pressed="false"] { color: #176fa8; }
-html[data-theme="day"] .google-connect { color: #17446a; }
 
 /* Footer and other dark identity bands: white text on deep blue, not brown. */
 html[data-theme="day"] .site-footer,
@@ -3588,8 +3583,6 @@ html[data-theme="night"] .theme-toggle[aria-pressed="true"] {
   background: linear-gradient(145deg, rgba(31,68,103,.94), rgba(13,39,68,.95));
   border-color: rgba(139,208,255,.3);
 }
-html[data-theme="night"] .google-connect { color: #e8f5ff; }
-html[data-theme="night"] .google-g { color: #a8caff; }
 html[data-theme="night"] .site-footer,
 html[data-theme="night"] footer {
   color: #e4f1ff;
@@ -4018,39 +4011,6 @@ html[data-theme="night"] .site-logo {
     min-width: 68px !important;
   }
 }
-
-
-/* Google sign-in and admin access requests — blue AJECCH visual system. */
-.google-connect-error {
-  max-width: 230px;
-  color: #a33f34;
-  font-size: 9px;
-  line-height: 1.4;
-}
-.google-connect:disabled { opacity: .62; cursor: wait; }
-
-.admin-auth-divider {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 7px 0 1px;
-  color: #6f879a;
-  font-size: 10px;
-}
-.admin-auth-divider::before,
-.admin-auth-divider::after {
-  content: "";
-  height: 1px;
-  flex: 1;
-  background: rgba(47,126,180,.18);
-}
-.admin-auth-form .admin-google-button {
-  min-height: 46px;
-  gap: 10px;
-  color: #173d60;
-  background: linear-gradient(135deg, #fff, #e9f5fd);
-  border: 1px solid rgba(47,126,180,.24);
-}
 .admin-auth-hint {
   margin: 1px 0 0;
   color: #58738b;
@@ -4165,45 +4125,9 @@ html[data-theme="night"] .admin-access-requests > p { color: #bdd5e8; }
   .admin-request-row { display: grid; }
   .admin-request-row .admin-team-actions { justify-content: flex-start; }
   .admin-request-row .admin-team-actions select { width: 100%; }
-  .google-connect-error { position: absolute; top: 100%; right: 0; z-index: 10; }
 }
 
 .nav-actions { position: relative; }
-.google-connect-error {
-  position: absolute;
-  top: calc(100% + 8px);
-  right: 0;
-  z-index: 50;
-  padding: 7px 10px;
-  border: 1px solid rgba(175,75,63,.2);
-  border-radius: 9px;
-  color: #8b332b;
-  background: rgba(255,248,247,.97);
-  box-shadow: 0 8px 20px rgba(8,39,73,.12);
-}
-
-
-.google-connect-message {
-  position: absolute;
-  top: calc(100% + 8px);
-  right: 0;
-  z-index: 50;
-  width: max-content;
-  max-width: min(290px, 80vw);
-  padding: 8px 11px;
-  border: 1px solid rgba(29, 112, 160, .2);
-  border-radius: 10px;
-  color: #17446a;
-  background: rgba(245, 251, 255, .98);
-  box-shadow: 0 8px 20px rgba(8, 39, 73, .12);
-  font-size: 10px;
-  line-height: 1.45;
-}
-html[data-theme="night"] .google-connect-message {
-  color: #d9edff;
-  border-color: rgba(139, 196, 238, .24);
-  background: rgba(8, 29, 54, .97);
-}
 .admin-dashboard-link { white-space: nowrap; }
 
 @media (min-width: 701px) and (max-width: 1100px) {
@@ -4294,3 +4218,76 @@ html[data-theme="night"] .night-sky { opacity: 1; }
   .night-sky, .night-star, .night-sky-moon { animation: none !important; transition: none !important; }
   .night-star { opacity: .55; }
 }
+
+/* Continuous procedural sky: transparent public section surfaces in both themes. */
+html[data-theme="day"] body main > section,
+html[data-theme="night"] body main > section,
+html[data-theme="day"] body main :is(.section-shell, .section-pad, .page-hero),
+html[data-theme="night"] body main :is(.section-shell, .section-pad, .page-hero) {
+  color: var(--ui-text);
+  background: transparent !important;
+  background-image: none !important;
+}
+
+/* Remove section overlays that would hide the sky; keep the glass content panels. */
+.hero-nature,
+.contact-section {
+  background: transparent !important;
+  background-image: none !important;
+}
+.hero-nature-shade,
+.contact-section::before {
+  background: transparent !important;
+  background-image: none !important;
+}
+.hero-nature-image,
+.contact-backdrop {
+  background: transparent !important;
+  background-image: none !important;
+}
+
+/* Daylight text stays dark against the blue sky, with readable translucent panels. */
+html[data-theme="day"] body main :is(.mission-band, .join-section) :is(h1, h2, h3, p) {
+  color: #0d2b4b !important;
+}
+html[data-theme="day"] body main :is(.mission-band, .join-section) .section-kicker,
+html[data-theme="day"] body main .mission-band .mission-label {
+  color: #176fa8 !important;
+}
+html[data-theme="day"] body main .mission-band .mission-seal {
+  color: #0d2b4b;
+  border-color: rgba(13, 43, 75, .28);
+}
+html[data-theme="day"] body main .join-inner {
+  color: #29445f;
+  background: linear-gradient(145deg, rgba(255,255,255,.84), rgba(231,245,255,.72));
+  border: 1px solid rgba(255,255,255,.88);
+  box-shadow: 0 18px 48px rgba(8,49,83,.10), inset 0 1px 0 rgba(255,255,255,.92);
+  backdrop-filter: blur(14px) saturate(125%);
+  -webkit-backdrop-filter: blur(14px) saturate(125%);
+}
+html[data-theme="day"] body main .join-inner h2 { color: #0d2b4b !important; }
+html[data-theme="day"] body main .join-inner p { color: #506981 !important; }
+
+/* Night sky keeps light typography and a dark glass panel without opaque section bands. */
+html[data-theme="night"] body main :is(.mission-band, .join-section) :is(h1, h2, h3, p) {
+  color: #f0f7ff !important;
+}
+html[data-theme="night"] body main :is(.mission-band, .join-section) .section-kicker,
+html[data-theme="night"] body main .mission-band .mission-label {
+  color: #9bd8ff !important;
+}
+html[data-theme="night"] body main .mission-band .mission-seal {
+  color: #f0f7ff;
+  border-color: rgba(188,220,245,.3);
+}
+html[data-theme="night"] body main .join-inner {
+  color: #d7e7f5;
+  background: linear-gradient(145deg, rgba(25,53,82,.88), rgba(14,37,64,.84));
+  border: 1px solid rgba(180,215,242,.18);
+  box-shadow: 0 18px 48px rgba(0,0,0,.24), inset 0 1px 0 rgba(237,247,255,.08);
+  backdrop-filter: blur(13px) saturate(115%);
+  -webkit-backdrop-filter: blur(13px) saturate(115%);
+}
+html[data-theme="night"] body main .join-inner h2 { color: #f0f7ff !important; }
+html[data-theme="night"] body main .join-inner p { color: #bfd2e5 !important; }
