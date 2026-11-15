@@ -2113,56 +2113,12 @@ body > :not(.scroll-sky) {
   position: relative;
   z-index: 1;
 }
-.scroll-sky-clouds {
-  position: absolute;
-  left: -12%;
-  width: 124%;
-  height: 58vh;
-  min-height: 360px;
-  background-repeat: no-repeat;
-  will-change: transform;
-  transform: translate3d(0, 0, 0);
-}
-.scroll-sky-clouds-distant {
-  top: -9vh;
-  opacity: .36;
-  filter: blur(13px);
-  background-image:
-    radial-gradient(ellipse 19% 17% at 13% 32%, rgba(255,255,255,.78) 0 45%, transparent 78%),
-    radial-gradient(ellipse 16% 14% at 23% 29%, rgba(255,255,255,.68) 0 45%, transparent 78%),
-    radial-gradient(ellipse 22% 18% at 72% 23%, rgba(255,255,255,.76) 0 44%, transparent 78%),
-    radial-gradient(ellipse 17% 15% at 84% 27%, rgba(255,255,255,.68) 0 45%, transparent 78%);
-}
-.scroll-sky-clouds-near {
-  top: 20vh;
-  opacity: .25;
-  filter: blur(19px);
-  background-image:
-    radial-gradient(ellipse 20% 18% at 5% 46%, rgba(255,255,255,.8) 0 42%, transparent 78%),
-    radial-gradient(ellipse 15% 14% at 17% 42%, rgba(255,255,255,.72) 0 45%, transparent 78%),
-    radial-gradient(ellipse 23% 19% at 91% 50%, rgba(255,255,255,.78) 0 43%, transparent 78%),
-    radial-gradient(ellipse 16% 14% at 78% 46%, rgba(255,255,255,.7) 0 44%, transparent 78%);
-}
-@media (max-width: 700px) {
-  .scroll-sky-clouds { height: 46vh; min-height: 280px; }
-  .scroll-sky-clouds-distant { opacity: .29; }
-  .scroll-sky-clouds-near { opacity: .19; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .scroll-sky-clouds { will-change: auto; }
-}
+
+
 
 
 
 /* Clear-day clouds: brighter, softer layers visible over the blue sky. */
-html[data-theme="day"] .scroll-sky-clouds-distant {
-  opacity: .48;
-  filter: blur(11px);
-}
-html[data-theme="day"] .scroll-sky-clouds-near {
-  opacity: .34;
-  filter: blur(16px);
-}
 
 /* Persistent liquid-glass controls in the site navigation */
 .nav-actions { display:flex; align-items:center; justify-content:flex-end; gap:8px; flex-shrink:0; }
@@ -2195,22 +2151,6 @@ html[data-theme="day"] .scroll-sky-clouds-near {
 html[data-theme="night"] { color-scheme:dark; }
 html[data-theme="night"] body { color:#e8edf7; background:#071329; }
 html[data-theme="night"] .scroll-sky { background:linear-gradient(180deg,#071329 0%,#101e3a 48%,#172845 100%); }
-html[data-theme="night"] .scroll-sky-clouds-distant {
-  opacity:.22; filter:blur(16px);
-  background-image:
-    radial-gradient(ellipse 19% 17% at 13% 32%,rgba(178,199,231,.42) 0 45%,transparent 78%),
-    radial-gradient(ellipse 16% 14% at 23% 29%,rgba(156,183,224,.34) 0 45%,transparent 78%),
-    radial-gradient(ellipse 22% 18% at 72% 23%,rgba(180,198,232,.38) 0 44%,transparent 78%),
-    radial-gradient(ellipse 17% 15% at 84% 27%,rgba(151,180,223,.32) 0 45%,transparent 78%);
-}
-html[data-theme="night"] .scroll-sky-clouds-near {
-  opacity:.16; filter:blur(22px);
-  background-image:
-    radial-gradient(ellipse 20% 18% at 5% 46%,rgba(194,207,231,.42) 0 42%,transparent 78%),
-    radial-gradient(ellipse 15% 14% at 17% 42%,rgba(162,186,222,.35) 0 45%,transparent 78%),
-    radial-gradient(ellipse 23% 19% at 91% 50%,rgba(182,199,231,.4) 0 43%,transparent 78%),
-    radial-gradient(ellipse 16% 14% at 78% 46%,rgba(155,181,220,.32) 0 44%,transparent 78%);
-}
 html[data-theme="night"] .site-header { background:rgba(10,23,45,.88); border-color:rgba(190,207,233,.16); box-shadow:0 12px 38px rgba(0,0,0,.2); backdrop-filter:blur(22px); }
 html[data-theme="night"] .brand-copy strong,
 html[data-theme="night"] .main-nav a,
@@ -2629,24 +2569,6 @@ html[data-theme="night"] .scroll-sky {
   background:
     radial-gradient(ellipse at 18% 3%, rgba(125, 157, 145, .11), transparent 32rem),
     linear-gradient(180deg, #111e1b 0%, #15231f 52%, #101a18 100%);
-}
-html[data-theme="night"] .scroll-sky-clouds-distant {
-  opacity: .17;
-  filter: blur(18px);
-  background-image:
-    radial-gradient(ellipse 19% 17% at 13% 32%, rgba(221,235,220,.34) 0 45%, transparent 78%),
-    radial-gradient(ellipse 16% 14% at 23% 29%, rgba(179,205,186,.29) 0 45%, transparent 78%),
-    radial-gradient(ellipse 22% 18% at 72% 23%, rgba(220,231,215,.32) 0 44%, transparent 78%),
-    radial-gradient(ellipse 17% 15% at 84% 27%, rgba(171,197,181,.27) 0 45%, transparent 78%);
-}
-html[data-theme="night"] .scroll-sky-clouds-near {
-  opacity: .12;
-  filter: blur(23px);
-  background-image:
-    radial-gradient(ellipse 20% 18% at 5% 46%, rgba(213,225,211,.32) 0 42%, transparent 78%),
-    radial-gradient(ellipse 15% 14% at 17% 42%, rgba(174,201,181,.26) 0 45%, transparent 78%),
-    radial-gradient(ellipse 23% 19% at 91% 50%, rgba(216,229,213,.3) 0 43%, transparent 78%),
-    radial-gradient(ellipse 16% 14% at 78% 46%, rgba(172,197,178,.25) 0 44%, transparent 78%);
 }
 html[data-theme="night"] .topline {
   color: #e9eee8;
@@ -3832,24 +3754,6 @@ html[data-theme="night"] .scroll-sky {
     radial-gradient(ellipse at 15% 3%, rgba(97,163,211,.16), transparent 32rem),
     linear-gradient(180deg, #07182d 0%, #0c2340 48%, #123454 100%);
 }
-html[data-theme="night"] .scroll-sky-clouds-distant {
-  opacity: .18;
-  filter: blur(17px);
-  background-image:
-    radial-gradient(ellipse 19% 17% at 13% 32%, rgba(194,224,247,.43) 0 45%, transparent 78%),
-    radial-gradient(ellipse 16% 14% at 23% 29%, rgba(151,204,238,.35) 0 45%, transparent 78%),
-    radial-gradient(ellipse 22% 18% at 72% 23%, rgba(194,224,247,.4) 0 44%, transparent 78%),
-    radial-gradient(ellipse 17% 15% at 84% 27%, rgba(151,204,238,.32) 0 45%, transparent 78%);
-}
-html[data-theme="night"] .scroll-sky-clouds-near {
-  opacity: .13;
-  filter: blur(22px);
-  background-image:
-    radial-gradient(ellipse 20% 18% at 5% 46%, rgba(194,224,247,.35) 0 42%, transparent 78%),
-    radial-gradient(ellipse 15% 14% at 17% 42%, rgba(151,204,238,.3) 0 45%, transparent 78%),
-    radial-gradient(ellipse 23% 19% at 91% 50%, rgba(194,224,247,.34) 0 43%, transparent 78%),
-    radial-gradient(ellipse 16% 14% at 78% 46%, rgba(151,204,238,.29) 0 44%, transparent 78%);
-}
 html[data-theme="night"] .hero-bottomline b,
 html[data-theme="night"] .nature-feature-overlay span,
 html[data-theme="night"] .site-footer .footer-label,
@@ -3888,7 +3792,6 @@ html[data-theme="day"] body main .contact-glass-panel h2 .contact-title-primary 
   background-repeat: no-repeat;
   background-attachment: fixed;
 }
-.scroll-sky-clouds { display: block; }
 body { background: transparent !important; }
 
 html[data-theme="day"] body main > section:not(.hero-nature):not(.contact-section) {
@@ -4149,7 +4052,6 @@ html[data-theme="night"] .admin-access-requests > p { color: #bdd5e8; }
 html[data-theme="night"] .scroll-sky {
   background: radial-gradient(ellipse at 75% 18%, #162854 0%, #09122b 45%, #030612 100%) !important;
 }
-html[data-theme="night"] .scroll-sky-clouds { display: none !important; }
 .night-sky {
   position: absolute;
   inset: 0;
@@ -4292,26 +4194,77 @@ html[data-theme="night"] body main .join-inner {
 html[data-theme="night"] body main .join-inner h2 { color: #f0f7ff !important; }
 html[data-theme="night"] body main .join-inner p { color: #bfd2e5 !important; }
 
-/* AJECCH daylight clouds: brighter white highlights with soft blue-grey depth. */
-html[data-theme="day"] .scroll-sky-clouds-distant {
-  opacity: .78;
-  filter: blur(8px);
-  background-image:
-    radial-gradient(ellipse 18% 21% at 12% 34%, rgba(255,255,255,.98) 0 34%, rgba(245,251,255,.88) 48%, rgba(207,232,249,.48) 66%, transparent 83%),
-    radial-gradient(ellipse 17% 18% at 21% 29%, rgba(255,255,255,.96) 0 36%, rgba(236,248,255,.82) 52%, transparent 82%),
-    radial-gradient(ellipse 20% 22% at 29% 35%, rgba(255,255,255,.92) 0 32%, rgba(218,239,252,.54) 60%, transparent 83%),
-    radial-gradient(ellipse 21% 22% at 69% 29%, rgba(255,255,255,.98) 0 35%, rgba(240,249,255,.86) 50%, rgba(206,231,249,.46) 67%, transparent 83%),
-    radial-gradient(ellipse 17% 18% at 78% 25%, rgba(255,255,255,.96) 0 36%, rgba(236,248,255,.82) 52%, transparent 82%),
-    radial-gradient(ellipse 20% 21% at 86% 32%, rgba(255,255,255,.92) 0 33%, rgba(218,239,252,.52) 60%, transparent 83%);
+/* Ciel diurne procédural : nuages volumétriques et soleil, sans nuages CSS en dégradés. */
+.day-sky-cloud-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
 }
-html[data-theme="day"] .scroll-sky-clouds-near {
-  opacity: .62;
-  filter: blur(11px);
-  background-image:
-    radial-gradient(ellipse 20% 20% at 4% 48%, rgba(255,255,255,.96) 0 33%, rgba(235,248,255,.84) 50%, rgba(189,222,245,.42) 68%, transparent 84%),
-    radial-gradient(ellipse 17% 17% at 14% 43%, rgba(255,255,255,.98) 0 36%, rgba(239,249,255,.82) 54%, transparent 82%),
-    radial-gradient(ellipse 19% 19% at 23% 50%, rgba(255,255,255,.9) 0 32%, rgba(206,232,250,.48) 61%, transparent 84%),
-    radial-gradient(ellipse 21% 20% at 77% 49%, rgba(255,255,255,.94) 0 33%, rgba(235,248,255,.82) 51%, rgba(189,222,245,.4) 68%, transparent 84%),
-    radial-gradient(ellipse 18% 18% at 88% 43%, rgba(255,255,255,.98) 0 36%, rgba(239,249,255,.82) 54%, transparent 82%),
-    radial-gradient(ellipse 19% 19% at 97% 50%, rgba(255,255,255,.9) 0 32%, rgba(206,232,250,.48) 61%, transparent 84%);
+.day-sky-sun {
+  position: absolute;
+  z-index: 2;
+  top: clamp(62px, 10vh, 104px);
+  right: clamp(28px, 8vw, 116px);
+  width: clamp(76px, 9vw, 116px);
+  aspect-ratio: 1;
+  pointer-events: none;
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 1s ease, transform 1s ease;
+}
+.day-sky-sun-rays {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 3.8em;
+  height: 3.8em;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: conic-gradient(
+    from 0deg,
+    rgba(255,255,240,.18) 0deg,
+    transparent 25deg,
+    rgba(255,245,210,.12) 55deg,
+    transparent 90deg,
+    rgba(255,255,240,.16) 130deg,
+    transparent 175deg,
+    rgba(255,240,190,.14) 220deg,
+    transparent 270deg,
+    rgba(255,255,240,.18) 315deg,
+    transparent 360deg
+  );
+  animation: ajecch-sun-rays 90s linear infinite;
+}
+.day-sky-sun-disc {
+  position: absolute;
+  inset: 12%;
+  overflow: hidden;
+  border-radius: 50%;
+  background: radial-gradient(circle at 32% 27%, #fff 0%, #fffdf3 38%, #ffe8af 76%, #f5c96f 100%);
+  box-shadow:
+    0 0 50px 20px rgba(255,250,220,.72),
+    0 0 120px 55px rgba(255,215,110,.38),
+    0 0 210px 95px rgba(255,190,80,.17);
+}
+@keyframes ajecch-sun-rays {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+html[data-theme="night"] .day-sky-cloud-canvas,
+html[data-theme="night"] .day-sky-sun {
+  opacity: 0;
+  visibility: hidden;
+}
+.night-sky { z-index: 3; }
+@media (max-width: 700px) {
+  .day-sky-sun { top: 92px; right: 25px; width: 76px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .day-sky-sun-rays { animation: none; }
+  .day-sky-sun { transition: none; }
+  .day-sky-cloud-canvas { will-change: auto; }
 }
