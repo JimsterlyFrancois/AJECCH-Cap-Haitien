@@ -4526,3 +4526,5 @@ html[data-theme="night"] .admin-quiz-option-caption { color: #a9c8df; }
   .quiz-answer-button { transition: none; }
   .quiz-answer-button:not(:disabled):hover { transform: none; }
 }
+
+.public-news-copy > p { white-space: pre-line; }
