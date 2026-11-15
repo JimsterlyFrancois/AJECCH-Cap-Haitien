@@ -53,7 +53,7 @@ Après la première activation du Super Admin 1 :
 
 La connexion Google ne confère jamais un rôle automatiquement. Seul un Super Admin déjà actif peut approuver une demande. Le compte du demandeur ne peut ni modifier son rôle ni approuver sa propre demande. Les identifiants Auth, les UUID et les clés de service ne doivent pas être copiés ou partagés manuellement.
 
-La migration `supabase/migrations/20261115030000_ajecch_admin_access_requests.sql` doit être appliquée à Supabase avant d’utiliser le nouveau circuit de demandes.
+La migration `supabase/migrations/20261115023017_ajecch_admin_access_requests.sql` doit être appliquée à Supabase avant d’utiliser le nouveau circuit de demandes.
 
 ## Bibliothèque d’images
 
