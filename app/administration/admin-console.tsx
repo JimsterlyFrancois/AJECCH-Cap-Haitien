@@ -64,29 +64,45 @@ export default function AdminConsole({ admin }: { admin: AjecchAdmin }) {
   const [accessRequests, setAccessRequests] = useState<AccessRequestItem[]>([]);
   const [requestRoles, setRequestRoles] = useState<Record<string, "super_admin" | "publisher">>({});
   const [busy, setBusy] = useState(false);
+  const [loadingData, setLoadingData] = useState(true);
   const [notice, setNotice] = useState("");
   const [error, setError] = useState("");
 
   const loadData = useCallback(async () => {
+    setLoadingData(true);
     setError("");
-    const [mediaResult, postResult, teamResult, requestResult] = await Promise.all([
-      supabase.from("ajecch_media").select("*").order("slot"),
-      supabase.from("ajecch_posts").select("*").order("created_at", { ascending: false }),
-      isSuper
-        ? supabase.from("ajecch_admins").select("id,user_id,display_name,email,role,seat,is_active").order("role").order("seat")
-        : Promise.resolve({ data: [], error: null }),
-      isSuper
-        ? supabase.from("ajecch_admin_access_requests").select("id,user_id,display_name,email,status,requested_at").eq("status", "pending").order("requested_at", { ascending: true })
-        : Promise.resolve({ data: [], error: null })
-    ]);
-    if (mediaResult.error) setError(mediaResult.error.message);
-    if (postResult.error) setError(postResult.error.message);
-    if (teamResult.error) setError(teamResult.error.message);
-    if (requestResult.error) setError(requestResult.error.message);
-    setMedia((mediaResult.data ?? []) as MediaItem[]);
-    setPosts((postResult.data ?? []) as PostItem[]);
-    setTeam((teamResult.data ?? []) as TeamItem[]);
-    setAccessRequests((requestResult.data ?? []) as AccessRequestItem[]);
+    try {
+      const [mediaResult, postResult, teamResult, requestResult] = await Promise.all([
+        supabase.from("ajecch_media").select("*").order("slot"),
+        supabase.from("ajecch_posts").select("*").order("created_at", { ascending: false }),
+        isSuper
+          ? supabase.from("ajecch_admins").select("id,user_id,display_name,email,role,seat,is_active").order("role").order("seat")
+          : Promise.resolve({ data: [], error: null }),
+        isSuper
+          ? supabase.from("ajecch_admin_access_requests").select("id,user_id,display_name,email,status,requested_at").eq("status", "pending").order("requested_at", { ascending: true })
+          : Promise.resolve({ data: [], error: null })
+      ]);
+
+      const failures = [
+        mediaResult.error && `Images : ${mediaResult.error.message}`,
+        postResult.error && `Publications : ${postResult.error.message}`,
+        teamResult.error && `Équipe : ${teamResult.error.message}`,
+        requestResult.error && `Demandes d’accès : ${requestResult.error.message}`
+      ].filter(Boolean);
+
+      setMedia((mediaResult.data ?? []) as MediaItem[]);
+      setPosts((postResult.data ?? []) as PostItem[]);
+      setTeam((teamResult.data ?? []) as TeamItem[]);
+      setAccessRequests((requestResult.data ?? []) as AccessRequestItem[]);
+
+      if (failures.length) {
+        setError(`Certaines données n’ont pas pu être chargées. ${failures.join(" · ")}`);
+      }
+    } catch (err) {
+      setError(`Connexion aux données AJECCH impossible : ${messageOf(err)}`);
+    } finally {
+      setLoadingData(false);
+    }
   }, [isSuper, supabase]);
 
   useEffect(() => { void loadData(); }, [loadData]);
@@ -103,6 +119,7 @@ export default function AdminConsole({ admin }: { admin: AjecchAdmin }) {
     setError("");
     setNotice("");
     const form = new FormData(event.currentTarget);
+    let uploadedPath: string | null = null;
     try {
       const file = form.get("file");
       let storagePath = item.storage_path;
@@ -120,6 +137,7 @@ export default function AdminConsole({ admin }: { admin: AjecchAdmin }) {
           cacheControl: "31536000"
         });
         if (uploadError) throw uploadError;
+        uploadedPath = newPath;
         storagePath = newPath;
         sourceUrl = null;
       }
@@ -135,12 +153,18 @@ export default function AdminConsole({ admin }: { admin: AjecchAdmin }) {
       };
       const { error: saveError } = await supabase.from("ajecch_media").upsert(updates, { onConflict: "slot" });
       if (saveError) throw saveError;
+      uploadedPath = null;
+      let cleanupWarning = "";
       if (item.storage_path && item.storage_path !== storagePath) {
-        await supabase.storage.from("ajecch-public-media").remove([item.storage_path]);
+        const { error: cleanupError } = await supabase.storage.from("ajecch-public-media").remove([item.storage_path]);
+        if (cleanupError) cleanupWarning = " Le nouveau visuel est actif, mais l’ancien fichier n’a pas pu être supprimé.";
       }
-      setNotice(`Image « ${item.label} » mise à jour.`);
+      setNotice(`Image « ${updates.label} » mise à jour.${cleanupWarning}`);
       await loadData();
     } catch (err) {
+      if (uploadedPath) {
+        await supabase.storage.from("ajecch-public-media").remove([uploadedPath]);
+      }
       setError(messageOf(err));
     } finally {
       setBusy(false);
@@ -158,11 +182,12 @@ export default function AdminConsole({ admin }: { admin: AjecchAdmin }) {
     try {
       const { error: deleteError } = await supabase.from("ajecch_media").delete().eq("id", item.id);
       if (deleteError) throw deleteError;
+      let cleanupWarning = "";
       if (item.storage_path) {
         const { error: storageError } = await supabase.storage.from("ajecch-public-media").remove([item.storage_path]);
-        if (storageError) throw storageError;
+        if (storageError) cleanupWarning = " L’entrée est supprimée, mais le fichier de stockage devra être nettoyé.";
       }
-      setNotice("Visuel supprimé du site public.");
+      setNotice(`Visuel supprimé du site public.${cleanupWarning}`);
       await loadData();
     } catch (err) {
       setError(messageOf(err));
@@ -181,10 +206,23 @@ export default function AdminConsole({ admin }: { admin: AjecchAdmin }) {
       const title = String(form.get("title") ?? "").trim();
       const slug = String(form.get("slug") ?? "").trim().toLowerCase();
       if (!title || !slug) throw new Error("Le titre et l’identifiant URL sont obligatoires.");
+      if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) {
+        throw new Error("L’identifiant URL doit contenir uniquement des lettres minuscules, des chiffres et des tirets.");
+      }
       const status = String(form.get("status")) as "draft" | "published";
       const category = String(form.get("category")) as PostItem["category"];
+      if (!["draft", "published"].includes(status) || !["news", "announcement", "event"].includes(category)) {
+        throw new Error("Le type ou le statut de la publication est invalide.");
+      }
       const starts = String(form.get("event_starts_at") ?? "");
       const ends = String(form.get("event_ends_at") ?? "");
+      const startDate = starts ? new Date(starts) : null;
+      const endDate = ends ? new Date(ends) : null;
+      if (startDate && Number.isNaN(startDate.getTime())) throw new Error("La date de début est invalide.");
+      if (endDate && Number.isNaN(endDate.getTime())) throw new Error("La date de fin est invalide.");
+      if (endDate && (!startDate || endDate < startDate)) {
+        throw new Error("La date de fin doit être postérieure ou égale à la date de début.");
+      }
       const values = {
         slug,
         cover_media_id: String(form.get("cover_media_id") ?? "") || null,
@@ -194,8 +232,8 @@ export default function AdminConsole({ admin }: { admin: AjecchAdmin }) {
         category,
         status,
         published_at: status === "published" ? (post.published_at ?? new Date().toISOString()) : null,
-        event_starts_at: category === "event" && starts ? new Date(starts).toISOString() : null,
-        event_ends_at: category === "event" && ends ? new Date(ends).toISOString() : null,
+        event_starts_at: category === "event" && startDate ? startDate.toISOString() : null,
+        event_ends_at: category === "event" && endDate ? endDate.toISOString() : null,
         event_location: category === "event" ? String(form.get("event_location") ?? "").trim() || null : null,
         updated_by: admin.user_id,
         ...(post.id ? {} : { created_by: admin.user_id })
@@ -312,8 +350,9 @@ export default function AdminConsole({ admin }: { admin: AjecchAdmin }) {
         </header>
         {notice && <p className="admin-notice" role="status">{notice}</p>}
         {error && <p className="admin-alert" role="alert">{error}</p>}
+        {loadingData && <p className="admin-empty" role="status">Connexion aux données et aux médias AJECCH…</p>}
 
-        {tab === "overview" && (
+        {!loadingData && tab === "overview" && (
           <div className="admin-content">
             <div className="admin-welcome-panel"><div><span className="admin-eyebrow">ESPACE DE GESTION</span><h2>Bonjour, {admin.display_name}.</h2><p>Gérez les informations, les visuels et les annonces affichés sur le site officiel de l’AJECCH.</p></div><a href="/" target="_blank" rel="noreferrer">Ouvrir le site ↗</a></div>
             <div className="admin-stat-grid">
@@ -330,7 +369,7 @@ export default function AdminConsole({ admin }: { admin: AjecchAdmin }) {
           </div>
         )}
 
-        {tab === "media" && (
+        {!loadingData && tab === "media" && (
           <div className="admin-content">
             <div className="admin-section-intro"><h2>Tous les visuels de la page publique</h2><p>Chaque emplacement peut recevoir une nouvelle image, être masqué ou être supprimé. Formats : JPG, PNG, WebP et AVIF · 8 Mo maximum.</p></div>
             <button className="admin-secondary-button admin-add-media" type="button" onClick={() => setMedia((current) => [...current, { id: "", slot: `custom.${crypto.randomUUID()}`, label: "Nouvelle image", alt_text: "", caption: null, source_url: null, storage_path: null, is_visible: false }])}>+ Ajouter un emplacement image</button>
@@ -358,7 +397,7 @@ export default function AdminConsole({ admin }: { admin: AjecchAdmin }) {
           </div>
         )}
 
-        {tab === "posts" && (
+        {!loadingData && tab === "posts" && (
           <div className="admin-content">
             <div className="admin-section-intro"><h2>Actualités, annonces et événements</h2><p>Les brouillons ne sont pas visibles du public. Une publication est mise en ligne uniquement lorsque son statut est « Publié ».</p></div>
             <PostEditor key="new-post" media={media} onSave={(event) => savePost({}, event)} busy={busy} />
@@ -369,7 +408,7 @@ export default function AdminConsole({ admin }: { admin: AjecchAdmin }) {
           </div>
         )}
 
-        {tab === "team" && isSuper && (
+        {!loadingData && tab === "team" && isSuper && (
           <div className="admin-content">
             <div className="admin-section-intro"><h2>Trois accès administratifs</h2><p>Deux sièges Super Admin disposent du contrôle complet. Le rôle Publication & Médias gère les actualités et les images, sans accès à cette section. Tous les nouveaux accès sont validés ici après une connexion Google.</p></div>
             <div className="admin-seat-grid">
