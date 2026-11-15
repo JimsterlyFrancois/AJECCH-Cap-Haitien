@@ -19,6 +19,9 @@ export default function SiteHeader({ active = "", logoUrl }: { active?: string; 
   const [activeSection, setActiveSection] = useState("accueil");
   const [nightMode, setNightMode] = useState(false);
   const [googleEmail, setGoogleEmail] = useState("");
+  const [googleLinked, setGoogleLinked] = useState(false);
+  const [googleBusy, setGoogleBusy] = useState(false);
+  const [googleError, setGoogleError] = useState("");
 
   useEffect(() => {
     const savedTheme = window.localStorage.getItem("ajecch-theme");
@@ -32,10 +35,19 @@ export default function SiteHeader({ active = "", logoUrl }: { active?: string; 
     const supabase = createClient();
     let mounted = true;
     void supabase.auth.getUser().then(({ data: { user } }) => {
-      if (mounted) setGoogleEmail(user?.email ?? "");
+      if (mounted) {
+        setGoogleEmail(user?.email ?? "");
+        const providers = (user?.app_metadata?.providers ?? []) as string[];
+        setGoogleLinked(Boolean(user && (providers.includes("google") || user.app_metadata?.provider === "google")));
+      }
     });
     const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (mounted) setGoogleEmail(session?.user.email ?? "");
+      if (mounted) {
+        const user = session?.user;
+        setGoogleEmail(user?.email ?? "");
+        const providers = (user?.app_metadata?.providers ?? []) as string[];
+        setGoogleLinked(Boolean(user && (providers.includes("google") || user.app_metadata?.provider === "google")));
+      }
     });
     return () => {
       mounted = false;
@@ -69,14 +81,29 @@ export default function SiteHeader({ active = "", logoUrl }: { active?: string; 
   }
 
   async function connectGoogle() {
+    setGoogleError("");
+    setGoogleBusy(true);
     const supabase = createClient();
-    await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback?next=%2F&subscribe=1`,
-        scopes: "openid email profile"
+    try {
+      if (googleLinked) {
+        const { error } = await supabase.rpc("ajecch_request_admin_access");
+        if (error) throw error;
+        window.location.assign("/administration");
+        return;
       }
-    });
+
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback?next=%2Fadministration&admin_request=1`,
+          scopes: "openid email profile"
+        }
+      });
+      if (error) throw error;
+    } catch (err) {
+      setGoogleError(err instanceof Error ? err.message : "Connexion Google impossible.");
+      setGoogleBusy(false);
+    }
   }
 
   return (
@@ -112,11 +139,12 @@ export default function SiteHeader({ active = "", logoUrl }: { active?: string; 
               <span aria-hidden="true">{nightMode ? "☀" : "☾"}</span>
               <small>{nightMode ? "Jour" : "Nuit"}</small>
             </button>
-            <button className="google-connect liquid-control" type="button" onClick={connectGoogle} title={googleEmail || "Connecter un compte Google"}>
+            <button className="google-connect liquid-control" type="button" onClick={connectGoogle} disabled={googleBusy} title={googleLinked ? `Demander ou consulter un accès administrateur · ${googleEmail}` : "Se connecter avec Google pour demander un accès administrateur"}>
               <span className="google-g" aria-hidden="true">G</span>
-              <small>{googleEmail ? "Connecté" : "Connecter Google"}</small>
+              <small>{googleBusy ? "Connexion…" : googleLinked ? "Mon accès admin" : "Connecter Google"}</small>
             </button>
             <a className="nav-cta" href={isHome ? "#contact" : "/#contact"}>Rejoindre <span>↗</span></a>
+            {googleError && <span className="google-connect-error" role="alert">{googleError}</span>}
           </div>
         </div>
       </header>
