@@ -90,7 +90,7 @@ export default function SiteHeader({ active = "", logoUrl }: { active?: string; 
       <header className="site-header">
         <div className="container nav-wrap">
           <a className="brand" href="/" aria-label="AJECCH, accueil">
-            <SiteLogo logoUrl={logoUrl} />
+            <SiteLogo logoUrl={logoUrl} variant="header" />
             <span className="brand-copy">
               <strong>AJECCH</strong>
               <small>JEUNES CHRÉTIENS · CAP-HAÏTIEN</small>
