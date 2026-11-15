@@ -1,26 +1,39 @@
-# AJECCH — administration du site
+# AJECCH — guide d’administration
 
-## Espaces et rôles
+## 1. Rôles et responsabilités
 
-- **Super Admin — siège 1** : contrôle complet, équipe, rôles, publications et bibliothèque média.
-- **Super Admin — siège 2** : mêmes droits que le siège 1.
-- **Publication & Médias** : crée, publie, modifie et supprime les actualités, annonces et événements ; téléverse, remplace, masque et supprime les images du site public. Ne peut pas attribuer de rôles ni consulter la gestion de l’équipe.
+La gestion repose sur trois accès administratifs :
 
-Les sièges sont protégés par une contrainte unique en base. Le système empêche également de désactiver ou supprimer le dernier Super Admin actif.
+- **Super Admin — siège 1** : contrôle complet du site, des publications, des médias, de l’équipe et des rôles.
+- **Super Admin — siège 2** : mêmes autorisations que le siège 1.
+- **Publication & Médias** : crée, publie, modifie et supprime les actualités, annonces et événements ; gère les images publiques. Ce rôle ne peut pas attribuer de rôles ni administrer l’équipe.
 
-## Variables d’environnement Vercel
+Les sièges actifs sont uniques en base. Le système empêche la désactivation ou la suppression du dernier Super Admin actif.
 
-Le projet doit contenir les variables suivantes pour Production, Preview et Development :
+## 2. Connexion actuelle
 
-- \`NEXT_PUBLIC_SUPABASE_URL\`
-- \`NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY\`
+- Adresse : `/administration/connexion`
+- Méthode : adresse e-mail et mot de passe via Supabase Auth.
+- L'accès à `/administration` exige une session authentifiée et un rôle actif dans `public.ajecch_admins`.
+- Une session authentifiée ne confère aucun privilège administratif à elle seule.
+- La connexion Google n'est pas le parcours pris en charge actuellement. Les anciennes demandes enregistrées dans `ajecch_admin_access_requests` sont conservées à titre historique ; elles ne constituent pas un formulaire public actif.
 
-Aucune clé \`service_role\` n’est utilisée dans le navigateur.
+## 3. Variables Vercel
 
-## Première activation du Super Admin
+Configurer les variables suivantes dans les environnements Production, Preview et Development :
 
-1. Dans Supabase, ouvrir **Authentication → Users** et créer le compte du premier responsable AJECCH avec son adresse e-mail et son mot de passe. Confirmer le compte selon les réglages d’authentification du projet.
-2. Dans le **SQL Editor** de Supabase, exécuter cette requête pour récupérer le code privé créé par la migration :
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
+
+Ne jamais exposer une clé `service_role`, un jeton d'initialisation ou un secret administratif dans le navigateur, une variable `NEXT_PUBLIC_*`, le dépôt Git ou une Pull Request.
+
+## 4. Première activation du Super Admin
+
+Cette procédure est réservée au propriétaire technique ou à une personne autorisée à administrer le projet Supabase.
+
+1. Dans Supabase **Authentication → Users**, créer le compte du premier responsable avec son adresse e-mail et son mot de passe.
+2. Vérifier que l'adresse e-mail est confirmée selon la configuration Auth du projet.
+3. Dans le **SQL Editor** Supabase, récupérer le code privé non utilisé :
 
    ```sql
    select token
@@ -29,38 +42,72 @@ Aucune clé \`service_role\` n’est utilisée dans le navigateur.
    limit 1;
    ```
 
-3. Conserver ce code hors du dépôt Git et le transmettre uniquement au premier responsable autorisé. Ne pas le publier dans une issue, un document public ou une variable `NEXT_PUBLIC_`.
-4. Se connecter sur \`/administration/connexion\`, puis ouvrir \`/administration\` et saisir le nom d’affichage et le code.
-5. Le code est à usage unique. Il est consommé au moment de la création du siège Super Admin 1.
+4. Transmettre ce code uniquement au premier responsable, par un canal privé et sûr. Ne pas le placer dans GitHub, dans le navigateur ou dans une variable publique.
+5. Le responsable se connecte sur `/administration/connexion`, ouvre `/administration`, indique son nom et saisit le code.
+6. Le code est consommé lors de l'activation du siège Super Admin 1. Il ne doit pas être réutilisé.
 
-Si la table avait déjà été créée avant l’ajout du durcissement RLS, le propriétaire du projet peut activer cette protection depuis le SQL Editor de Supabase :
+Si cette table avait été créée sur une ancienne base sans la protection attendue, le propriétaire doit vérifier son état avant toute initialisation et appliquer, si nécessaire, la commande de durcissement documentée dans la migration. Ne pas désactiver RLS pour faciliter l'activation.
+
+## 5. Ajouter un responsable après l'initialisation
+
+Le parcours d'invitation automatisé n'est pas encore disponible dans l'interface. En attendant, le propriétaire Supabase doit effectuer l'attribution depuis le SQL Editor, après avoir créé le compte du responsable dans **Authentication → Users** et vérifié son identité.
+
+Exemple pour attribuer le rôle **Publication & Médias** (siège unique disponible) :
 
 ```sql
-alter table private.ajecch_bootstrap_tokens enable row level security;
+insert into public.ajecch_admins (
+  user_id, display_name, email, role, seat, is_active, created_by
+)
+select
+  u.id,
+  'NOM DU RESPONSABLE',
+  u.email,
+  'publisher',
+  1,
+  true,
+  (
+    select user_id
+    from public.ajecch_admins
+    where role = 'super_admin' and seat = 1 and is_active = true
+    limit 1
+  )
+from auth.users as u
+where lower(u.email) = lower('adresse@example.com')
+  and not exists (
+    select 1 from public.ajecch_admins as existing
+    where existing.user_id = u.id
+  );
 ```
 
-Aucune politique d’accès direct n’est nécessaire : les fonctions privées autorisées exécutent l’initialisation avec leurs privilèges contrôlés. L’accès direct à la table reste bloqué pour les clients.
+Pour attribuer le siège Super Admin 2, remplacer `'publisher'` par `'super_admin'` et conserver `seat = 2`. Ne jamais attribuer le siège 1 à un autre compte. Si le siège demandé est déjà occupé, vérifier d'abord les responsables actifs ; ne pas contourner l'index unique ou le déclencheur de protection du dernier Super Admin.
 
-## Ajouter les autres administrateurs avec Google
+Cette opération est réservée au propriétaire autorisé de la base. Ne pas demander aux utilisateurs de s'attribuer eux-mêmes un rôle et ne jamais insérer un rôle depuis le navigateur.
 
-Après la première activation du Super Admin 1 :
+## 6. Bibliothèque média et publications
 
-1. Le futur responsable ouvre le site AJECCH et clique sur **Connecter Google** (ou sur **Continuer avec Google** dans la page de connexion d’administration).
-2. Supabase Auth vérifie son compte Google puis enregistre une demande d’accès associée à son propre identifiant utilisateur.
-3. Un Super Admin ouvre **Administration → Équipe & accès**.
-4. La demande apparaît avec le nom et l’adresse e-mail du compte Google. Le Super Admin choisit **Super Admin · siège 2** ou **Publication & Médias**, puis approuve ou refuse.
-5. Après approbation, le nouvel administrateur clique sur **Mon accès admin** ou ouvre `/administration` pour accéder à son espace.
+Le bucket public `ajecch-public-media` sert les médias destinés au site. Les formats prévus sont JPG, PNG, WebP et AVIF, avec une limite applicative de 8 Mo.
 
-La connexion Google ne confère jamais un rôle automatiquement. Seul un Super Admin déjà actif peut approuver une demande. Le compte du demandeur ne peut ni modifier son rôle ni approuver sa propre demande. Les identifiants Auth, les UUID et les clés de service ne doivent pas être copiés ou partagés manuellement.
+Emplacements média connus :
 
-La migration `supabase/migrations/20261115023017_ajecch_admin_access_requests.sql` doit être appliquée à Supabase avant d’utiliser le nouveau circuit de demandes.
+- `brand.logo`
+- `home.hero`
+- `home.actions`
+- `home.gallery`
+- `home.contact`
 
-## Bibliothèque d’images
+Les publications utilisent les catégories actualité, annonce et événement. Seules les publications au statut publié sont visibles publiquement. Les brouillons restent réservés aux comptes administratifs autorisés.
 
-Le bucket public \`ajecch-public-media\` accepte les images JPG, PNG, WebP et AVIF jusqu’à 8 Mo. Le téléchargement public est autorisé ; l’ajout, le remplacement et la suppression nécessitent une session associée à un rôle Super Admin ou Publication & Médias.
+## 7. Sécurité
 
-Les emplacements gérés depuis l’espace média sont : \`brand.logo\`, \`home.hero\`, \`home.actions\`, \`home.gallery\` et \`home.contact\`.
+- Supabase Auth authentifie les comptes.
+- `public.ajecch_admins` détermine les rôles actifs.
+- Les politiques RLS et les fonctions SQL vérifient les droits côté base.
+- Le middleware protège les routes d'administration contre les visiteurs non connectés ; la page serveur vérifie ensuite le rôle.
+- Le contrôle visuel d'un bouton ou d'un lien n'est jamais considéré comme une mesure de sécurité.
+- Aucun secret privé ne doit apparaître dans le code client.
 
-## Développement
+## 8. Migrations
 
-Le schéma initial est conservé dans \`supabase/migrations/20261114000000_ajecch_admin_cms.sql\`. Les versions exactes des clients Supabase sont épinglées dans \`package.json\`.
+Les migrations de référence sont conservées dans `supabase/migrations/`. Les migrations relatives aux anciennes demandes Google sont conservées pour assurer l'historique et la compatibilité des données ; elles ne signifient pas que le fournisseur Google est activé ou utilisé par l'interface actuelle.
+
+Avant toute modification de schéma, vérifier les migrations déjà présentes et l'état réel du projet Supabase. Ne pas appliquer une migration à l'aveugle sur une base existante.
