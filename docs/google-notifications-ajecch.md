@@ -16,3 +16,9 @@ Après consentement explicite via le bouton Google, le callback enregistre l'adr
 
 ## Reconnaissance des administrateurs
 La connexion Google ne confère aucun privilège d'administration. Le site affiche le rôle uniquement si l'identifiant Supabase connecté possède déjà une entrée active dans `public.ajecch_admins`. Les contrôles d'accès existants et les politiques RLS restent l'autorité.
+
+
+## Connexion Google et demandes d’administration
+
+Le bouton Google du site public sert maintenant à ouvrir une session et à transmettre une demande d'accès à l'espace AJECCH. La connexion seule ne donne aucun privilège. Un Super Admin actif doit examiner et approuver la demande dans **Administration → Équipe & accès**. Aucun message de notification par e-mail n'est envoyé par ce flux.
+
