@@ -4291,3 +4291,27 @@ html[data-theme="night"] body main .join-inner {
 }
 html[data-theme="night"] body main .join-inner h2 { color: #f0f7ff !important; }
 html[data-theme="night"] body main .join-inner p { color: #bfd2e5 !important; }
+
+/* AJECCH daylight clouds: brighter white highlights with soft blue-grey depth. */
+html[data-theme="day"] .scroll-sky-clouds-distant {
+  opacity: .78;
+  filter: blur(8px);
+  background-image:
+    radial-gradient(ellipse 18% 21% at 12% 34%, rgba(255,255,255,.98) 0 34%, rgba(245,251,255,.88) 48%, rgba(207,232,249,.48) 66%, transparent 83%),
+    radial-gradient(ellipse 17% 18% at 21% 29%, rgba(255,255,255,.96) 0 36%, rgba(236,248,255,.82) 52%, transparent 82%),
+    radial-gradient(ellipse 20% 22% at 29% 35%, rgba(255,255,255,.92) 0 32%, rgba(218,239,252,.54) 60%, transparent 83%),
+    radial-gradient(ellipse 21% 22% at 69% 29%, rgba(255,255,255,.98) 0 35%, rgba(240,249,255,.86) 50%, rgba(206,231,249,.46) 67%, transparent 83%),
+    radial-gradient(ellipse 17% 18% at 78% 25%, rgba(255,255,255,.96) 0 36%, rgba(236,248,255,.82) 52%, transparent 82%),
+    radial-gradient(ellipse 20% 21% at 86% 32%, rgba(255,255,255,.92) 0 33%, rgba(218,239,252,.52) 60%, transparent 83%);
+}
+html[data-theme="day"] .scroll-sky-clouds-near {
+  opacity: .62;
+  filter: blur(11px);
+  background-image:
+    radial-gradient(ellipse 20% 20% at 4% 48%, rgba(255,255,255,.96) 0 33%, rgba(235,248,255,.84) 50%, rgba(189,222,245,.42) 68%, transparent 84%),
+    radial-gradient(ellipse 17% 17% at 14% 43%, rgba(255,255,255,.98) 0 36%, rgba(239,249,255,.82) 54%, transparent 82%),
+    radial-gradient(ellipse 19% 19% at 23% 50%, rgba(255,255,255,.9) 0 32%, rgba(206,232,250,.48) 61%, transparent 84%),
+    radial-gradient(ellipse 21% 20% at 77% 49%, rgba(255,255,255,.94) 0 33%, rgba(235,248,255,.82) 51%, rgba(189,222,245,.4) 68%, transparent 84%),
+    radial-gradient(ellipse 18% 18% at 88% 43%, rgba(255,255,255,.98) 0 36%, rgba(239,249,255,.82) 54%, transparent 82%),
+    radial-gradient(ellipse 19% 19% at 97% 50%, rgba(255,255,255,.9) 0 32%, rgba(206,232,250,.48) 61%, transparent 84%);
+}
