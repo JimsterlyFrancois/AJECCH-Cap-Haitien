@@ -3963,3 +3963,65 @@ html[data-theme="night"] .scroll-sky {
 @media (max-width: 700px) {
   html[data-theme="night"] .scroll-sky { background-attachment: scroll, scroll; }
 }
+
+
+/* Official AJECCH emblem: show the full submitted seal, never crop it into a circle. */
+.site-header-stack .brand { gap: 13px; }
+.site-logo {
+  display: inline-flex !important;
+  flex: 0 0 64px !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 64px !important;
+  height: 64px !important;
+  min-width: 64px !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+  border: 1px solid rgba(34, 104, 153, .20) !important;
+  border-radius: 9px !important;
+  background: #fff !important;
+  box-shadow: 0 5px 16px rgba(7, 41, 71, .11), inset 0 1px 0 rgba(255,255,255,.98) !important;
+}
+.site-logo img {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  object-fit: contain !important;
+  object-position: center !important;
+  border-radius: 0 !important;
+  filter: none !important;
+}
+.site-logo-footer {
+  flex-basis: 82px !important;
+  width: 82px !important;
+  height: 82px !important;
+  min-width: 82px !important;
+  margin-right: 3px;
+  border-radius: 11px !important;
+}
+.site-header-stack .brand-copy strong { letter-spacing: .14em; }
+.site-header-stack .brand-copy small { line-height: 1.45; }
+
+html[data-theme="night"] .site-logo {
+  border-color: rgba(179, 216, 241, .28) !important;
+  background: #fff !important;
+  box-shadow: 0 5px 17px rgba(0,0,0,.30), inset 0 1px 0 #fff !important;
+}
+
+@media (max-width: 700px) {
+  .site-header-stack .brand { gap: 9px; }
+  .site-logo {
+    flex-basis: 49px !important;
+    width: 49px !important;
+    height: 49px !important;
+    min-width: 49px !important;
+    border-radius: 7px !important;
+  }
+  .site-logo-footer {
+    flex-basis: 68px !important;
+    width: 68px !important;
+    height: 68px !important;
+    min-width: 68px !important;
+  }
+}
