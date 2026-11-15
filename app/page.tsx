@@ -1,204 +1,269 @@
-const values = [
+import SiteHeader from "@/components/site-header";
+import SiteFooter from "@/components/site-footer";
+import { getPublishedPosts, getSiteMedia } from "@/lib/public-content";
+
+const pillars = [
   {
     number: "01",
-    title: "Foi",
-    description:
-      "Placer les valeurs chrétiennes au cœur de nos choix, de nos relations et de notre engagement."
+    icon: "✧",
+    title: "Foi vivante",
+    text: "Faire de la foi une source d’espérance, de discernement et de cohérence dans la vie quotidienne."
   },
   {
     number: "02",
-    title: "Solidarité",
-    description:
-      "Créer des liens fraternels et encourager l’entraide entre les jeunes et au sein de la communauté."
+    icon: "⌁",
+    title: "Fraternité & accueil",
+    text: "Créer des liens sincères, accueillir chacun avec respect et faire grandir l’esprit d’entraide."
   },
   {
     number: "03",
-    title: "Service",
-    description:
-      "Mettre les talents et l’énergie de la jeunesse au service du bien commun."
+    icon: "↗",
+    title: "Action sociale & jeunesse",
+    text: "Encourager les jeunes à mettre leurs talents, leurs idées et leur énergie au service du bien commun."
   }
 ];
 
-const areas = [
-  ["Jeunesse", "Encourager les jeunes à développer leurs capacités et à prendre leur place dans la société."],
-  ["Foi & fraternité", "Faire grandir une communauté unie par les valeurs chrétiennes et le respect mutuel."],
-  ["Engagement communautaire", "Favoriser les initiatives positives qui répondent aux besoins de la communauté."]
+const actionAreas = [
+  {
+    number: "01",
+    title: "Jeunesse & formation",
+    text: "Encourager le développement des capacités, l’apprentissage et la prise de responsabilité."
+  },
+  {
+    number: "02",
+    title: "Fraternité & vie spirituelle",
+    text: "Faire vivre un cadre de rencontre, de partage et de croissance dans la foi."
+  },
+  {
+    number: "03",
+    title: "Engagement communautaire",
+    text: "Soutenir les initiatives utiles qui rapprochent les jeunes de leur communauté."
+  }
 ];
 
-export default function Home() {
+export const dynamic = "force-dynamic";
+
+export default async function Home() {
+  const [media, posts] = await Promise.all([getSiteMedia(), getPublishedPosts()]);
+  const events = posts.filter((post) => post.category === "event");
+  const logoUrl = media["brand.logo"] ?? null;
+
   return (
-    <main>
-      <div className="topline">
-        <div className="container topline-inner">
-          <span>Association des Jeunes Chrétiens du Cap-Haïtien</span>
-          <span className="topline-note">Foi · Unité · Engagement</span>
-        </div>
-      </div>
+    <main className="ajecch-home">
+      <SiteHeader active="/" logoUrl={logoUrl} />
 
-      <header className="site-header">
-        <div className="container nav-wrap">
-          <a className="brand" href="#accueil" aria-label="AJECCH, accueil">
-            <span className="brand-mark">A<span>J</span></span>
-            <span className="brand-copy">
-              <strong>AJECCH</strong>
-              <small>JEUNES CHRÉTIENS · CAP-HAÏTIEN</small>
+      <section className="hero-nature" id="accueil">
+        <div className="hero-nature-image" aria-hidden="true" style={{ backgroundImage: media["home.hero"] ? `url("${media["home.hero"]}")` : "none" }} />
+        <div className="hero-nature-shade" aria-hidden="true" />
+        <div className="hero-orb hero-orb-one" aria-hidden="true" />
+        <div className="hero-orb hero-orb-two" aria-hidden="true" />
+        <div className="container hero-nature-content">
+          <div className="hero-glass-panel" data-reveal>
+            <span className="hero-overline">
+              ASSOCIATION DES JEUNES CHRÉTIENS DU CAP-HAÏTIEN · FOI · FRATERNITÉ · ENGAGEMENT
             </span>
-          </a>
-          <nav className="main-nav" aria-label="Navigation principale">
-            <a className="active" href="#accueil">Accueil</a>
-            <a href="/a-propos">À propos</a>
-            <a href="/activites">Activités</a>
-            <a href="#valeurs">Nos valeurs</a>
-            <a href="#contact">Contact</a><a href="/actualites">Actualités</a>
-          </nav>
-          <a className="nav-cta" href="#rejoindre">Rejoindre AJECCH <span>↗</span></a>
-        </div>
-      </header>
-
-      <section className="hero" id="accueil">
-        <div className="hero-shape hero-shape-one" />
-        <div className="hero-shape hero-shape-two" />
-        <div className="container hero-grid">
-          <div className="hero-copy">
-            <div className="eyebrow"><span /> UNE JEUNESSE, UNE COMMUNAUTÉ</div>
-            <h1>Ensemble, faisons grandir <em>la foi</em> et l’engagement.</h1>
-            <p className="hero-lead">
-              L’AJECCH rassemble une jeunesse chrétienne appelée à vivre ses valeurs,
-              à servir avec conviction et à contribuer positivement à sa communauté.
+            <h1>Une jeunesse unie.<br /><em>Une espérance en action.</em></h1>
+            <p className="hero-description">
+              L’AJECCH rassemble des jeunes chrétiens qui souhaitent grandir dans la foi,
+              cultiver la fraternité et contribuer positivement à leur communauté.
             </p>
-            <div className="hero-actions">
-              <a className="button button-gold" href="#apropos">Découvrir l’association <span>→</span></a>
-              <a className="button button-outline" href="#rejoindre">Nous rejoindre</a>
-            </div>
-            <div className="hero-footnote">
-              <span className="gold-line" />
-              <span>CAP-HAÏTIEN, HAÏTI</span>
+            <div className="hero-buttons">
+              <a className="button button-gold" href="#actions">Découvrir nos actions <span>↗</span></a>
+              <a className="button button-glass" href="#mission">Notre mission</a>
             </div>
           </div>
-          <div className="hero-visual" aria-label="Illustration symbolique de la jeunesse et de la foi">
-            <div className="visual-frame">
-              <div className="visual-sun" />
-              <div className="visual-cross"><span /><i /></div>
-              <div className="visual-hill hill-back" />
-              <div className="visual-hill hill-front" />
-              <div className="visual-caption">
-                <span>NOTRE CONVICTION</span>
-                <strong>Une foi vivante.<br />Un engagement concret.</strong>
+          <div className="hero-bottomline">
+            <span>CAP-HAÏTIEN, HAÏTI · UNE COMMUNAUTÉ DE JEUNES EN CHEMIN</span>
+            <a className="discover-link" href="#mission">DÉCOUVRIR <b>↓</b></a>
+          </div>
+        </div>
+        <div className="hero-photo-note">Littoral de Labadie · Nord d’Haïti · Photo d’ambiance</div>
+      </section>
+
+      <section className="section-shell foundation-actions-section" id="mission">
+        <div className="container">
+          <div className="foundation-floor">
+            <div className="section-intro" data-reveal>
+              <span className="section-kicker">01 / NOTRE FONDEMENT</span>
+              <h2>La foi nous rassemble.<br /><em>Le service nous met en mouvement.</em></h2>
+              <p>
+                L’AJECCH se veut un espace de rencontre et d’engagement où la jeunesse peut
+                faire grandir ses convictions, ses relations et son sens des responsabilités.
+              </p>
+            </div>
+            <div className="pillar-grid">
+              {pillars.map((pillar) => (
+                <article className="glass-card pillar-card" key={pillar.number} data-reveal>
+                  <div className="card-topline">
+                    <span>{pillar.number}</span>
+                    <span className="pillar-icon">{pillar.icon}</span>
+                  </div>
+                  <h3>{pillar.title}</h3>
+                  <p>{pillar.text}</p>
+                  <span className="card-bottom-mark" />
+                </article>
+              ))}
+            </div>
+          </div>
+
+          <div className="foundation-connector" aria-hidden="true"><span /></div>
+
+          <div className="actions-floor" id="actions">
+            <div className="section-heading-wide" data-reveal>
+              <div>
+                <span className="section-kicker">02 / ENGAGEMENT SUR LE TERRAIN</span>
+                <h2>Des convictions qui prennent<br /><em>racine dans la vie réelle.</em></h2>
+              </div>
+              <p>
+                L’engagement se construit dans la durée : par la rencontre, l’apprentissage,
+                l’entraide et des initiatives pensées avec la communauté.
+              </p>
+            </div>
+
+            <div className="action-feature-grid">
+              <div className="action-visual-column">
+                <figure className="nature-feature" data-reveal>
+                  {media["home.actions"] ? (
+                    <img src={media["home.actions"]} alt="Visuel des actions AJECCH" loading="lazy" decoding="async" />
+                  ) : (
+                    <div className="public-image-empty">Aucune image publiée pour cet emplacement</div>
+                  )}
+                  <div className="nature-feature-overlay">
+                    <span>UNE DYNAMIQUE COLLECTIVE</span>
+                    <strong>Grandir, transmettre<br />et agir ensemble.</strong>
+                  </div>
+                  <figcaption>Visuel d’ambiance · Photographies officielles AJECCH à venir</figcaption>
+                </figure>
+
+                <aside className="impact-strip glass-card" data-reveal>
+                  <span className="section-kicker">NOTRE ENGAGEMENT DE TRANSPARENCE</span>
+                  <h3>Un impact qui se raconte avec des faits.</h3>
+                  <p>Les chiffres et résultats seront publiés une fois documentés et validés.</p>
+                  <a className="text-link" href="https://www.facebook.com/AJECCH" target="_blank" rel="noreferrer">
+                    Suivre les publications officielles <span>↗</span>
+                  </a>
+                </aside>
+              </div>
+
+              <div className="action-side">
+                <div className="action-side-heading" data-reveal>
+                  <span className="section-kicker">NOS DOMAINES D’ACTION</span>
+                  <h3>Trois chemins pour servir la communauté.</h3>
+                </div>
+                <div className="action-list">
+                  {actionAreas.map((area) => (
+                    <article className="glass-card action-domain-card" key={area.number} data-reveal>
+                      <span className="domain-number">{area.number}</span>
+                      <div className="domain-copy">
+                        <h3>{area.title}</h3>
+                        <p>{area.text}</p>
+                      </div>
+                      <a
+                        className="domain-arrow"
+                        href="https://www.facebook.com/AJECCH"
+                        target="_blank"
+                        rel="noreferrer"
+                        aria-label={`Suivre les actualités AJECCH : ${area.title}`}
+                      >↗</a>
+                    </article>
+                  ))}
+                </div>
               </div>
             </div>
-            <div className="visual-stamp"><span>AJECCH</span><b>✳</b><small>DEPUIS NOTRE COMMUNAUTÉ</small></div>
           </div>
-        </div>
-        <div className="hero-bottom container">
-          <span>01 — QUI NOUS SOMMES</span>
-          <span className="scroll-cue">DÉFILER POUR DÉCOUVRIR <b>↓</b></span>
         </div>
       </section>
 
-      <section className="intro-section section-pad" id="apropos">
-        <div className="container intro-grid">
-          <div>
-            <div className="section-kicker">01 / À PROPOS</div>
-            <h2>Une association portée par <em>la jeunesse</em>.</h2>
+      <section className="section-shell agenda-section" id="evenements">
+        <div className="container">
+          <div className="section-heading-wide agenda-heading" data-reveal>
+            <div>
+              <span className="section-kicker">03 / AGENDA</span>
+              <h2>Les prochains rendez-vous<br /><em>de la communauté.</em></h2>
+            </div>
+            <p>Retrouvez ici les dates annoncées et les informations pratiques confirmées par l’association.</p>
           </div>
-          <div className="intro-text">
+          {events.length > 0 ? events.slice(0, 4).map((event) => {
+            const starts = event.event_starts_at ? new Date(event.event_starts_at) : null;
+            const ends = event.event_ends_at ? new Date(event.event_ends_at) : starts;
+            const dayLabel = starts ? starts.toLocaleDateString("fr-FR", { day: "2-digit" }) : "—";
+            const endDay = ends ? ends.toLocaleDateString("fr-FR", { day: "2-digit" }) : "";
+            const monthLabel = starts ? starts.toLocaleDateString("fr-FR", { month: "short" }).replace(".", "").toUpperCase() : "DATE";
+            const yearLabel = starts ? starts.toLocaleDateString("fr-FR", { year: "numeric" }) : "";
+            const sameMonth = Boolean(starts && ends && starts.getMonth() === ends.getMonth());
+            return (
+              <article className="agenda-event glass-card" data-reveal key={event.id}>
+                <div className="event-date">
+                  <span>{sameMonth && endDay ? `${dayLabel} — ${endDay}` : dayLabel}</span>
+                  <strong>{monthLabel}</strong>
+                  <small>{yearLabel}</small>
+                </div>
+                <div className="event-details">
+                  <span className="event-status"><i /> RENDEZ-VOUS ANNONCÉ</span>
+                  <h3>{event.title}</h3>
+                  <p>{event.excerpt || event.event_location || "Informations à venir"}</p>
+                  <small>{event.body}</small>
+                </div>
+                <a className="event-link" href={`/actualites#${event.slug}`} aria-label={`Lire les détails : ${event.title}`}>↗</a>
+              </article>
+            );
+          }) : null}
+          <p className="agenda-footnote">Les informations de cet agenda seront complétées selon les communications officielles de l’AJECCH.</p>
+        </div>
+      </section>
+
+      <section className="section-shell voices-section" id="vie-associative">
+        <div className="container">
+          <div className="voices-heading" data-reveal>
+            <div>
+              <span className="section-kicker">04 / PAROLES & VIE ASSOCIATIVE</span>
+              <h2>Une association se construit<br /><em>avec celles et ceux qui la vivent.</em></h2>
+            </div>
+            <a className="text-link" href="https://www.facebook.com/AJECCH" target="_blank" rel="noreferrer">
+              Découvrir la communauté sur Facebook <span>↗</span>
+            </a>
+          </div>
+          <div className="voice-cards">
+            <article className="glass-card voice-card voice-card-main" data-reveal>
+              <span className="voice-quote-mark">“</span>
+              <span className="section-kicker">LA PAROLE AUX MEMBRES</span>
+              <h3>Des expériences vécues, racontées avec authenticité.</h3>
+              <p>Les premières paroles seront ajoutées après collecte et validation par leurs auteurs.</p>
+              <span className="voice-card-foot">TÉMOIGNAGES À VENIR</span>
+            </article>
+            <article className="glass-card voice-card voice-card-secondary" data-reveal>
+              <div className="gallery-preview" role="img" aria-label="Photographie de la vie associative AJECCH" style={{ backgroundImage: media["home.gallery"] ? `url("${media["home.gallery"]}")` : "none" }} />
+              <div className="gallery-copy">
+                <span className="voice-card-foot">VISUELS OFFICIELS EN COURS D’INTÉGRATION</span>
+                <h3>Les moments qui nous rassemblent.</h3>
+                <a href="https://www.facebook.com/AJECCH" target="_blank" rel="noreferrer">Voir la page AJECCH ↗</a>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section className="contact-section" id="contact">
+        <div className="contact-backdrop" aria-hidden="true" style={{ backgroundImage: media["home.contact"] ? `url("${media["home.contact"]}")` : "none" }} />
+        <div className="contact-container container">
+          <div className="contact-glass-panel" data-reveal>
+            <span className="section-kicker">05 / PRENONS CONTACT</span>
+            <h2><span className="contact-title-primary">Une idée, une envie de servir,</span><br /><em>un pas à faire ensemble.</em></h2>
             <p>
-              L’Association des Jeunes Chrétiens du Cap-Haïtien (AJECCH) est présentée
-              comme un cadre de rassemblement, de fraternité et d’action pour les jeunes
-              qui souhaitent mettre leur foi et leurs compétences au service de la société.
+              Vous souhaitez rejoindre l’AJECCH, en savoir plus sur ses initiatives ou proposer un appui ?
+              Écrivez à l’association par sa page officielle.
             </p>
-            <p className="muted">
-              Cette présentation institutionnelle sera enrichie avec l’histoire officielle,
-              les responsables, les dates et les informations validées par l’association.
-            </p>
-            <a className="text-link" href="#engagement">Explorer nos engagements <span>↗</span></a>
-          </div>
-        </div>
-      </section>
-
-      <section className="mission-band">
-        <div className="container mission-grid">
-          <div className="mission-label">NOTRE CAP</div>
-          <div>
-            <h2>Rassembler. Inspirer. Servir.</h2>
-            <p>Faire de la jeunesse une force de foi, de solidarité et de transformation positive.</p>
-          </div>
-          <div className="mission-seal">A<span>J</span></div>
-        </div>
-      </section>
-
-      <section className="section-pad values-section" id="valeurs">
-        <div className="container">
-          <div className="section-heading">
-            <div>
-              <div className="section-kicker">02 / CE QUI NOUS GUIDE</div>
-              <h2>Nos valeurs, <em>notre fondation.</em></h2>
+            <div className="hero-buttons">
+              <a className="button button-gold" href="https://www.facebook.com/AJECCH" target="_blank" rel="noreferrer">
+                Contacter AJECCH <span>↗</span>
+              </a>
+              <a className="button button-glass" href="/a-propos">Mieux nous connaître</a>
             </div>
-            <p>Des repères qui donnent du sens à notre manière de nous rassembler et d’agir.</p>
-          </div>
-          <div className="value-grid">
-            {values.map((value) => (
-              <article className="value-card" key={value.number}>
-                <span className="value-number">{value.number}</span>
-                <div className="value-symbol">{value.number === "01" ? "✧" : value.number === "02" ? "⌘" : "↗"}</div>
-                <h3>{value.title}</h3>
-                <p>{value.description}</p>
-              </article>
-            ))}
           </div>
         </div>
       </section>
 
-      <section className="engagement-section section-pad" id="engagement">
-        <div className="container">
-          <div className="section-heading engagement-heading">
-            <div>
-              <div className="section-kicker">03 / NOTRE ENGAGEMENT</div>
-              <h2>La foi en action, <em>au quotidien.</em></h2>
-            </div>
-            <p>Des domaines d’action présentés à titre de premières orientations, à confirmer avec l’association.</p>
-          </div>
-          <div className="area-list">
-            {areas.map(([title, description], index) => (
-              <article className="area-row" key={title}>
-                <span className="area-index">0{index + 1}</span>
-                <h3>{title}</h3>
-                <p>{description}</p>
-                <span className="area-arrow">↗</span>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="join-section" id="rejoindre">
-        <div className="container join-inner">
-          <div className="section-kicker">FAISONS ROUTE ENSEMBLE</div>
-          <h2>Votre énergie a sa place<br />dans <em>notre communauté.</em></h2>
-          <p>Vous souhaitez en savoir plus, participer ou soutenir une initiative ? Prenons contact.</p>
-          <a className="button button-gold" href="#contact">Prendre contact <span>→</span></a>
-        </div>
-      </section>
-
-      <footer id="contact">
-        <div className="container footer-main">
-          <a className="brand footer-brand" href="#accueil">
-            <span className="brand-mark">A<span>J</span></span>
-            <span className="brand-copy"><strong>AJECCH</strong><small>JEUNES CHRÉTIENS · CAP-HAÏTIEN</small></span>
-          </a>
-          <div className="footer-message">Une jeunesse unie par la foi,<br />engagée pour sa communauté.</div>
-          <div className="footer-contact">
-            <span>RESTONS EN CONTACT</span>
-            <a href="https://www.facebook.com/AJECCH" target="_blank" rel="noreferrer">Facebook AJECCH ↗</a>
-            <a href="https://www.facebook.com/AJECCH" target="_blank" rel="noreferrer">Contacter l’association ↗</a>
-          </div>
-        </div>
-        <div className="container footer-bottom">
-          <span>© {new Date().getFullYear()} AJECCH. Tous droits réservés.</span>
-          <span>CAP-HAÏTIEN · HAÏTI</span>
-          <a href="#accueil">RETOUR EN HAUT ↑</a>
-        </div>
-      </footer>
+      <SiteFooter logoUrl={logoUrl} />
     </main>
   );
 }
