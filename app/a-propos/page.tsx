@@ -33,7 +33,6 @@ export default async function AboutPage() {
             <div className="page-copy">
               <p>L’Association des Jeunes Chrétiens du Cap-Haïtien (AJECCH) se présente comme un cadre de rassemblement et d’action destiné aux jeunes chrétiens de la région du Cap-Haïtien.</p>
               <p>À travers la rencontre, le partage et les initiatives collectives, l’association souhaite encourager une jeunesse qui met ses convictions, ses talents et son énergie au service des autres.</p>
-              <p className="editorial-note">La date de fondation, l’historique détaillé, la composition officielle et les textes statutaires seront ajoutés après validation par les responsables de l’AJECCH.</p>
             </div>
           </div>
         </section>
