@@ -126,6 +126,8 @@ export default function AdminConsole({ admin }: { admin: AjecchAdmin }) {
     setError("");
     setNotice("");
     const form = new FormData(event.currentTarget);
+    let uploadedPath: string | null = null;
+    let recordSaved = false;
     try {
       const file = form.get("file");
       let storagePath = item.storage_path;
@@ -143,6 +145,7 @@ export default function AdminConsole({ admin }: { admin: AjecchAdmin }) {
           cacheControl: "31536000"
         });
         if (uploadError) throw uploadError;
+        uploadedPath = newPath;
         storagePath = newPath;
         sourceUrl = null;
       }
@@ -158,13 +161,24 @@ export default function AdminConsole({ admin }: { admin: AjecchAdmin }) {
       };
       const { error: saveError } = await supabase.from("ajecch_media").upsert(updates, { onConflict: "slot" });
       if (saveError) throw saveError;
+      recordSaved = true;
+
+      let notice = `Image « ${item.label} » mise à jour.`;
       if (item.storage_path && item.storage_path !== storagePath) {
-        await supabase.storage.from("ajecch-public-media").remove([item.storage_path]);
+        const { error: cleanupError } = await supabase.storage.from("ajecch-public-media").remove([item.storage_path]);
+        if (cleanupError) {
+          notice += " L’ancienne copie du fichier n’a pas pu être supprimée ; le visuel public utilise bien la nouvelle image.";
+        }
       }
-      setNotice(`Image « ${item.label} » mise à jour.`);
+      setNotice(notice);
       await loadData();
     } catch (err) {
-      setError(messageOf(err));
+      let message = messageOf(err);
+      if (uploadedPath && !recordSaved) {
+        const { error: cleanupError } = await supabase.storage.from("ajecch-public-media").remove([uploadedPath]);
+        if (cleanupError) message += " Le fichier téléversé temporairement n’a pas pu être supprimé.";
+      }
+      setError(message);
     } finally {
       setBusy(false);
     }
@@ -178,16 +192,32 @@ export default function AdminConsole({ admin }: { admin: AjecchAdmin }) {
     if (!window.confirm(`Supprimer définitivement le visuel « ${item.label} » ? Il disparaîtra aussi de la page publique.`)) return;
     setBusy(true);
     setError("");
+    setNotice("");
+    let hidden = false;
     try {
+      const { error: hideError } = await supabase
+        .from("ajecch_media")
+        .update({ is_visible: false, updated_by: admin.user_id })
+        .eq("id", item.id);
+      if (hideError) throw hideError;
+      hidden = true;
+
+      if (item.storage_path) {
+        const { error: storageError } = await supabase.storage
+          .from("ajecch-public-media")
+          .remove([item.storage_path]);
+        if (storageError) {
+          throw new Error(`Le visuel a été masqué, mais le fichier n’a pas pu être supprimé : ${storageError.message}`);
+        }
+      }
+
       const { error: deleteError } = await supabase.from("ajecch_media").delete().eq("id", item.id);
       if (deleteError) throw deleteError;
-      if (item.storage_path) {
-        const { error: storageError } = await supabase.storage.from("ajecch-public-media").remove([item.storage_path]);
-        if (storageError) throw storageError;
-      }
+
       setNotice("Visuel supprimé du site public.");
       await loadData();
     } catch (err) {
+      if (hidden) await loadData();
       setError(messageOf(err));
     } finally {
       setBusy(false);
