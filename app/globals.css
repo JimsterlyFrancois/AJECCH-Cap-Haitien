@@ -2188,6 +2188,7 @@ body { isolation: isolate; }
 /* Night mode: a complete palette change with moonlit parallax clouds */
 html[data-theme="night"] { color-scheme:dark; }
 html[data-theme="night"] body { color:#e8edf7; background:#071329; }
+
 html[data-theme="night"] .scroll-sky { background:linear-gradient(180deg,#071329 0%,#101e3a 48%,#172845 100%); }
 html[data-theme="night"] .scroll-sky-clouds-distant {
   opacity:.22; filter:blur(16px);
@@ -3837,8 +3838,16 @@ html[data-theme="day"] body main .contact-glass-panel h2 .contact-title-primary 
 }
 
 
-/* AJECCH — retain the page canvas beneath the scrolling cloud layers. */
-.scroll-sky { background: transparent; }
+/* AJECCH — restore the original continuous sky image beneath the scrolling clouds. */
+.scroll-sky {
+  background-image:
+    linear-gradient(180deg, rgba(5, 55, 91, .10), rgba(5, 55, 91, .18)),
+    url("/ajecch-sky-background.webp");
+  background-size: cover;
+  background-position: center 44%;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
 body { background: transparent !important; }
 
 html[data-theme="day"] body main > section:not(.hero-nature):not(.contact-section) {
@@ -3850,7 +3859,9 @@ html[data-theme="night"] body main > section:not(.hero-nature):not(.contact-sect
 
 .hero-nature { background: transparent !important; }
 .hero-nature-image {
-  background: transparent !important;
+  background-image: url("/ajecch-sky-background.webp") !important;
+  background-size: cover;
+  background-position: center 48%;
   filter: none;
 }
 .hero-nature-shade {
@@ -3859,8 +3870,10 @@ html[data-theme="night"] body main > section:not(.hero-nature):not(.contact-sect
     linear-gradient(90deg, rgba(4, 39, 71, .12), transparent 72%) !important;
 }
 .contact-backdrop {
-  background: transparent !important;
-  filter: none;
+  background-image: url("/ajecch-sky-background.webp") !important;
+  background-size: cover;
+  background-position: center 52%;
+  filter: saturate(.92);
 }
 html[data-theme="day"] .contact-section:before {
   background: linear-gradient(115deg, rgba(6, 43, 77, .34), rgba(24, 104, 155, .28)) !important;
@@ -3890,7 +3903,23 @@ html[data-theme="night"] footer {
   background: linear-gradient(125deg, rgba(2, 12, 26, .97), rgba(4, 28, 51, .96)) !important;
 }
 @media (max-width: 700px) {
-  .scroll-sky { background-position: center top; }
+  .scroll-sky { background-attachment: scroll; background-position: center top; }
+}
+/* Night mode keeps the original sky photo, dimmed behind the moving clouds. */
+html[data-theme="night"] .scroll-sky {
+  background-image:
+    linear-gradient(180deg, rgba(2, 13, 29, .66), rgba(3, 21, 41, .78)),
+    url("/ajecch-sky-background.webp");
+  background-size: cover, cover;
+  background-position: center, center 44%;
+  background-repeat: no-repeat, no-repeat;
+  background-attachment: fixed, fixed;
+}
+@media (max-width: 700px) {
+  html[data-theme="night"] .scroll-sky {
+    background-attachment: scroll, scroll;
+    background-position: center, center top;
+  }
 }
 
 
