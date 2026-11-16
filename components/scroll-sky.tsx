@@ -22,8 +22,9 @@ export default function ScrollSky() {
     const starsLayer = starsRef.current;
     if (!canvasElement || !starsLayer) return;
 
-    const ctx = canvasElement.getContext("2d", { alpha: true });
-    if (!ctx) return;
+    const drawingContext = canvasElement.getContext("2d", { alpha: true });
+    if (!drawingContext) return;
+    const ctx = drawingContext!;
 
     let width = window.innerWidth;
     let height = window.innerHeight;
