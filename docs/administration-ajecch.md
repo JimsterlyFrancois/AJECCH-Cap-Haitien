@@ -4,8 +4,8 @@
 
 La gestion repose sur trois accès administratifs :
 
-- **ADM — siège 1** : contrôle complet du site et seul compte autorisé à gérer les accès administratifs, parcourir la liste des comptes inscrits et désigner ou révoquer le responsable des médias.
-- **ADM — siège 2** : s'inscrit depuis le site lorsque le siège est libre, confirme son adresse e-mail et attend la validation de sa candidature. Après acceptation, il dispose des mêmes outils de publication et de création de quiz que le siège 1, sans accès à l'annuaire ni à la gestion des rôles. L'écran de candidature et son espace ne révèlent pas l'identité du compte ADM 1.
+- **ADM — siège 1** : contrôle les accès administratifs, gère les candidatures ADM et peut consulter l'annuaire complet des comptes inscrits. Il peut désigner ou révoquer le responsable des médias.
+- **ADM — siège 2** : après inscription et validation, dispose de pouvoirs étendus sur les contenus du site : modification des publications et données éditoriales, gestion des images, création des quiz, désignation et révocation du responsable des médias. Il ne peut ni modifier les sièges ADM, ni traiter les candidatures administratives, ni consulter l'identité ou la fiche de l'autre ADM. Son annuaire de nomination exclut les comptes ADM.
 - **Publication & Médias** : rôle historique distinct, limité aux publications et aux images publiques. Il ne peut pas administrer l'équipe.
 
 Les sièges actifs sont uniques en base. Le système empêche la désactivation ou la suppression du dernier ADM actif. Le libellé visible des comptes Super Admin est simplement **ADM**.
@@ -61,13 +61,13 @@ Si cette table avait été créée sur une ancienne base sans la protection atte
 3. Il confirme son adresse e-mail depuis le message envoyé par Supabase.
 4. Il revient automatiquement sur `/administration` et voit l'état « En attente de validation ».
 5. Dans **Équipe & accès**, ADM 1 examine la candidature et choisit **Valider l'accès** ou **Refuser**.
-6. Après validation, l'utilisateur reçoit le siège ADM 2 et peut se connecter à l'espace de gestion. Il n'a pas accès à l'annuaire des comptes ni à la section Équipe & accès.
+6. Après validation, l'utilisateur reçoit le siège ADM 2 et peut se connecter à son tableau de bord. Il peut gérer les contenus et les médias ainsi que le responsable des médias ; l'identité de l'ADM 1, les sièges ADM et les candidatures restent masqués.
 
 La base de données limite la candidature à un siège 2 et une demande en cours. L'accès ne devient actif qu'après confirmation de l'e-mail et approbation par ADM 1. L'interface et les fonctions de consultation du candidat ne révèlent pas le nom ni l'identifiant du compte ADM 1.
 
 ## 6. Désigner ou révoquer le responsable des médias
 
-Cette gestion est disponible dans l'espace du compte **ADM** (siège 1) :
+Cette gestion est disponible dans l'espace des deux comptes **ADM**. Le siège 1 conserve l'annuaire complet ; le siège 2 dispose d'une liste de comptes non-ADM, sans identité d'un autre administrateur.
 
 1. Ouvrir **Équipe & accès**.
 2. Consulter la rubrique **Comptes inscrits sur le site**.
@@ -78,7 +78,7 @@ Cette gestion est disponible dans l'espace du compte **ADM** (siège 1) :
 
 Un seul responsable des médias peut être actif à la fois. Pour le remplacer, révoquer d'abord son accès, puis désigner un autre compte inscrit. La révocation désactive l'accès et conserve l'historique du compte ; elle ne supprime pas le compte Auth.
 
-L'annuaire affiche uniquement le nom, l'adresse e-mail, l'état de confirmation et la date d'inscription. Son accès et les opérations d'attribution/révocation sont contrôlés par des fonctions SQL et des politiques RLS : le compte ADM 2, les éditeurs et les visiteurs ne peuvent pas utiliser ces opérations.
+L'annuaire de nomination affiche le nom, l'adresse e-mail, l'état de confirmation et la date d'inscription. Le siège 1 peut voir les comptes inscrits, tandis que le siège 2 ne reçoit que les comptes non-ADM. Les deux ADM peuvent attribuer ou révoquer le rôle Publication & Médias par des fonctions SQL protégées. Les politiques RLS empêchent le siège 2 de lire la fiche de l'ADM 1 ou les candidatures administratives, et empêchent les éditeurs et visiteurs d'utiliser ces opérations.
 
 ## 7. Bibliothèque média, publications et quiz
 
@@ -108,7 +108,7 @@ Les deux comptes ADM peuvent créer des quiz comportant de 1 à 12 questions, ch
 
 - Supabase Auth authentifie les comptes.
 - `public.ajecch_admins` détermine les rôles actifs.
-- Les politiques RLS et les fonctions SQL vérifient les droits côté base. Seul le siège ADM 1 peut lire l'annuaire des inscrits et gérer les rôles administratifs.
+- Les politiques RLS et les fonctions SQL vérifient les droits côté base. Seul le siège ADM 1 peut lire l'annuaire complet et gérer les sièges ADM. Les deux ADM peuvent consulter les comptes non-ADM et gérer le responsable des médias.
 - Le middleware protège les routes d'administration contre les visiteurs non connectés ; la page serveur vérifie ensuite le rôle.
 - Le contrôle visuel d'un bouton ou d'un lien n'est jamais considéré comme une mesure de sécurité.
 - Aucun secret privé ne doit apparaître dans le code client.
