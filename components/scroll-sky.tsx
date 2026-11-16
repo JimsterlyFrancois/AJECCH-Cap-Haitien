@@ -390,25 +390,27 @@ export default function ScrollSky() {
   }, []);
 
   return (
-    <div className="scroll-sky" aria-hidden="true">
-      <div className="sky-milky-way" />
-      <div className="sky-stars" ref={starsRef} />
-      <div className="sky-sun-wrapper">
-        <div className="sky-sun-rays" />
-        <div className="sky-sun"><span /></div>
+    <>
+      <div className="scroll-sky" aria-hidden="true">
+        <div className="sky-milky-way" />
+        <div className="sky-stars" ref={starsRef} />
+        <div className="sky-sun-wrapper">
+          <div className="sky-sun-rays" />
+          <div className="sky-sun"><span /></div>
+        </div>
+        <div className="sky-moon">
+          <span className="sky-moon-sea" />
+          <span className="sky-moon-crater sky-moon-crater-one" />
+          <span className="sky-moon-crater sky-moon-crater-two" />
+          <span className="sky-moon-crater sky-moon-crater-three" />
+        </div>
+        <canvas ref={canvasRef} className="sky-clouds-canvas" />
       </div>
-      <div className="sky-moon">
-        <span className="sky-moon-sea" />
-        <span className="sky-moon-crater sky-moon-crater-one" />
-        <span className="sky-moon-crater sky-moon-crater-two" />
-        <span className="sky-moon-crater sky-moon-crater-three" />
-      </div>
-      <canvas ref={canvasRef} className="sky-clouds-canvas" />
-      <div className="sky-weather-badge">
+      <div className="sky-weather-badge" aria-hidden="true">
         <span className="sky-weather-dot" />
         <span ref={badgeRef}>Ciel ensoleillé · Brise douce</span>
         <span ref={windRef} className="sky-wind-speed">1.0×</span>
       </div>
-    </div>
+    </>
   );
 }
