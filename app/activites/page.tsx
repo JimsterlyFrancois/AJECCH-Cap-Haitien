@@ -1,46 +1,79 @@
 import SiteHeader from "@/components/site-header";
 import SiteFooter from "@/components/site-footer";
-import { getSiteMedia } from "@/lib/public-content";
+import { getPublishedPosts, getSiteMedia } from "@/lib/public-content";
 
 export const metadata = {
   title: "Activités | AJECCH",
-  description: "Les activités et initiatives de l'Association des Jeunes Chrétiens du Cap-Haïtien."
+  description: "Les activités et événements publiés par l’Association des Jeunes Chrétiens du Cap-Haïtien."
 };
-
-const categories = [
-  { number: "01", title: "Rencontres & fraternité", text: "Des temps de rassemblement, d’échange et de communion pour renforcer les liens entre les jeunes." },
-  { number: "02", title: "Formation & jeunesse", text: "Des initiatives pour encourager le développement personnel, les talents et le leadership responsable." },
-  { number: "03", title: "Actions communautaires", text: "Des activités collectives tournées vers l’entraide et les besoins de la communauté." },
-  { number: "04", title: "Foi & engagement", text: "Des moments et projets qui permettent de vivre les valeurs chrétiennes au quotidien." }
-];
 
 export const dynamic = "force-dynamic";
 
 export default async function ActivitiesPage() {
-  const media = await getSiteMedia();
+  const [media, posts] = await Promise.all([getSiteMedia(), getPublishedPosts()]);
+  const events = posts.filter((post) => post.category === "event");
   const logoUrl = media["brand.logo"] ?? null;
+
   return (
     <>
       <SiteHeader active="/activites" logoUrl={logoUrl} />
       <main>
         <section className="page-hero">
           <div className="container">
-            <div className="section-kicker">PASSER DES VALEURS À L’ACTION</div>
+            <div className="section-kicker">INFORMATIONS PUBLIÉES</div>
             <h1>Nos <em>activités.</em></h1>
-            <p>Des occasions de se rencontrer, d’apprendre, de servir et de construire ensemble.</p>
+            <p>Consultez les activités et événements annoncés par les responsables de l’association.</p>
             <div className="breadcrumb"><a href="/">Accueil</a><span>/</span>Activités</div>
           </div>
         </section>
         <section className="section-pad">
           <div className="container">
-            <div className="section-heading"><div><div className="section-kicker">NOS DOMAINES D’ACTION</div><h2>Des engagements qui <em>rassemblent.</em></h2></div><p>Les catégories ci-dessous constituent une première organisation éditoriale. Les activités précises seront publiées après confirmation.</p></div>
-            <div className="activity-grid">
-              {categories.map((item) => <article className="activity-card" key={item.number}><span>{item.number}</span><div className="activity-mark">✳</div><h3>{item.title}</h3><p>{item.text}</p></article>)}
+            <div className="section-heading">
+              <div>
+                <div className="section-kicker">AGENDA DE L’ASSOCIATION</div>
+                <h2>Les activités <em>publiées.</em></h2>
+              </div>
+              <p>Seules les activités enregistrées et publiées dans l’espace de gestion apparaissent sur cette page.</p>
             </div>
-            <p className="editorial-note activity-note">Aucune date ni aucun événement n’est annoncé sur cette page pour le moment. Les prochaines activités seront ajoutées avec leurs informations vérifiées : date, lieu, horaires et modalités de participation.</p>
+            {events.length > 0 ? (
+              <div className="public-news-list">
+                {events.map((event) => (
+                  <article className="public-news-card" key={event.id}>
+                    <div className="public-news-copy">
+                      <span className="public-news-category">Activité annoncée</span>
+                      {event.event_starts_at && (
+                        <time dateTime={event.event_starts_at}>
+                          {new Date(event.event_starts_at).toLocaleString("fr-FR", {
+                            day: "numeric", month: "long", year: "numeric",
+                            hour: "2-digit", minute: "2-digit"
+                          })}
+                        </time>
+                      )}
+                      <h3><a href={`/actualites/${encodeURIComponent(event.slug)}`}>{event.title}</a></h3>
+                      {event.excerpt && <p className="public-news-excerpt">{event.excerpt}</p>}
+                      {event.event_location && <p>Lieu : {event.event_location}</p>}
+                      {event.body && <p>{event.body}</p>}
+                      <a className="text-link" href={`/actualites/${encodeURIComponent(event.slug)}`}>Voir les détails <span>↗</span></a>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            ) : (
+              <div className="empty-news">
+                <h3>Aucune activité confirmée n’est actuellement publiée.</h3>
+                <p>Les activités seront affichées ici uniquement après leur annonce par l’association.</p>
+              </div>
+            )}
           </div>
         </section>
-        <section className="join-section"><div className="container join-inner"><div className="section-kicker">PARTICIPER</div><h2>Une initiative en tête ?<br /><em>Construisons-la ensemble.</em></h2><p>Contactez l’association pour en savoir plus sur les activités et les possibilités de participation.</p><a className="button button-gold" href="/#contact">Contacter AJECCH <span>→</span></a></div></section>
+        <section className="join-section">
+          <div className="container join-inner">
+            <div className="section-kicker">PARTICIPER</div>
+            <h2>Une question sur une activité ?<br /><em>Contactez l’association.</em></h2>
+            <p>Pour obtenir des informations, utilisez la page officielle de l’AJECCH.</p>
+            <a className="button button-gold" href="/#contact">Contacter AJECCH <span>→</span></a>
+          </div>
+        </section>
       </main>
       <SiteFooter logoUrl={logoUrl} />
     </>
