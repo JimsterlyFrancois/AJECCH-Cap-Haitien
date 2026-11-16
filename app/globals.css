@@ -2107,15 +2107,55 @@ h1, h2, h3 { color: #1B3B2B; }
 }
 
 
-/* Lightweight fixed sky layer. The wrapper itself stays in place; no scroll listener is needed. */
+/* Parallax sky: two lightweight cloud layers drift at different speeds while scrolling. */
 body { isolation: isolate; }
 .scroll-sky {
   position: fixed;
   inset: 0;
   z-index: -1;
+  overflow: hidden;
   pointer-events: none;
-  contain: paint;
+  contain: strict;
 }
+.scroll-sky-clouds {
+  position: absolute;
+  left: -12%;
+  width: 124%;
+  height: 58vh;
+  min-height: 360px;
+  background-repeat: no-repeat;
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+}
+.scroll-sky-clouds-distant {
+  top: -9vh;
+  opacity: .36;
+  filter: blur(13px);
+  background-image:
+    radial-gradient(ellipse 19% 17% at 13% 32%, rgba(255,255,255,.78) 0 45%, transparent 78%),
+    radial-gradient(ellipse 16% 14% at 23% 29%, rgba(255,255,255,.68) 0 45%, transparent 78%),
+    radial-gradient(ellipse 22% 18% at 72% 23%, rgba(255,255,255,.76) 0 44%, transparent 78%),
+    radial-gradient(ellipse 17% 15% at 84% 27%, rgba(255,255,255,.68) 0 45%, transparent 78%);
+}
+.scroll-sky-clouds-near {
+  top: 20vh;
+  opacity: .25;
+  filter: blur(19px);
+  background-image:
+    radial-gradient(ellipse 20% 18% at 5% 46%, rgba(255,255,255,.8) 0 42%, transparent 78%),
+    radial-gradient(ellipse 15% 14% at 17% 42%, rgba(255,255,255,.72) 0 45%, transparent 78%),
+    radial-gradient(ellipse 23% 19% at 91% 50%, rgba(255,255,255,.78) 0 43%, transparent 78%),
+    radial-gradient(ellipse 16% 14% at 78% 46%, rgba(255,255,255,.7) 0 44%, transparent 78%);
+}
+@media (max-width: 700px) {
+  .scroll-sky-clouds { height: 46vh; min-height: 280px; }
+  .scroll-sky-clouds-distant { opacity: .29; }
+  .scroll-sky-clouds-near { opacity: .19; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .scroll-sky-clouds { will-change: auto; }
+}
+
 
 /* Persistent liquid-glass controls in the site navigation */
 .nav-actions { display:flex; align-items:center; justify-content:flex-end; gap:8px; flex-shrink:0; }
@@ -2148,6 +2188,23 @@ body { isolation: isolate; }
 /* Night mode: a complete palette change with moonlit parallax clouds */
 html[data-theme="night"] { color-scheme:dark; }
 html[data-theme="night"] body { color:#e8edf7; background:#071329; }
+html[data-theme="night"] .scroll-sky { background:linear-gradient(180deg,#071329 0%,#101e3a 48%,#172845 100%); }
+html[data-theme="night"] .scroll-sky-clouds-distant {
+  opacity:.22; filter:blur(16px);
+  background-image:
+    radial-gradient(ellipse 19% 17% at 13% 32%,rgba(178,199,231,.42) 0 45%,transparent 78%),
+    radial-gradient(ellipse 16% 14% at 23% 29%,rgba(156,183,224,.34) 0 45%,transparent 78%),
+    radial-gradient(ellipse 22% 18% at 72% 23%,rgba(180,198,232,.38) 0 44%,transparent 78%),
+    radial-gradient(ellipse 17% 15% at 84% 27%,rgba(151,180,223,.32) 0 45%,transparent 78%);
+}
+html[data-theme="night"] .scroll-sky-clouds-near {
+  opacity:.16; filter:blur(22px);
+  background-image:
+    radial-gradient(ellipse 20% 18% at 5% 46%,rgba(194,207,231,.42) 0 42%,transparent 78%),
+    radial-gradient(ellipse 15% 14% at 17% 42%,rgba(162,186,222,.35) 0 45%,transparent 78%),
+    radial-gradient(ellipse 23% 19% at 91% 50%,rgba(182,199,231,.4) 0 43%,transparent 78%),
+    radial-gradient(ellipse 16% 14% at 78% 46%,rgba(155,181,220,.32) 0 44%,transparent 78%);
+}
 
 html[data-theme="night"] .site-header { background:rgba(10,23,45,.88); border-color:rgba(190,207,233,.16); box-shadow:0 12px 38px rgba(0,0,0,.2); backdrop-filter:blur(22px); }
 html[data-theme="night"] .brand-copy strong,
@@ -3780,15 +3837,8 @@ html[data-theme="day"] body main .contact-glass-panel h2 .contact-title-primary 
 }
 
 
-/* AJECCH — continuous sky background from locally bundled repository assets. */
-.scroll-sky {
-  background-image:
-    linear-gradient(180deg, rgba(5, 55, 91, .10), rgba(5, 55, 91, .18)),
-    url("/ajecch-sky-background.webp");
-  background-size: cover;
-  background-position: center 44%;
-  background-repeat: no-repeat;
-}
+/* AJECCH — retain the page canvas beneath the scrolling cloud layers. */
+.scroll-sky { background: transparent; }
 body { background: transparent !important; }
 
 html[data-theme="day"] body main > section:not(.hero-nature):not(.contact-section) {
@@ -3800,9 +3850,7 @@ html[data-theme="night"] body main > section:not(.hero-nature):not(.contact-sect
 
 .hero-nature { background: transparent !important; }
 .hero-nature-image {
-  background-image: url("/ajecch-sky-background.webp") !important;
-  background-size: cover;
-  background-position: center 48%;
+  background: transparent !important;
   filter: none;
 }
 .hero-nature-shade {
@@ -3811,10 +3859,8 @@ html[data-theme="night"] body main > section:not(.hero-nature):not(.contact-sect
     linear-gradient(90deg, rgba(4, 39, 71, .12), transparent 72%) !important;
 }
 .contact-backdrop {
-  background-image: url("/ajecch-sky-background.webp") !important;
-  background-size: cover;
-  background-position: center 52%;
-  filter: saturate(.92);
+  background: transparent !important;
+  filter: none;
 }
 html[data-theme="day"] .contact-section:before {
   background: linear-gradient(115deg, rgba(6, 43, 77, .34), rgba(24, 104, 155, .28)) !important;
@@ -3848,18 +3894,6 @@ html[data-theme="night"] footer {
 }
 
 
-/* Night mode uses the same bundled sky, dimmed for text and panel contrast. */
-html[data-theme="night"] .scroll-sky {
-  background-image:
-    linear-gradient(180deg, rgba(2, 13, 29, .66), rgba(3, 21, 41, .78)),
-    url("/ajecch-sky-background.webp");
-  background-size: cover, cover;
-  background-position: center, center 44%;
-  background-repeat: no-repeat, no-repeat;
-}
-@media (max-width: 700px) {
-  html[data-theme="night"] .scroll-sky { background-position: center, center top; }
-}
 
 
 /* Official AJECCH emblem: show the full submitted seal, never crop it into a circle. */
