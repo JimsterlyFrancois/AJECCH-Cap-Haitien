@@ -29,6 +29,15 @@ type QuizListItem = Pick<QuizRecord, "id" | "title" | "description" | "status" |
   questionCount: number;
 };
 
+function messageOf(error: unknown, fallback: string) {
+  if (error instanceof Error) return error.message;
+  if (typeof error === "object" && error !== null && "message" in error) {
+    const message = (error as { message?: unknown }).message;
+    if (typeof message === "string" && message.trim()) return message;
+  }
+  return fallback;
+}
+
 function blankQuestion(): QuizQuestion {
   return { id: crypto.randomUUID(), prompt: "", options: ["", "", "", ""], correctIndex: 0 };
 }
@@ -80,7 +89,7 @@ export default function QuizManager() {
         }))
       });
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Impossible d’ouvrir ce quiz.");
+      setError(messageOf(err, "Impossible d’ouvrir ce quiz."));
     } finally {
       setBusy(false);
     }
@@ -150,7 +159,7 @@ export default function QuizManager() {
       setDraft(null);
       await load();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Impossible d’enregistrer ce quiz.");
+      setError(messageOf(err, "Impossible d’enregistrer ce quiz."));
     } finally {
       setBusy(false);
     }

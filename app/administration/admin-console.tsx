@@ -49,11 +49,17 @@ type AccessRequestItem = {
   requested_at: string;
 };
 
-const SLOT_ORDER = ["brand.logo", "home.hero", "home.actions", "home.gallery", "home.contact"];
+const SLOT_ORDER = ["brand.logo", "home.actions"];
+const RETIRED_MEDIA_SLOTS = new Set(["home.hero", "home.gallery", "home.contact"]);
 const CATEGORY_LABELS = { news: "Actualité", announcement: "Annonce", event: "Événement" };
 
 function messageOf(error: unknown) {
-  return error instanceof Error ? error.message : "Une erreur est survenue.";
+  if (error instanceof Error) return error.message;
+  if (typeof error === "object" && error !== null && "message" in error) {
+    const message = (error as { message?: unknown }).message;
+    if (typeof message === "string" && message.trim()) return message;
+  }
+  return "Une erreur est survenue.";
 }
 function toLocalInput(value: string | null) {
   if (!value) return "";
@@ -120,6 +126,8 @@ export default function AdminConsole({ admin }: { admin: AjecchAdmin }) {
     setError("");
     setNotice("");
     const form = new FormData(event.currentTarget);
+    let uploadedPath: string | null = null;
+    let recordSaved = false;
     try {
       const file = form.get("file");
       let storagePath = item.storage_path;
@@ -137,6 +145,7 @@ export default function AdminConsole({ admin }: { admin: AjecchAdmin }) {
           cacheControl: "31536000"
         });
         if (uploadError) throw uploadError;
+        uploadedPath = newPath;
         storagePath = newPath;
         sourceUrl = null;
       }
@@ -152,13 +161,24 @@ export default function AdminConsole({ admin }: { admin: AjecchAdmin }) {
       };
       const { error: saveError } = await supabase.from("ajecch_media").upsert(updates, { onConflict: "slot" });
       if (saveError) throw saveError;
+      recordSaved = true;
+
+      let notice = `Image « ${item.label} » mise à jour.`;
       if (item.storage_path && item.storage_path !== storagePath) {
-        await supabase.storage.from("ajecch-public-media").remove([item.storage_path]);
+        const { error: cleanupError } = await supabase.storage.from("ajecch-public-media").remove([item.storage_path]);
+        if (cleanupError) {
+          notice += " L’ancienne copie du fichier n’a pas pu être supprimée ; le visuel public utilise bien la nouvelle image.";
+        }
       }
-      setNotice(`Image « ${item.label} » mise à jour.`);
+      setNotice(notice);
       await loadData();
     } catch (err) {
-      setError(messageOf(err));
+      let message = messageOf(err);
+      if (uploadedPath && !recordSaved) {
+        const { error: cleanupError } = await supabase.storage.from("ajecch-public-media").remove([uploadedPath]);
+        if (cleanupError) message += " Le fichier téléversé temporairement n’a pas pu être supprimé.";
+      }
+      setError(message);
     } finally {
       setBusy(false);
     }
@@ -172,16 +192,32 @@ export default function AdminConsole({ admin }: { admin: AjecchAdmin }) {
     if (!window.confirm(`Supprimer définitivement le visuel « ${item.label} » ? Il disparaîtra aussi de la page publique.`)) return;
     setBusy(true);
     setError("");
+    setNotice("");
+    let hidden = false;
     try {
+      const { error: hideError } = await supabase
+        .from("ajecch_media")
+        .update({ is_visible: false, updated_by: admin.user_id })
+        .eq("id", item.id);
+      if (hideError) throw hideError;
+      hidden = true;
+
+      if (item.storage_path) {
+        const { error: storageError } = await supabase.storage
+          .from("ajecch-public-media")
+          .remove([item.storage_path]);
+        if (storageError) {
+          throw new Error(`Le visuel a été masqué, mais le fichier n’a pas pu être supprimé : ${storageError.message}`);
+        }
+      }
+
       const { error: deleteError } = await supabase.from("ajecch_media").delete().eq("id", item.id);
       if (deleteError) throw deleteError;
-      if (item.storage_path) {
-        const { error: storageError } = await supabase.storage.from("ajecch-public-media").remove([item.storage_path]);
-        if (storageError) throw storageError;
-      }
+
       setNotice("Visuel supprimé du site public.");
       await loadData();
     } catch (err) {
+      if (hidden) await loadData();
       setError(messageOf(err));
     } finally {
       setBusy(false);
@@ -426,10 +462,10 @@ export default function AdminConsole({ admin }: { admin: AjecchAdmin }) {
 
         {tab === "media" && (
           <div className="admin-content">
-            <div className="admin-section-intro"><h2>Tous les visuels de la page publique</h2><p>Chaque emplacement peut recevoir une nouvelle image, être masqué ou être supprimé. Formats : JPG, PNG, WebP et AVIF · 8 Mo maximum.</p></div>
+            <div className="admin-section-intro"><h2>Logo et visuel des actions</h2><p>Les images des publications se gèrent dans l’onglet Publications. Formats acceptés : JPG, PNG, WebP et AVIF · 8 Mo maximum.</p></div>
             <button className="admin-secondary-button admin-add-media" type="button" onClick={() => setMedia((current) => [...current, { id: "", slot: `custom.${crypto.randomUUID()}`, label: "Nouvelle image", alt_text: "", caption: null, source_url: null, storage_path: null, is_visible: false }])}>+ Ajouter un emplacement image</button>
             <div className="admin-media-grid">
-              {[...SLOT_ORDER.map((slot) => media.find((entry) => entry.slot === slot) ?? ({ id: "", slot, label: slot, alt_text: "", caption: "", source_url: null, storage_path: null, is_visible: false } as MediaItem)), ...media.filter((entry) => !SLOT_ORDER.includes(entry.slot))].map((item) => {
+              {[...SLOT_ORDER.map((slot) => media.find((entry) => entry.slot === slot) ?? ({ id: "", slot, label: slot, alt_text: "", caption: "", source_url: null, storage_path: null, is_visible: false } as MediaItem)), ...media.filter((entry) => !SLOT_ORDER.includes(entry.slot) && !RETIRED_MEDIA_SLOTS.has(entry.slot) && !entry.slot.startsWith("post."))].map((item) => {
                 const preview = item.storage_path
                   ? supabase.storage.from("ajecch-public-media").getPublicUrl(item.storage_path).data.publicUrl
                   : item.source_url;
@@ -556,7 +592,7 @@ function PostEditor({ post, media, onSave, onDelete, busy }: {
         <span><strong>{post?.title ?? "Nouvelle publication"}</strong><small>{post ? `${CATEGORY_LABELS[post.category]} · ${post.status === "published" ? "En ligne" : "Brouillon"}` : "Créer une actualité, une annonce ou un événement"}</small></span><b>{expanded ? "−" : "+"}</b>
       </button>
       {expanded && <div className="admin-post-fields">
-        <label>Image existante (facultatif)<select name="cover_media_id" defaultValue={post?.cover_media_id ?? ""}><option value="">Aucune image</option>{media.filter((item) => item.id && item.is_visible).map((item) => <option value={item.id} key={item.id}>{item.label}</option>)}</select></label>
+        <label>Image existante (facultatif)<select name="cover_media_id" defaultValue={post?.cover_media_id ?? ""}><option value="">Aucune image</option>{media.filter((item) => item.id && item.is_visible).map((item) => <option value={item.id} key={item.id}>{item.label}{item.slot.startsWith("post.") ? ` · ${item.id.slice(0, 8)}` : ""}</option>)}</select></label>
         <label className="admin-file-field">Ou téléverser une image pour cette publication<input type="file" name="cover_file" accept="image/jpeg,image/png,image/webp,image/avif" /></label>
         <div className="admin-form-two">
           <label>Titre<input name="title" required defaultValue={post?.title ?? ""} /></label>

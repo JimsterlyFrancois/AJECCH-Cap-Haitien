@@ -77,7 +77,6 @@ export default async function Home() {
             <a className="discover-link" href="#mission">DÉCOUVRIR <b>↓</b></a>
           </div>
         </div>
-        <div className="hero-photo-note">Littoral de Labadie · Nord d’Haïti · Photo d’ambiance</div>
       </section>
 
       <section className="section-shell foundation-actions-section" id="mission">
@@ -132,7 +131,7 @@ export default async function Home() {
                     <span>UNE DYNAMIQUE COLLECTIVE</span>
                     <strong>Grandir, transmettre<br />et agir ensemble.</strong>
                   </div>
-                  <figcaption>Visuel d’ambiance · Photographies officielles AJECCH à venir</figcaption>
+                  <figcaption>Visuel associé aux actions de l’AJECCH.</figcaption>
                 </figure>
 
                 <aside className="impact-strip glass-card" data-reveal>
@@ -212,42 +211,11 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="section-shell voices-section" id="vie-associative">
-        <div className="container">
-          <div className="voices-heading" data-reveal>
-            <div>
-              <span className="section-kicker">04 / PAROLES & VIE ASSOCIATIVE</span>
-              <h2>Une association se construit<br /><em>avec celles et ceux qui la vivent.</em></h2>
-            </div>
-            <a className="text-link" href="https://www.facebook.com/AJECCH" target="_blank" rel="noreferrer">
-              Découvrir la communauté sur Facebook <span>↗</span>
-            </a>
-          </div>
-          <div className="voice-cards">
-            <article className="glass-card voice-card voice-card-main" data-reveal>
-              <span className="voice-quote-mark">“</span>
-              <span className="section-kicker">LA PAROLE AUX MEMBRES</span>
-              <h3>Des expériences vécues, racontées avec authenticité.</h3>
-              <p>Les premières paroles seront ajoutées après collecte et validation par leurs auteurs.</p>
-              <span className="voice-card-foot">TÉMOIGNAGES À VENIR</span>
-            </article>
-            <article className="glass-card voice-card voice-card-secondary" data-reveal>
-              <div className="gallery-preview" aria-hidden="true" />
-              <div className="gallery-copy">
-                <span className="voice-card-foot">VISUELS OFFICIELS EN COURS D’INTÉGRATION</span>
-                <h3>Les moments qui nous rassemblent.</h3>
-                <a href="https://www.facebook.com/AJECCH" target="_blank" rel="noreferrer">Voir la page AJECCH ↗</a>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-
       <section className="contact-section" id="contact">
         <div className="contact-backdrop" aria-hidden="true" />
         <div className="contact-container container">
           <div className="contact-glass-panel" data-reveal>
-            <span className="section-kicker">05 / PRENONS CONTACT</span>
+            <span className="section-kicker">04 / PRENONS CONTACT</span>
             <h2><span className="contact-title-primary">Une idée, une envie de servir,</span><br /><em>un pas à faire ensemble.</em></h2>
             <p>
               Vous souhaitez rejoindre l’AJECCH, en savoir plus sur ses initiatives ou proposer un appui ?

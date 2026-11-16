@@ -1,13 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
 
-const DEFAULT_MEDIA: Record<string, { url: string; alt: string }> = {
-  "brand.logo": { url: "", alt: "Logo officiel de l’AJECCH" },
-  "home.hero": { url: "https://images.pexels.com/photos/8868160/pexels-photo-8868160.jpeg?auto=compress&cs=tinysrgb&w=2600", alt: "Littoral de Labadie, Nord d’Haïti — photo d’ambiance" },
-  "home.actions": { url: "https://images.pexels.com/photos/17772875/pexels-photo-17772875.jpeg?auto=compress&cs=tinysrgb&w=1800", alt: "Lumière naturelle traversant une végétation tropicale dense" },
-  "home.gallery": { url: "https://images.pexels.com/photos/8868160/pexels-photo-8868160.jpeg?auto=compress&cs=tinysrgb&w=1400", alt: "Littoral de Labadie — photo d’ambiance" },
-  "home.contact": { url: "https://images.pexels.com/photos/8868160/pexels-photo-8868160.jpeg?auto=compress&cs=tinysrgb&w=2200", alt: "Littoral de Labadie — photo d’ambiance" }
-};
-
 type MediaRecord = {
   slot: string;
   source_url: string | null;
@@ -15,6 +7,10 @@ type MediaRecord = {
   is_visible: boolean;
   alt_text: string | null;
 };
+
+function isUnverifiedStockMedia(reference: string | null | undefined) {
+  return Boolean(reference && /pexels([.]com|[-_])/i.test(reference));
+}
 
 function publicClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -25,21 +21,17 @@ function publicClient() {
 
 export async function getSiteMedia() {
   const client = publicClient();
-  if (!client) {
-    return Object.fromEntries(Object.entries(DEFAULT_MEDIA).map(([slot, item]) => [slot, item.url || null])) as Record<string, string | null>;
-  }
+  if (!client) return { "brand.logo": null } as Record<string, string | null>;
 
   const { data, error } = await client
     .from("ajecch_media")
     .select("slot,source_url,storage_path,is_visible,alt_text");
 
-  if (error) {
-    return Object.fromEntries(Object.entries(DEFAULT_MEDIA).map(([slot, item]) => [slot, item.url || null])) as Record<string, string | null>;
-  }
+  if (error) return { "brand.logo": null } as Record<string, string | null>;
 
   const result: Record<string, string | null> = {};
   for (const row of (data ?? []) as MediaRecord[]) {
-    if (!row.is_visible) {
+    if (!row.is_visible || isUnverifiedStockMedia(row.source_url) || isUnverifiedStockMedia(row.storage_path)) {
       result[row.slot] = null;
       continue;
     }
@@ -97,7 +89,7 @@ export async function getPublishedPosts() {
   const mediaById = new Map((media ?? []).map((item) => [item.id, item]));
   return (data as PublicPost[]).map((post) => {
     const cover = post.cover_media_id ? mediaById.get(post.cover_media_id) : null;
-    const coverUrl = !cover || !cover.is_visible
+    const coverUrl = !cover || !cover.is_visible || isUnverifiedStockMedia(cover.source_url) || isUnverifiedStockMedia(cover.storage_path)
       ? null
       : cover.storage_path
         ? client.storage.from("ajecch-public-media").getPublicUrl(cover.storage_path).data.publicUrl
