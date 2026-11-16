@@ -88,6 +88,10 @@ begin
     end if;
 
     for option_index in 0..jsonb_array_length(question -> 'options') - 1 loop
+      if jsonb_typeof(question -> 'options' -> option_index) is distinct from 'string' then
+        raise exception 'Chaque choix doit être un texte valide.';
+      end if;
+
       option_text := question -> 'options' ->> option_index;
       if option_text is null or char_length(trim(option_text)) not between 1 and 240 then
         raise exception 'Chaque choix doit contenir de 1 à 240 caractères.';
@@ -231,7 +235,8 @@ begin
   end if;
 
   question_options := question -> 'options';
-  if p_selected_index is null
+  if coalesce(jsonb_typeof(question_options), '') <> 'array'
+    or p_selected_index is null
     or p_selected_index < 0
     or p_selected_index >= jsonb_array_length(question_options) then
     raise exception 'Sélection de réponse invalide.';
