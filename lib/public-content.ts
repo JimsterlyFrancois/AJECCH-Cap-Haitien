@@ -2,11 +2,18 @@ import { createClient } from "@supabase/supabase-js";
 
 const DEFAULT_MEDIA: Record<string, { url: string; alt: string }> = {
   "brand.logo": { url: "", alt: "Logo officiel de l’AJECCH" },
-  "home.hero": { url: "https://images.pexels.com/photos/8868160/pexels-photo-8868160.jpeg?auto=compress&cs=tinysrgb&w=2600", alt: "Littoral de Labadie, Nord d’Haïti — photo d’ambiance" },
-  "home.actions": { url: "https://images.pexels.com/photos/17772875/pexels-photo-17772875.jpeg?auto=compress&cs=tinysrgb&w=1800", alt: "Lumière naturelle traversant une végétation tropicale dense" },
-  "home.gallery": { url: "https://images.pexels.com/photos/8868160/pexels-photo-8868160.jpeg?auto=compress&cs=tinysrgb&w=1400", alt: "Littoral de Labadie — photo d’ambiance" },
-  "home.contact": { url: "https://images.pexels.com/photos/8868160/pexels-photo-8868160.jpeg?auto=compress&cs=tinysrgb&w=2200", alt: "Littoral de Labadie — photo d’ambiance" }
+  "home.hero": { url: "", alt: "Image principale de l’association" },
+  "home.actions": { url: "", alt: "Visuel des engagements de l’association" },
+  "home.gallery": { url: "", alt: "Visuel de galerie" },
+  "home.contact": { url: "", alt: "Visuel de contact de l’association" }
 };
+
+const DEMO_MEDIA_PATHS = ["/photos/8868160/", "/photos/17772875/"];
+const DEMO_POST_SLUGS = new Set(["reflexe-genie-premiere-edition"]);
+
+function isDemoMedia(sourceUrl: string | null) {
+  return Boolean(sourceUrl && DEMO_MEDIA_PATHS.some((path) => sourceUrl.includes(path)));
+}
 
 type MediaRecord = {
   slot: string;
@@ -41,7 +48,7 @@ export async function getSiteMedia() {
 
   const result: Record<string, string | null> = {};
   for (const row of (data ?? []) as MediaRecord[]) {
-    if (!row.is_visible) {
+    if (!row.is_visible || (!row.storage_path && isDemoMedia(row.source_url))) {
       result[row.slot] = null;
       continue;
     }
@@ -81,23 +88,25 @@ export async function getPublishedPosts() {
 
   if (error || !data) return [] as PublicPost[];
 
+  const publishedPosts = (data as PublicPost[]).filter((post) => !DEMO_POST_SLUGS.has(post.slug));
+
   const mediaIds = [...new Set(
-    (data as PublicPost[])
+    publishedPosts
       .map((post) => post.cover_media_id)
       .filter((id): id is string => Boolean(id))
   )];
 
-  if (mediaIds.length === 0) return data as PublicPost[];
+  if (mediaIds.length === 0) return publishedPosts;
 
   const { data: media, error: mediaError } = await client
     .from("ajecch_media")
     .select("id,source_url,storage_path,is_visible")
     .in("id", mediaIds);
 
-  if (mediaError) return data as PublicPost[];
+  if (mediaError) return publishedPosts;
 
   const mediaById = new Map((media ?? []).map((item) => [item.id, item]));
-  return (data as PublicPost[]).map((post) => {
+  return publishedPosts.map((post) => {
     const cover = post.cover_media_id ? mediaById.get(post.cover_media_id) : null;
     const coverUrl = !cover || !cover.is_visible
       ? null
