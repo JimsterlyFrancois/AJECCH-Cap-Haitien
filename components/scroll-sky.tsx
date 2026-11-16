@@ -63,7 +63,7 @@ export default function ScrollSky() {
     }
 
     function createStars() {
-      starsLayer.replaceChildren();
+      starsLayer!.replaceChildren();
       const fragment = document.createDocumentFragment();
       const count = isMobile() ? 62 : 120;
       const colors = ["#ffffff", "#fff8e7", "#dbeafe", "#e0e7ff"];
@@ -84,7 +84,7 @@ export default function ScrollSky() {
         fragment.appendChild(star);
       }
 
-      starsLayer.appendChild(fragment);
+      starsLayer!.appendChild(fragment);
     }
 
     class RealisticCloud {
@@ -387,7 +387,7 @@ export default function ScrollSky() {
       window.removeEventListener("touchend", handleTouchEnd);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
       reduceMotion.removeEventListener("change", handleMotionPreferenceChange);
-      starsLayer.replaceChildren();
+      starsLayer!.replaceChildren();
     };
   }, []);
 
