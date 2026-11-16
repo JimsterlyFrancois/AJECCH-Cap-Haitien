@@ -18,11 +18,12 @@ export default function ScrollSky() {
   const badgeRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
+    const canvasElement = canvasRef.current;
     const starsLayer = starsRef.current;
-    const ctx = canvas?.getContext("2d", { alpha: true });
+    if (!canvasElement || !starsLayer) return;
 
-    if (!canvas || !starsLayer || !ctx) return;
+    const ctx = canvasElement.getContext("2d", { alpha: true });
+    if (!ctx) return;
 
     let width = window.innerWidth;
     let height = window.innerHeight;
@@ -51,10 +52,10 @@ export default function ScrollSky() {
       width = window.innerWidth;
       height = window.innerHeight;
       pixelRatio = Math.min(window.devicePixelRatio || 1, isMobile() ? 1 : 1.5);
-      canvas.width = Math.max(1, Math.floor(width * pixelRatio));
-      canvas.height = Math.max(1, Math.floor(height * pixelRatio));
-      canvas.style.width = width + "px";
-      canvas.style.height = height + "px";
+      canvasElement.width = Math.max(1, Math.floor(width * pixelRatio));
+      canvasElement.height = Math.max(1, Math.floor(height * pixelRatio));
+      canvasElement.style.width = width + "px";
+      canvasElement.style.height = height + "px";
       ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
       initClouds();
       drawFrame(false);
