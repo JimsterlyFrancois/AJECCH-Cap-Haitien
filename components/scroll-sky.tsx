@@ -14,8 +14,6 @@ type CloudPuff = {
 export default function ScrollSky() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const starsRef = useRef<HTMLDivElement>(null);
-  const windRef = useRef<HTMLSpanElement>(null);
-  const badgeRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
     const canvasElement = canvasRef.current;
@@ -35,7 +33,6 @@ export default function ScrollSky() {
     let clouds: RealisticCloud[] = [];
     let animationFrame = 0;
     let lastFrameTime = 0;
-    let renderedFrames = 0;
     let touchY: number | null = null;
     let touchX: number | null = null;
     let isDisposed = false;
@@ -241,15 +238,6 @@ export default function ScrollSky() {
       clouds.sort((a, b) => a.depth - b.depth);
     }
 
-    function updateWindLabel() {
-      if (windRef.current) windRef.current.textContent = windMultiplier.toFixed(1) + "×";
-      if (badgeRef.current) {
-        badgeRef.current.textContent = isNight
-          ? "Nuit étoilée · Clair de lune"
-          : "Ciel ensoleillé · Brise douce";
-      }
-    }
-
     function drawFrame(advance: boolean) {
       ctx.clearRect(0, 0, width, height);
       const targetNight = isNight ? 1 : 0;
@@ -266,8 +254,6 @@ export default function ScrollSky() {
         cloud.draw(nightTransition);
       }
 
-      renderedFrames += 1;
-      if (renderedFrames % 8 === 0 || !advance) updateWindLabel();
     }
 
     function animate(time: number) {
@@ -298,7 +284,6 @@ export default function ScrollSky() {
 
     function boostWind(impulse = 5.5) {
       windMultiplier = Math.min(MAX_WIND, windMultiplier + impulse);
-      updateWindLabel();
     }
 
     function handleClick(event: MouseEvent) {
@@ -335,7 +320,6 @@ export default function ScrollSky() {
 
     function handleThemeChange() {
       isNight = document.documentElement.dataset.theme === "night";
-      updateWindLabel();
       if (reduceMotion.matches) drawFrame(false);
     }
 
@@ -361,7 +345,6 @@ export default function ScrollSky() {
 
     resizeCanvas();
     createStars();
-    updateWindLabel();
 
     window.addEventListener("resize", resizeCanvas, { passive: true });
     window.addEventListener("click", handleClick);
@@ -407,11 +390,6 @@ export default function ScrollSky() {
           <span className="sky-moon-crater sky-moon-crater-three" />
         </div>
         <canvas ref={canvasRef} className="sky-clouds-canvas" />
-      </div>
-      <div className="sky-weather-badge" aria-hidden="true">
-        <span className="sky-weather-dot" />
-        <span ref={badgeRef}>Ciel ensoleillé · Brise douce</span>
-        <span ref={windRef} className="sky-wind-speed">1.0×</span>
       </div>
     </>
   );
