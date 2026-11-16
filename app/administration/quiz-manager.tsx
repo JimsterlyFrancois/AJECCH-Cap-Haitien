@@ -150,7 +150,12 @@ export default function QuizManager() {
       setDraft(null);
       await load();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Impossible d’enregistrer ce quiz.");
+      const message = err instanceof Error
+        ? err.message
+        : typeof err === "object" && err !== null && "message" in err && typeof (err as { message?: unknown }).message === "string"
+          ? (err as { message: string }).message
+          : "Impossible d’enregistrer ce quiz.";
+      setError(message);
     } finally {
       setBusy(false);
     }
