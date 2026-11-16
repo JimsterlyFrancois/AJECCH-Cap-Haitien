@@ -130,7 +130,7 @@ export default function SiteHeader({ active = "", logoUrl }: { active?: string; 
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${siteUrl}/auth/callback?next=%2F`,
+          redirectTo: `${siteUrl}/auth/callback?next=%2Fadministration&admin_request=1`,
           scopes: "openid email profile"
         }
       });
