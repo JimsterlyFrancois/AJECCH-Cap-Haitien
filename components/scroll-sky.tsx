@@ -52,10 +52,10 @@ export default function ScrollSky() {
       width = window.innerWidth;
       height = window.innerHeight;
       pixelRatio = Math.min(window.devicePixelRatio || 1, isMobile() ? 1 : 1.5);
-      canvasElement.width = Math.max(1, Math.floor(width * pixelRatio));
-      canvasElement.height = Math.max(1, Math.floor(height * pixelRatio));
-      canvasElement.style.width = width + "px";
-      canvasElement.style.height = height + "px";
+      canvasElement!.width = Math.max(1, Math.floor(width * pixelRatio));
+      canvasElement!.height = Math.max(1, Math.floor(height * pixelRatio));
+      canvasElement!.style.width = width + "px";
+      canvasElement!.style.height = height + "px";
       ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
       initClouds();
       drawFrame(false);
