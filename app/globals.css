@@ -4445,3 +4445,29 @@ body .ajecch-home .contact-section {
 @media (max-width: 700px) {
   body { background-attachment: scroll; }
 }
+
+/* Public publication cards and their dedicated reading pages */
+.public-news-image-link { display: block; overflow: hidden; }
+.public-news-image-link .public-news-cover { transition: transform .45s ease; }
+.public-news-image-link:hover .public-news-cover { transform: scale(1.015); }
+.public-news-copy h3 a { color: inherit; text-decoration: none; }
+.public-news-copy h3 a:hover { text-decoration: underline; text-underline-offset: 4px; }
+.publication-detail-layout { align-items: start; }
+.publication-detail-card { display: block; }
+.publication-detail-card h1 {
+  margin: 8px 0 14px;
+  color: #183b55;
+  font: 600 clamp(30px, 5vw, 52px)/1.12 'Playfair Display', Georgia, serif;
+}
+.publication-detail-cover {
+  width: 100%;
+  max-height: min(68vh, 680px);
+  object-fit: contain;
+  background: rgba(15, 38, 58, .04);
+}
+.publication-detail-body p { font-size: 15px; line-height: 1.9; }
+.publication-detail-body .text-link { display: inline-block; margin-top: 22px; }
+@media (prefers-reduced-motion: reduce) {
+  .public-news-image-link .public-news-cover { transition: none; }
+}
+

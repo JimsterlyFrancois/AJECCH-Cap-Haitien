@@ -35,13 +35,18 @@ export default async function NewsPage() {
                 <div className="public-news-list">
                   {posts.map((post) => (
                     <article className="public-news-card" id={post.slug} key={post.id}>
-                      {post.cover_url && <img className="public-news-cover" src={post.cover_url} alt="" loading="lazy" />}
+                      {post.cover_url && (
+                        <a className="public-news-image-link" href={`/actualites/${encodeURIComponent(post.slug)}`} aria-label={`Ouvrir la publication : ${post.title}`}>
+                          <img className="public-news-cover" src={post.cover_url} alt={`Image de couverture : ${post.title}`} loading="lazy" decoding="async" />
+                        </a>
+                      )}
                       <div className="public-news-copy">
                         <span className="public-news-category">{post.category === "event" ? "Événement" : post.category === "announcement" ? "Annonce" : "Actualité"}</span>
                         {post.published_at && <time dateTime={post.published_at}>{new Date(post.published_at).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}</time>}
-                        <h3>{post.title}</h3>
+                        <h3><a href={`/actualites/${encodeURIComponent(post.slug)}`}>{post.title}</a></h3>
                         {post.excerpt && <p className="public-news-excerpt">{post.excerpt}</p>}
                         {post.body && <p>{post.body}</p>}
+                        <a className="text-link" href={`/actualites/${encodeURIComponent(post.slug)}`}>Lire la publication <span>↗</span></a>
                         {post.category === "event" && (post.event_starts_at || post.event_location) && (
                           <p className="public-news-event-meta">
                             {post.event_starts_at && <>Date : {new Date(post.event_starts_at).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}</>}
