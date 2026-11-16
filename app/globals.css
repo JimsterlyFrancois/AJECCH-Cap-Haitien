@@ -2113,56 +2113,12 @@ body > :not(.scroll-sky) {
   position: relative;
   z-index: 1;
 }
-.scroll-sky-clouds {
-  position: absolute;
-  left: -12%;
-  width: 124%;
-  height: 58vh;
-  min-height: 360px;
-  background-repeat: no-repeat;
-  will-change: transform;
-  transform: translate3d(0, 0, 0);
-}
-.scroll-sky-clouds-distant {
-  top: -9vh;
-  opacity: .36;
-  filter: blur(13px);
-  background-image:
-    radial-gradient(ellipse 19% 17% at 13% 32%, rgba(255,255,255,.78) 0 45%, transparent 78%),
-    radial-gradient(ellipse 16% 14% at 23% 29%, rgba(255,255,255,.68) 0 45%, transparent 78%),
-    radial-gradient(ellipse 22% 18% at 72% 23%, rgba(255,255,255,.76) 0 44%, transparent 78%),
-    radial-gradient(ellipse 17% 15% at 84% 27%, rgba(255,255,255,.68) 0 45%, transparent 78%);
-}
-.scroll-sky-clouds-near {
-  top: 20vh;
-  opacity: .25;
-  filter: blur(19px);
-  background-image:
-    radial-gradient(ellipse 20% 18% at 5% 46%, rgba(255,255,255,.8) 0 42%, transparent 78%),
-    radial-gradient(ellipse 15% 14% at 17% 42%, rgba(255,255,255,.72) 0 45%, transparent 78%),
-    radial-gradient(ellipse 23% 19% at 91% 50%, rgba(255,255,255,.78) 0 43%, transparent 78%),
-    radial-gradient(ellipse 16% 14% at 78% 46%, rgba(255,255,255,.7) 0 44%, transparent 78%);
-}
-@media (max-width: 700px) {
-  .scroll-sky-clouds { height: 46vh; min-height: 280px; }
-  .scroll-sky-clouds-distant { opacity: .29; }
-  .scroll-sky-clouds-near { opacity: .19; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .scroll-sky-clouds { will-change: auto; }
-}
+
+
 
 
 
 /* Clear-day clouds: brighter, softer layers visible over the blue sky. */
-html[data-theme="day"] .scroll-sky-clouds-distant {
-  opacity: .48;
-  filter: blur(11px);
-}
-html[data-theme="day"] .scroll-sky-clouds-near {
-  opacity: .34;
-  filter: blur(16px);
-}
 
 /* Persistent liquid-glass controls in the site navigation */
 .nav-actions { display:flex; align-items:center; justify-content:flex-end; gap:8px; flex-shrink:0; }
@@ -2195,22 +2151,6 @@ html[data-theme="day"] .scroll-sky-clouds-near {
 html[data-theme="night"] { color-scheme:dark; }
 html[data-theme="night"] body { color:#e8edf7; background:#071329; }
 html[data-theme="night"] .scroll-sky { background:linear-gradient(180deg,#071329 0%,#101e3a 48%,#172845 100%); }
-html[data-theme="night"] .scroll-sky-clouds-distant {
-  opacity:.22; filter:blur(16px);
-  background-image:
-    radial-gradient(ellipse 19% 17% at 13% 32%,rgba(178,199,231,.42) 0 45%,transparent 78%),
-    radial-gradient(ellipse 16% 14% at 23% 29%,rgba(156,183,224,.34) 0 45%,transparent 78%),
-    radial-gradient(ellipse 22% 18% at 72% 23%,rgba(180,198,232,.38) 0 44%,transparent 78%),
-    radial-gradient(ellipse 17% 15% at 84% 27%,rgba(151,180,223,.32) 0 45%,transparent 78%);
-}
-html[data-theme="night"] .scroll-sky-clouds-near {
-  opacity:.16; filter:blur(22px);
-  background-image:
-    radial-gradient(ellipse 20% 18% at 5% 46%,rgba(194,207,231,.42) 0 42%,transparent 78%),
-    radial-gradient(ellipse 15% 14% at 17% 42%,rgba(162,186,222,.35) 0 45%,transparent 78%),
-    radial-gradient(ellipse 23% 19% at 91% 50%,rgba(182,199,231,.4) 0 43%,transparent 78%),
-    radial-gradient(ellipse 16% 14% at 78% 46%,rgba(155,181,220,.32) 0 44%,transparent 78%);
-}
 html[data-theme="night"] .site-header { background:rgba(10,23,45,.88); border-color:rgba(190,207,233,.16); box-shadow:0 12px 38px rgba(0,0,0,.2); backdrop-filter:blur(22px); }
 html[data-theme="night"] .brand-copy strong,
 html[data-theme="night"] .main-nav a,
@@ -2629,24 +2569,6 @@ html[data-theme="night"] .scroll-sky {
   background:
     radial-gradient(ellipse at 18% 3%, rgba(125, 157, 145, .11), transparent 32rem),
     linear-gradient(180deg, #111e1b 0%, #15231f 52%, #101a18 100%);
-}
-html[data-theme="night"] .scroll-sky-clouds-distant {
-  opacity: .17;
-  filter: blur(18px);
-  background-image:
-    radial-gradient(ellipse 19% 17% at 13% 32%, rgba(221,235,220,.34) 0 45%, transparent 78%),
-    radial-gradient(ellipse 16% 14% at 23% 29%, rgba(179,205,186,.29) 0 45%, transparent 78%),
-    radial-gradient(ellipse 22% 18% at 72% 23%, rgba(220,231,215,.32) 0 44%, transparent 78%),
-    radial-gradient(ellipse 17% 15% at 84% 27%, rgba(171,197,181,.27) 0 45%, transparent 78%);
-}
-html[data-theme="night"] .scroll-sky-clouds-near {
-  opacity: .12;
-  filter: blur(23px);
-  background-image:
-    radial-gradient(ellipse 20% 18% at 5% 46%, rgba(213,225,211,.32) 0 42%, transparent 78%),
-    radial-gradient(ellipse 15% 14% at 17% 42%, rgba(174,201,181,.26) 0 45%, transparent 78%),
-    radial-gradient(ellipse 23% 19% at 91% 50%, rgba(216,229,213,.3) 0 43%, transparent 78%),
-    radial-gradient(ellipse 16% 14% at 78% 46%, rgba(172,197,178,.25) 0 44%, transparent 78%);
 }
 html[data-theme="night"] .topline {
   color: #e9eee8;
@@ -3832,24 +3754,6 @@ html[data-theme="night"] .scroll-sky {
     radial-gradient(ellipse at 15% 3%, rgba(97,163,211,.16), transparent 32rem),
     linear-gradient(180deg, #07182d 0%, #0c2340 48%, #123454 100%);
 }
-html[data-theme="night"] .scroll-sky-clouds-distant {
-  opacity: .18;
-  filter: blur(17px);
-  background-image:
-    radial-gradient(ellipse 19% 17% at 13% 32%, rgba(194,224,247,.43) 0 45%, transparent 78%),
-    radial-gradient(ellipse 16% 14% at 23% 29%, rgba(151,204,238,.35) 0 45%, transparent 78%),
-    radial-gradient(ellipse 22% 18% at 72% 23%, rgba(194,224,247,.4) 0 44%, transparent 78%),
-    radial-gradient(ellipse 17% 15% at 84% 27%, rgba(151,204,238,.32) 0 45%, transparent 78%);
-}
-html[data-theme="night"] .scroll-sky-clouds-near {
-  opacity: .13;
-  filter: blur(22px);
-  background-image:
-    radial-gradient(ellipse 20% 18% at 5% 46%, rgba(194,224,247,.35) 0 42%, transparent 78%),
-    radial-gradient(ellipse 15% 14% at 17% 42%, rgba(151,204,238,.3) 0 45%, transparent 78%),
-    radial-gradient(ellipse 23% 19% at 91% 50%, rgba(194,224,247,.34) 0 43%, transparent 78%),
-    radial-gradient(ellipse 16% 14% at 78% 46%, rgba(151,204,238,.29) 0 44%, transparent 78%);
-}
 html[data-theme="night"] .hero-bottomline b,
 html[data-theme="night"] .nature-feature-overlay span,
 html[data-theme="night"] .site-footer .footer-label,
@@ -3888,7 +3792,6 @@ html[data-theme="day"] body main .contact-glass-panel h2 .contact-title-primary 
   background-repeat: no-repeat;
   background-attachment: fixed;
 }
-.scroll-sky-clouds { display: block; }
 body { background: transparent !important; }
 
 html[data-theme="day"] body main > section:not(.hero-nature):not(.contact-section) {
@@ -4149,7 +4052,6 @@ html[data-theme="night"] .admin-access-requests > p { color: #bdd5e8; }
 html[data-theme="night"] .scroll-sky {
   background: radial-gradient(ellipse at 75% 18%, #162854 0%, #09122b 45%, #030612 100%) !important;
 }
-html[data-theme="night"] .scroll-sky-clouds { display: none !important; }
 .night-sky {
   position: absolute;
   inset: 0;
@@ -4291,3 +4193,413 @@ html[data-theme="night"] body main .join-inner {
 }
 html[data-theme="night"] body main .join-inner h2 { color: #f0f7ff !important; }
 html[data-theme="night"] body main .join-inner p { color: #bfd2e5 !important; }
+
+/* Ciel diurne procédural : nuages volumétriques et soleil, sans nuages CSS en dégradés. */
+.day-sky-cloud-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.day-sky-sun {
+  position: absolute;
+  z-index: 2;
+  top: clamp(62px, 10vh, 104px);
+  right: clamp(28px, 8vw, 116px);
+  width: clamp(76px, 9vw, 116px);
+  aspect-ratio: 1;
+  pointer-events: none;
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 1s ease, transform 1s ease;
+}
+.day-sky-sun-rays {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 390%;
+  height: 390%;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: conic-gradient(
+    from 0deg,
+    rgba(255,255,240,.18) 0deg,
+    transparent 25deg,
+    rgba(255,245,210,.12) 55deg,
+    transparent 90deg,
+    rgba(255,255,240,.16) 130deg,
+    transparent 175deg,
+    rgba(255,240,190,.14) 220deg,
+    transparent 270deg,
+    rgba(255,255,240,.18) 315deg,
+    transparent 360deg
+  );
+  animation: ajecch-sun-rays 90s linear infinite;
+}
+.day-sky-sun-disc {
+  position: absolute;
+  inset: 12%;
+  overflow: hidden;
+  border-radius: 50%;
+  background: radial-gradient(circle at 32% 27%, #fff 0%, #fffdf3 38%, #ffe8af 76%, #f5c96f 100%);
+  box-shadow:
+    0 0 50px 20px rgba(255,250,220,.72),
+    0 0 120px 55px rgba(255,215,110,.38),
+    0 0 210px 95px rgba(255,190,80,.17);
+}
+@keyframes ajecch-sun-rays {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+html[data-theme="night"] .day-sky-cloud-canvas,
+html[data-theme="night"] .day-sky-sun {
+  opacity: 0;
+  visibility: hidden;
+}
+.night-sky { z-index: 3; }
+@media (max-width: 700px) {
+  .day-sky-sun { top: 92px; right: 25px; width: 76px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .day-sky-sun-rays { animation: none; }
+  .day-sky-sun { transition: none; }
+  .day-sky-cloud-canvas { will-change: auto; }
+}
+
+/* ADM 1 — directory of registered accounts and media-manager assignment. */
+.admin-user-directory { min-width: 0; }
+.admin-user-directory-search {
+  display: grid;
+  gap: 7px;
+  max-width: 520px;
+  margin: 18px 0 14px;
+  color: #40566a;
+  font-size: 11px;
+  font-weight: 700;
+}
+.admin-user-directory-search input {
+  width: 100%;
+  min-height: 42px;
+  padding: 10px 13px;
+  border: 1px solid #d5e0e8;
+  border-radius: 10px;
+  color: #193d5a;
+  background: rgba(255,255,255,.92);
+  font: inherit;
+  font-weight: 500;
+}
+.admin-user-directory-list {
+  max-height: 440px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  border: 1px solid rgba(74,113,143,.18);
+  border-radius: 12px;
+  background: rgba(255,255,255,.5);
+}
+.admin-user-directory-row {
+  display: grid;
+  grid-template-columns: minmax(0,1fr) minmax(220px,.75fr);
+  align-items: center;
+  gap: 16px;
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(74,113,143,.13);
+}
+.admin-user-directory-row:last-child { border-bottom: 0; }
+.admin-user-directory-identity { display: grid; gap: 5px; min-width: 0; }
+.admin-user-directory-identity strong {
+  color: #173b5a;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+.admin-user-directory-identity small {
+  color: #587086;
+  font-size: 10px;
+  overflow-wrap: anywhere;
+}
+.admin-user-directory-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 9px;
+  flex-wrap: wrap;
+}
+.admin-user-directory-actions .admin-primary-button {
+  min-height: 34px;
+  padding: 8px 12px;
+  font-size: 10px;
+}
+.admin-user-status {
+  display: inline-flex;
+  align-items: center;
+  min-height: 29px;
+  padding: 5px 10px;
+  border: 1px solid rgba(43,119,171,.18);
+  border-radius: 999px;
+  color: #155c8c;
+  background: #eaf5fc;
+  font-size: 10px;
+  font-weight: 800;
+}
+.admin-user-muted { color: #758493; font-size: 10px; }
+.admin-seat-card.publisher .admin-danger-text {
+  align-self: flex-start;
+  margin-top: 8px;
+  padding: 7px 10px;
+  border: 1px solid #efcfca;
+  border-radius: 8px;
+  color: #9a403a;
+  background: #fff3f1;
+  font: inherit;
+  font-size: 10px;
+  font-weight: 800;
+  cursor: pointer;
+}
+html[data-theme="night"] .admin-user-directory-list {
+  border-color: rgba(185,218,244,.18);
+  background: rgba(12,37,61,.48);
+}
+html[data-theme="night"] .admin-user-directory-search { color: #c2d8e9; }
+html[data-theme="night"] .admin-user-directory-search input {
+  color: #eaf5ff;
+  border-color: rgba(185,218,244,.24);
+  background: #102d4a;
+}
+html[data-theme="night"] .admin-user-directory-row { border-bottom-color: rgba(185,218,244,.13); }
+html[data-theme="night"] .admin-user-directory-identity strong { color: #f0f7ff; }
+html[data-theme="night"] .admin-user-directory-identity small,
+html[data-theme="night"] .admin-user-muted { color: #b7cde0; }
+html[data-theme="night"] .admin-user-status {
+  color: #b8e3ff;
+  border-color: rgba(139,208,255,.2);
+  background: rgba(44,110,157,.22);
+}
+@media (max-width: 700px) {
+  .admin-user-directory-row { grid-template-columns: minmax(0,1fr); gap: 10px; }
+  .admin-user-directory-actions { justify-content: flex-start; }
+  .admin-user-directory-actions .admin-primary-button { width: 100%; }
+}
+
+/* AJECCH — quiz participant interface and authoring tools */
+.quiz-page-section { min-height: 72vh; padding: clamp(54px, 7vw, 92px) 0; }
+.quiz-page-content { max-width: 980px; margin: 0 auto; }
+.quiz-page-heading { max-width: 760px; margin: 0 auto 34px; text-align: center; }
+.quiz-page-heading h1 { margin: 10px 0 12px; color: #123b61; font-size: clamp(30px, 5vw, 48px); line-height: 1.08; }
+.quiz-page-heading p { margin: 0; color: #526e87; font-size: 14px; line-height: 1.75; }
+.quiz-auth-panel, .quiz-user-panel, .quiz-card {
+  border: 1px solid rgba(73,124,164,.2);
+  border-radius: 18px;
+  background: rgba(255,255,255,.78);
+  box-shadow: 0 18px 46px rgba(9,45,76,.08), inset 0 1px 0 rgba(255,255,255,.9);
+  backdrop-filter: blur(14px) saturate(120%);
+  -webkit-backdrop-filter: blur(14px) saturate(120%);
+}
+.quiz-auth-panel { max-width: 620px; margin: 0 auto 28px; padding: clamp(18px, 4vw, 28px); }
+.quiz-auth-heading h2 { margin: 0 0 8px; color: #163e62; font-size: 19px; }
+.quiz-auth-heading p { margin: 0; color: #597289; font-size: 12px; line-height: 1.7; }
+.quiz-auth-switch { display: flex; gap: 8px; margin: 18px 0 14px; }
+.quiz-auth-switch button, .quiz-user-panel > button {
+  min-height: 36px; padding: 8px 13px; border: 1px solid rgba(41,112,162,.18);
+  border-radius: 9px; color: #285b80; background: rgba(232,244,252,.78);
+  font: inherit; font-size: 11px; font-weight: 750; cursor: pointer;
+}
+.quiz-auth-switch button.active { color: #fff; background: #155786; border-color: #155786; }
+.quiz-auth-form { display: grid; gap: 11px; }
+.quiz-auth-form label, .admin-quiz-editor > label, .admin-quiz-question > label {
+  display: grid; gap: 6px; color: #35546d; font-size: 11px; font-weight: 750;
+}
+.quiz-auth-form input, .admin-quiz-editor input, .admin-quiz-editor textarea,
+.admin-quiz-question textarea, .admin-quiz-option input[type="text"] {
+  width: 100%; min-width: 0; min-height: 39px; padding: 9px 11px;
+  border: 1px solid #d4e1ea; border-radius: 9px; color: #163e5d;
+  background: rgba(255,255,255,.94); font: inherit; font-size: 12px;
+}
+.quiz-auth-form .button { justify-content: center; margin-top: 4px; border: 0; cursor: pointer; }
+.quiz-user-panel { display: flex; align-items: center; gap: 16px; margin: 0 auto 28px; padding: 16px 19px; }
+.quiz-user-panel > div:first-child { display: grid; gap: 5px; min-width: 0; flex: 1; }
+.quiz-user-panel span { color: #68839a; font-size: 9px; font-weight: 850; letter-spacing: .12em; }
+.quiz-user-panel strong { color: #173e61; font-size: 13px; overflow-wrap: anywhere; }
+.quiz-score { display: grid; gap: 3px; padding: 8px 15px; border-left: 1px solid rgba(70,121,159,.2); }
+.quiz-score strong { color: #0f6da7; font-size: 25px; font-variant-numeric: tabular-nums; }
+.quiz-score small { font-size: 11px; }
+.quiz-user-panel > button { flex: 0 0 auto; }
+.quiz-feedback { max-width: 760px; margin: 12px auto; padding: 11px 14px; border: 1px solid rgba(42,133,100,.2); border-radius: 10px; color: #1a6b52; background: rgba(232,249,242,.82); font-size: 11px; line-height: 1.55; }
+.quiz-feedback-error { color: #963f3a; border-color: rgba(176,83,75,.22); background: rgba(255,241,239,.88); }
+.quiz-list { display: grid; gap: 18px; }
+.quiz-card { padding: clamp(18px, 4vw, 27px); }
+.quiz-card-heading { display: flex; justify-content: space-between; align-items: flex-start; gap: 15px; }
+.quiz-card-heading h2 { margin: 6px 0 0; color: #173e60; font-size: clamp(18px, 3vw, 23px); line-height: 1.25; }
+.quiz-card-heading > span { flex: 0 0 auto; padding: 6px 9px; border-radius: 999px; color: #28668f; background: #e9f5fc; font-size: 9px; font-weight: 800; }
+.quiz-number { color: #2678ac; font-size: 9px; font-weight: 850; letter-spacing: .14em; }
+.quiz-description { margin: 12px 0 18px; color: #5a7287; font-size: 12px; line-height: 1.65; }
+.quiz-questions { display: grid; gap: 13px; }
+.quiz-question-card { padding: 16px; border: 1px solid rgba(71,121,157,.16); border-radius: 13px; background: rgba(246,251,254,.72); }
+.quiz-question-card h3 { margin: 0 0 13px; color: #183f60; font-size: 13px; line-height: 1.55; }
+.quiz-question-card h3 span { color: #277bae; }
+.quiz-answer-list { display: grid; gap: 8px; }
+.quiz-answer-button { display: flex; align-items: center; gap: 10px; width: 100%; min-width: 0; padding: 10px 12px; border: 1px solid #d8e5ed; border-radius: 9px; color: #35546d; background: rgba(255,255,255,.9); text-align: left; font: inherit; font-size: 11px; line-height: 1.45; cursor: pointer; transition: border-color .18s ease, background .18s ease, transform .18s ease; }
+.quiz-answer-button:not(:disabled):hover { border-color: #70acd0; background: #f0f8fd; transform: translateY(-1px); }
+.quiz-answer-button:disabled { cursor: default; opacity: 1; }
+.quiz-answer-letter { display: grid; flex: 0 0 24px; width: 24px; height: 24px; place-items: center; border-radius: 7px; color: #27668f; background: #e8f3fa; font-weight: 850; }
+.quiz-answer-button strong { margin-left: auto; color: #217251; font-size: 9px; white-space: nowrap; }
+.quiz-answer-button.selected.correct { border-color: #76bca0; background: #effaf4; }
+.quiz-answer-button.selected.incorrect { border-color: #d89a91; background: #fff4f2; }
+.quiz-answer-button.selected.incorrect strong { color: #a34c43; }
+.quiz-question-result, .quiz-question-hint { margin: 10px 0 0; color: #7a6670; font-size: 10px; line-height: 1.5; }
+.quiz-question-result.good { color: #1f7655; }
+.quiz-empty { padding: 22px; color: #647d91; text-align: center; font-size: 12px; }
+.admin-quiz-manager { min-width: 0; }
+.admin-quiz-new { margin: 5px 0 16px; }
+.admin-quiz-list { display: grid; gap: 9px; }
+.admin-quiz-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 14px 15px; border: 1px solid rgba(73,124,164,.19); border-radius: 12px; background: rgba(255,255,255,.64); }
+.admin-quiz-row > div:first-child { min-width: 0; }
+.admin-quiz-row strong { color: #173d5d; font-size: 12px; }
+.admin-quiz-row p { margin: 5px 0; color: #5b7489; font-size: 10px; line-height: 1.45; }
+.admin-quiz-row small { color: #69849a; font-size: 9px; }
+.admin-quiz-editor { display: grid; gap: 15px; margin-top: 17px; padding: clamp(16px, 3vw, 24px); border: 1px solid rgba(73,124,164,.2); border-radius: 14px; background: rgba(255,255,255,.72); }
+.admin-quiz-editor-heading, .admin-quiz-question-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.admin-quiz-editor-heading h3 { margin: 5px 0 0; color: #153d60; font-size: 18px; }
+.admin-quiz-question-list { display: grid; gap: 12px; }
+.admin-quiz-question { display: grid; gap: 12px; min-width: 0; padding: 14px; border: 1px solid rgba(73,124,164,.18); border-radius: 12px; background: rgba(244,249,253,.76); }
+.admin-quiz-question-heading strong { color: #1a4f77; font-size: 12px; }
+.admin-quiz-question-heading .admin-danger-text { border: 0; background: transparent; cursor: pointer; }
+.admin-quiz-options { display: grid; gap: 8px; }
+.admin-quiz-option-caption { color: #56738b; font-size: 10px; font-weight: 750; }
+.admin-quiz-option { display: grid; grid-template-columns: 20px minmax(0,1fr) 26px; align-items: center; gap: 8px; }
+.admin-quiz-option input[type="radio"] { width: 16px; height: 16px; accent-color: #1975a8; }
+.admin-quiz-option input[type="text"] { min-height: 35px; }
+.admin-quiz-remove-option { width: 25px; height: 25px; border: 1px solid #ead5d2; border-radius: 7px; color: #9d4b43; background: #fff5f3; cursor: pointer; }
+.admin-quiz-add-option { justify-self: start; padding: 5px 0; border: 0; color: #246e9d; background: transparent; font: inherit; font-size: 10px; font-weight: 800; cursor: pointer; }
+.admin-quiz-save-actions { justify-content: flex-end; flex-wrap: wrap; }
+html[data-theme="night"] .quiz-page-heading h1,
+html[data-theme="night"] .quiz-auth-heading h2,
+html[data-theme="night"] .quiz-user-panel strong,
+html[data-theme="night"] .quiz-card-heading h2,
+html[data-theme="night"] .quiz-question-card h3,
+html[data-theme="night"] .admin-quiz-row strong,
+html[data-theme="night"] .admin-quiz-editor-heading h3 { color: #eef7ff; }
+html[data-theme="night"] .quiz-page-heading p,
+html[data-theme="night"] .quiz-auth-heading p,
+html[data-theme="night"] .quiz-description,
+html[data-theme="night"] .quiz-question-hint,
+html[data-theme="night"] .admin-quiz-row p,
+html[data-theme="night"] .admin-quiz-row small { color: #bbd1e4; }
+html[data-theme="night"] .quiz-auth-panel,
+html[data-theme="night"] .quiz-user-panel,
+html[data-theme="night"] .quiz-card,
+html[data-theme="night"] .admin-quiz-editor,
+html[data-theme="night"] .admin-quiz-row { border-color: rgba(175,211,238,.18); background: rgba(7,29,51,.82); box-shadow: 0 18px 46px rgba(0,0,0,.2); }
+html[data-theme="night"] .quiz-question-card,
+html[data-theme="night"] .admin-quiz-question { border-color: rgba(175,211,238,.14); background: rgba(16,43,68,.72); }
+html[data-theme="night"] .quiz-answer-button { border-color: rgba(173,208,235,.18); color: #d7e8f6; background: rgba(18,47,73,.92); }
+html[data-theme="night"] .quiz-answer-letter { color: #c4e6ff; background: rgba(51,111,153,.35); }
+html[data-theme="night"] .quiz-answer-button.selected.correct { border-color: #4b9274; background: rgba(24,92,66,.28); }
+html[data-theme="night"] .quiz-answer-button.selected.incorrect { border-color: #a15d56; background: rgba(114,51,46,.27); }
+html[data-theme="night"] .quiz-score strong { color: #8ed5ff; }
+html[data-theme="night"] .quiz-auth-form label,
+html[data-theme="night"] .admin-quiz-editor > label,
+html[data-theme="night"] .admin-quiz-question > label { color: #d1e4f3; }
+html[data-theme="night"] .quiz-auth-form input,
+html[data-theme="night"] .admin-quiz-editor input,
+html[data-theme="night"] .admin-quiz-editor textarea,
+html[data-theme="night"] .admin-quiz-question textarea,
+html[data-theme="night"] .admin-quiz-option input[type="text"] { color: #edf7ff; border-color: rgba(178,214,240,.22); background: #102e4b; }
+html[data-theme="night"] .quiz-card-heading > span { color: #c4e8ff; background: rgba(39,104,151,.34); }
+html[data-theme="night"] .quiz-user-panel span,
+html[data-theme="night"] .admin-quiz-option-caption { color: #a9c8df; }
+@media (max-width: 700px) {
+  .quiz-page-section { padding: 42px 0 58px; }
+  .quiz-user-panel { align-items: flex-start; flex-wrap: wrap; }
+  .quiz-user-panel > div:first-child { flex-basis: 100%; }
+  .quiz-score { padding-left: 0; border-left: 0; }
+  .quiz-user-panel > button { margin-left: auto; }
+  .admin-quiz-row { align-items: flex-start; flex-direction: column; }
+  .admin-quiz-row .admin-card-actions { width: 100%; justify-content: flex-start; }
+  .admin-quiz-row .admin-card-actions button { flex: 1; }
+  .quiz-card-heading { align-items: flex-start; }
+  .quiz-answer-button { align-items: flex-start; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .quiz-answer-button { transition: none; }
+  .quiz-answer-button:not(:disabled):hover { transform: none; }
+}
+
+.public-news-copy > p { white-space: pre-line; }
+
+
+/* ADM dashboard — co-authority and delegated media-manager workflow */
+.admin-authority-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(230px, .72fr);
+  align-items: center;
+  gap: 22px;
+  margin: 20px 0;
+  padding: clamp(19px, 3vw, 28px);
+  border: 1px solid rgba(93, 151, 190, .25);
+  border-radius: 18px;
+  background: linear-gradient(128deg, rgba(255,255,255,.92), rgba(232,244,252,.86) 58%, rgba(246,250,253,.92));
+  box-shadow: 0 16px 40px rgba(12, 48, 77, .08), inset 0 1px 0 rgba(255,255,255,.9);
+}
+.admin-authority-copy { min-width: 0; }
+.admin-authority-copy h2 {
+  max-width: 620px;
+  margin: 8px 0 10px;
+  color: #123b5d;
+  font-size: clamp(19px, 2.4vw, 26px);
+  line-height: 1.2;
+  letter-spacing: -.025em;
+}
+.admin-authority-copy p {
+  max-width: 700px;
+  margin: 0;
+  color: #587188;
+  font-size: 11px;
+  line-height: 1.75;
+}
+.admin-authority-actions {
+  display: grid;
+  gap: 13px;
+  padding: 16px;
+  border: 1px solid rgba(68, 130, 173, .18);
+  border-radius: 13px;
+  background: rgba(255,255,255,.74);
+}
+.admin-authority-actions span { display: grid; gap: 5px; }
+.admin-authority-actions strong { color: #1d557b; font-size: 11px; }
+.admin-authority-actions small { color: #687f93; font-size: 10px; line-height: 1.45; }
+.admin-authority-actions button {
+  min-height: 38px;
+  padding: 9px 12px;
+  border: 0;
+  border-radius: 9px;
+  color: #fff;
+  background: linear-gradient(110deg, #14557f, #247fae);
+  font: inherit;
+  font-size: 10px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: filter .18s ease, transform .18s ease;
+}
+.admin-authority-actions button:hover { filter: brightness(1.06); transform: translateY(-1px); }
+.admin-seat-grid-secondary { grid-template-columns: minmax(0, 1fr); }
+.admin-seat-grid-secondary .admin-seat-card.publisher { max-width: 620px; }
+html[data-theme="night"] .admin-authority-panel {
+  border-color: rgba(146, 202, 239, .18);
+  background: linear-gradient(128deg, rgba(9,32,54,.96), rgba(13,47,75,.9) 58%, rgba(11,38,63,.94));
+  box-shadow: 0 18px 45px rgba(0,0,0,.2), inset 0 1px 0 rgba(225,242,255,.06);
+}
+html[data-theme="night"] .admin-authority-copy h2 { color: #edf7ff; }
+html[data-theme="night"] .admin-authority-copy p { color: #b9d0e2; }
+html[data-theme="night"] .admin-authority-actions {
+  border-color: rgba(146, 202, 239, .16);
+  background: rgba(5,25,44,.7);
+}
+html[data-theme="night"] .admin-authority-actions strong { color: #bce5ff; }
+html[data-theme="night"] .admin-authority-actions small { color: #b5cadd; }
+@media (max-width: 760px) {
+  .admin-authority-panel { grid-template-columns: minmax(0,1fr); }
+  .admin-authority-actions { padding: 13px; }
+}

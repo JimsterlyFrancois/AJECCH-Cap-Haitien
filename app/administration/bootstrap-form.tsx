@@ -4,6 +4,15 @@ import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
+function getErrorMessage(error: unknown) {
+  if (typeof error === "string" && error.trim()) return error;
+  if (typeof error === "object" && error !== null && "message" in error) {
+    const message = (error as { message?: unknown }).message;
+    if (typeof message === "string" && message.trim()) return message;
+  }
+  return "L’activation a échoué. Vérifiez le code d’initialisation et la confirmation de votre adresse e-mail, puis réessayez.";
+}
+
 export default function BootstrapForm() {
   const router = useRouter();
   const [name, setName] = useState("");
@@ -25,7 +34,7 @@ export default function BootstrapForm() {
       router.replace("/administration");
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Initialisation impossible.");
+      setError(getErrorMessage(err));
     } finally {
       setLoading(false);
     }

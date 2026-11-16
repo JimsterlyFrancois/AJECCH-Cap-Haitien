@@ -5,7 +5,8 @@ const footerLinks = [
   { href: "/#actions", label: "Nos actions" },
   { href: "/#evenements", label: "Événements" },
   { href: "/a-propos", label: "À propos" },
-  { href: "/actualites", label: "Actualités" }
+  { href: "/actualites", label: "Actualités" },
+  { href: "/quiz", label: "Quiz & connaissances" }
 ];
 
 export default function SiteFooter({ logoUrl }: { logoUrl?: string | null }) {

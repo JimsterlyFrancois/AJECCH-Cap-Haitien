@@ -1,4 +1,9 @@
-# Connexion Google et notifications AJECCH
+# ARCHIVE — ancien parcours Google et notifications AJECCH
+
+> **Statut : historique, non actif dans l'interface actuelle.**  
+> La connexion administrative prise en charge actuellement utilise l'adresse e-mail et le mot de passe via Supabase Auth. Ne pas réactiver Google OAuth ni ajouter un bouton Google sur la seule base de ce document. Toute remise en service exige une décision explicite, une configuration complète du fournisseur et des tests de sécurité.
+
+Ce document conserve les informations de l'ancienne implémentation pour comprendre les migrations, les données et les routes déjà présentes. Il ne décrit pas le parcours utilisateur actuellement actif.
 
 ## Connexion Google
 Le bouton « Connecter Google » utilise Supabase Auth avec le fournisseur Google et les scopes minimaux `openid email profile`. Le retour OAuth est traité par `/auth/callback`.

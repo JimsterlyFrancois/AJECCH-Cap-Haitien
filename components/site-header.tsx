@@ -127,19 +127,15 @@ export default function SiteHeader({ active = "", logoUrl }: { active?: string; 
                 </a>
               );
             })}
+            <a className={pathname === "/quiz" ? "active" : ""} href="/quiz" aria-current={pathname === "/quiz" ? "page" : undefined}>Quiz</a>
           </nav>
           <div className="nav-actions">
             <button className="theme-toggle liquid-control" type="button" onClick={toggleTheme} aria-label={nightMode ? "Activer le mode jour" : "Activer le mode nuit"} aria-pressed={nightMode}>
               <span aria-hidden="true">{nightMode ? "☀" : "☾"}</span>
               <small>{nightMode ? "Jour" : "Nuit"}</small>
             </button>
-            {accountEmail && (
-              <a className="nav-cta admin-dashboard-link" href="/administration" title={`${adminAccess ? "Espace de gestion" : "Consulter mon accès AJECCH"} · ${accountEmail}`}>
-                {adminAccess ? "Espace admin" : "Mon espace"} <span>↗</span>
-              </a>
-            )}
             <a className="nav-cta admin-dashboard-link" href={accountEmail ? "/administration" : "/administration/connexion"} title={accountTitle}>
-              {accountEmail && adminAccess ? "Espace admin" : "Administration"} <span>↗</span>
+              {accountEmail ? (adminAccess ? "Espace admin" : "Mon espace") : "Administration"} <span>↗</span>
             </a>
             <a className="nav-cta" href={isHome ? "#contact" : "/#contact"}>Rejoindre <span>↗</span></a>
           </div>
