@@ -212,11 +212,64 @@ export default async function Home() {
         </div>
       </section>
 
+      <section className="section-shell recent-publications-section" id="actualites">
+        <div className="container">
+          <div className="section-heading-wide" data-reveal>
+            <div>
+              <span className="section-kicker">04 / ACTUALITÉS</span>
+              <h2>Les nouvelles de la<br /><em>communauté AJECCH.</em></h2>
+            </div>
+            <p>Retrouvez les actualités, les annonces et les temps forts publiés par les responsables de l’association.</p>
+          </div>
+          {posts.length > 0 ? (
+            <div className="public-news-list">
+              {posts.slice(0, 3).map((post) => (
+                <article className="public-news-card" id={`accueil-${post.slug}`} key={post.id} data-reveal>
+                  {post.cover_url ? (
+                    <img
+                      className="public-news-cover"
+                      src={post.cover_url}
+                      alt={`Image de couverture : ${post.title}`}
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  ) : (
+                    <div className="public-image-empty">Aucune image de couverture pour cette publication</div>
+                  )}
+                  <div className="public-news-copy">
+                    <span className="public-news-category">
+                      {post.category === "event" ? "Événement" : post.category === "announcement" ? "Annonce" : "Actualité"}
+                    </span>
+                    {post.published_at && (
+                      <time dateTime={post.published_at}>
+                        {new Date(post.published_at).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}
+                      </time>
+                    )}
+                    <h3><a href={`/actualites/${encodeURIComponent(post.slug)}`}>{post.title}</a></h3>
+                    {post.excerpt && <p className="public-news-excerpt">{post.excerpt}</p>}
+                    <a className="text-link" href={`/actualites/${encodeURIComponent(post.slug)}`}>Lire la publication <span>↗</span></a>
+                  </div>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <div className="empty-news">
+              <span className="empty-news-icon">✳</span>
+              <h3>Aucune publication pour le moment.</h3>
+              <p>Les prochaines actualités officielles seront affichées ici dès leur publication.</p>
+            </div>
+          )}
+          <div className="hero-buttons" style={{ marginTop: 28 }}>
+            <a className="button button-outline" href="/actualites">Toutes les actualités <span>↗</span></a>
+          </div>
+        </div>
+      </section>
+
       <section className="section-shell voices-section" id="vie-associative">
         <div className="container">
           <div className="voices-heading" data-reveal>
             <div>
-              <span className="section-kicker">04 / PAROLES & VIE ASSOCIATIVE</span>
+              <span className="section-kicker">05 / PAROLES & VIE ASSOCIATIVE</span>
               <h2>Une association se construit<br /><em>avec celles et ceux qui la vivent.</em></h2>
             </div>
             <a className="text-link" href="https://www.facebook.com/AJECCH" target="_blank" rel="noreferrer">
@@ -247,7 +300,7 @@ export default async function Home() {
         <div className="contact-backdrop" aria-hidden="true" style={{ backgroundImage: media["home.contact"] ? `url("${media["home.contact"]}")` : "none" }} />
         <div className="contact-container container">
           <div className="contact-glass-panel" data-reveal>
-            <span className="section-kicker">05 / PRENONS CONTACT</span>
+            <span className="section-kicker">06 / PRENONS CONTACT</span>
             <h2><span className="contact-title-primary">Une idée, une envie de servir,</span><br /><em>un pas à faire ensemble.</em></h2>
             <p>
               Vous souhaitez rejoindre l’AJECCH, en savoir plus sur ses initiatives ou proposer un appui ?
