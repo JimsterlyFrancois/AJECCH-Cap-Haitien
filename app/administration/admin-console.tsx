@@ -122,6 +122,17 @@ export default function AdminConsole({ admin }: { admin: AjecchAdmin }) {
     let uploadedPath: string | null = null;
     try {
       const file = form.get("file");
+      const shouldBeVisible = form.get("is_visible") === "on";
+      const publishedUses = item.id
+        ? posts.filter((post) => post.cover_media_id === item.id && post.status === "published")
+        : [];
+      if (!shouldBeVisible && publishedUses.length > 0) {
+        const titles = publishedUses.map((post) => "« " + post.title + " »").join(", ");
+        throw new Error(
+          "Cette image est encore utilisée par des publications en ligne : " + titles +
+          ". Remplacez d’abord leur couverture ou repassez ces publications en brouillon."
+        );
+      }
       let storagePath = item.storage_path;
       let sourceUrl = item.source_url;
       if (file instanceof File && file.size > 0) {
@@ -148,7 +159,7 @@ export default function AdminConsole({ admin }: { admin: AjecchAdmin }) {
         caption: String(form.get("caption") ?? "").trim() || null,
         storage_path: storagePath,
         source_url: sourceUrl,
-        is_visible: form.get("is_visible") === "on",
+        is_visible: shouldBeVisible,
         updated_by: admin.user_id
       };
       const { error: saveError } = await supabase.from("ajecch_media").upsert(updates, { onConflict: "slot" });
@@ -176,21 +187,66 @@ export default function AdminConsole({ admin }: { admin: AjecchAdmin }) {
       setMedia((current) => current.filter((entry) => entry.slot !== item.slot));
       return;
     }
-    if (!window.confirm(`Supprimer définitivement le visuel « ${item.label} » ? Il disparaîtra aussi de la page publique.`)) return;
+
+    const linkedPosts = posts.filter((post) => post.cover_media_id === item.id);
+    if (linkedPosts.length > 0) {
+      const titles = linkedPosts.map((post) => "« " + post.title + " »").join(", ");
+      setError(
+        "Suppression bloquée : cette image est encore associée à " + linkedPosts.length +
+        " publication(s) : " + titles +
+        ". Retirez ou remplacez d’abord la couverture dans l’onglet Publications."
+      );
+      return;
+    }
+
+    if (!window.confirm("Supprimer définitivement « " + item.label + " » ? Le visuel disparaîtra de son emplacement public. Cette action ne peut pas être annulée.")) return;
     setBusy(true);
     setError("");
+    setNotice("");
+
+    let hidden = false;
     try {
-      const { error: deleteError } = await supabase.from("ajecch_media").delete().eq("id", item.id);
-      if (deleteError) throw deleteError;
-      let cleanupWarning = "";
+      // Hide the record first. If Storage fails, the metadata stays available for a safe retry.
+      const { error: hideError } = await supabase
+        .from("ajecch_media")
+        .update({ is_visible: false, updated_by: admin.user_id })
+        .eq("id", item.id);
+      if (hideError) throw hideError;
+      hidden = true;
+
+      setMedia((current) =>
+        current.map((entry) => entry.id === item.id ? { ...entry, is_visible: false } : entry)
+      );
+
       if (item.storage_path) {
-        const { error: storageError } = await supabase.storage.from("ajecch-public-media").remove([item.storage_path]);
-        if (storageError) cleanupWarning = " L’entrée est supprimée, mais le fichier de stockage devra être nettoyé.";
+        const { error: storageError } = await supabase
+          .storage
+          .from("ajecch-public-media")
+          .remove([item.storage_path]);
+        if (storageError) {
+          throw new Error(
+            "Le visuel a été masqué, mais le fichier n’a pas pu être supprimé du stockage : " +
+            storageError.message + ". Vous pouvez relancer la suppression."
+          );
+        }
       }
-      setNotice(`Visuel supprimé du site public.${cleanupWarning}`);
+
+      const { error: deleteError } = await supabase
+        .from("ajecch_media")
+        .delete()
+        .eq("id", item.id);
+      if (deleteError) {
+        throw new Error(
+          "Le fichier a été supprimé et le visuel est masqué, mais son entrée reste à nettoyer : " +
+          deleteError.message + ". Relancez la suppression."
+        );
+      }
+
+      setNotice("Visuel supprimé du site et du stockage.");
       await loadData();
     } catch (err) {
       setError(messageOf(err));
+      if (hidden) await loadData();
     } finally {
       setBusy(false);
     }
@@ -253,11 +309,24 @@ export default function AdminConsole({ admin }: { admin: AjecchAdmin }) {
   }
 
   async function deletePost(post: PostItem) {
-    if (!window.confirm(`Supprimer « ${post.title} » ?`)) return;
+    const hasCover = Boolean(post.cover_media_id);
+    const confirmation = hasCover
+      ? "Supprimer « " + post.title + " » ? Son image sera conservée dans la bibliothèque des visuels, car elle peut être utilisée ailleurs."
+      : "Supprimer « " + post.title + " » ?";
+    if (!window.confirm(confirmation)) return;
+
     setBusy(true);
+    setError("");
+    setNotice("");
     const { error: deleteError } = await supabase.from("ajecch_posts").delete().eq("id", post.id);
-    if (deleteError) setError(deleteError.message);
-    else { setNotice("Publication supprimée."); await loadData(); }
+    if (deleteError) {
+      setError(deleteError.message);
+    } else {
+      setNotice(hasCover
+        ? "Publication supprimée. Son image reste disponible dans la bibliothèque des visuels."
+        : "Publication supprimée.");
+      await loadData();
+    }
     setBusy(false);
   }
 
@@ -378,17 +447,41 @@ export default function AdminConsole({ admin }: { admin: AjecchAdmin }) {
                 const preview = item.storage_path
                   ? supabase.storage.from("ajecch-public-media").getPublicUrl(item.storage_path).data.publicUrl
                   : item.source_url;
+                const linkedPosts = item.id
+                  ? posts.filter((post) => post.cover_media_id === item.id)
+                  : [];
                 return (
                   <form className="admin-media-card" key={item.slot} onSubmit={(event) => saveMedia(item, event)}>
-                    <div className="admin-media-preview">{preview && item.is_visible ? <img src={preview} alt={item.alt_text || item.label} /> : <span>Visuel masqué ou absent</span>}</div>
+                    <div className="admin-media-preview">{preview && item.is_visible ? <img src={preview} alt={item.alt_text || item.label} loading="lazy" decoding="async" /> : <span>Visuel masqué ou absent</span>}</div>
                     <div className="admin-media-fields">
                       <span className="admin-slot">{item.slot}</span>
+                      {linkedPosts.length > 0 ? (
+                        <p className="admin-media-usage" role="note">
+                          Couverture utilisée par {linkedPosts.length} publication(s) : {linkedPosts.map((post) => post.title).join(" · ")}.
+                          Remplacez ou retirez cette couverture avant de supprimer le média.
+                        </p>
+                      ) : (
+                        <p className="admin-media-usage is-unused">Aucune publication n’utilise actuellement ce visuel comme couverture.</p>
+                      )}
                       <label>Nom de l’image<input name="label" defaultValue={item.label} required /></label>
                       <label>Texte alternatif<input name="alt_text" defaultValue={item.alt_text} placeholder="Description accessible de l’image" /></label>
                       <label>Légende<input name="caption" defaultValue={item.caption ?? ""} placeholder="Légende facultative" /></label>
                       <label className="admin-file-field">Remplacer / téléverser une image<input type="file" name="file" accept="image/jpeg,image/png,image/webp,image/avif" /></label>
                       <label className="admin-checkbox"><input type="checkbox" name="is_visible" defaultChecked={item.is_visible} /> Afficher sur le site public</label>
-                      <div className="admin-card-actions"><button className="admin-primary-button" disabled={busy} type="submit">Enregistrer</button>{item.id && <button className="admin-danger-button" disabled={busy} type="button" onClick={() => void deleteMedia(item)}>Supprimer</button>}</div>
+                      <div className="admin-card-actions">
+                        <button className="admin-primary-button" disabled={busy} type="submit">Enregistrer</button>
+                        {item.id && (
+                          <button
+                            className="admin-danger-button"
+                            disabled={busy || linkedPosts.length > 0}
+                            title={linkedPosts.length > 0 ? "Retirez d’abord cette image des publications qui l’utilisent." : "Supprimer ce média"}
+                            type="button"
+                            onClick={() => void deleteMedia(item)}
+                          >
+                            Supprimer
+                          </button>
+                        )}
+                      </div>
                     </div>
                   </form>
                 );
