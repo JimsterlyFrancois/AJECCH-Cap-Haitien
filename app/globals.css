@@ -2188,22 +2188,7 @@ body { isolation: isolate; }
 /* Night mode: a complete palette change with moonlit parallax clouds */
 html[data-theme="night"] { color-scheme:dark; }
 html[data-theme="night"] body { color:#e8edf7; background:#071329; }
-/* Night mode keeps the original sky photo, dimmed behind the moving clouds. */
-html[data-theme="night"] .scroll-sky {
-  background-image:
-    linear-gradient(180deg, rgba(2, 13, 29, .66), rgba(3, 21, 41, .78)),
-    url("/ajecch-sky-background.webp");
-  background-size: cover, cover;
-  background-position: center, center 44%;
-  background-repeat: no-repeat, no-repeat;
-  background-attachment: fixed, fixed;
-}
-@media (max-width: 700px) {
-  html[data-theme="night"] .scroll-sky {
-    background-attachment: scroll, scroll;
-    background-position: center, center top;
-  }
-}
+
 html[data-theme="night"] .scroll-sky { background:linear-gradient(180deg,#071329 0%,#101e3a 48%,#172845 100%); }
 html[data-theme="night"] .scroll-sky-clouds-distant {
   opacity:.22; filter:blur(16px);
@@ -3919,6 +3904,22 @@ html[data-theme="night"] footer {
 }
 @media (max-width: 700px) {
   .scroll-sky { background-attachment: scroll; background-position: center top; }
+}
+/* Night mode keeps the original sky photo, dimmed behind the moving clouds. */
+html[data-theme="night"] .scroll-sky {
+  background-image:
+    linear-gradient(180deg, rgba(2, 13, 29, .66), rgba(3, 21, 41, .78)),
+    url("/ajecch-sky-background.webp");
+  background-size: cover, cover;
+  background-position: center, center 44%;
+  background-repeat: no-repeat, no-repeat;
+  background-attachment: fixed, fixed;
+}
+@media (max-width: 700px) {
+  html[data-theme="night"] .scroll-sky {
+    background-attachment: scroll, scroll;
+    background-position: center, center top;
+  }
 }
 
 
