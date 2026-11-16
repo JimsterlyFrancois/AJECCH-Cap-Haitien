@@ -1,40 +1,217 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import type { User } from "@supabase/supabase-js";
+import { usePathname } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
+import SiteLogo from "@/components/site-logo";
+
 const links = [
-  { href: "/", label: "Accueil" },
-  { href: "/a-propos", label: "À propos" },
-  { href: "/activites", label: "Activités" },
-  { href: "/actualites", label: "Actualités" }
+  { id: "accueil", hash: "#accueil", label: "Accueil" },
+  { id: "mission", hash: "#mission", label: "Mission" },
+  { id: "actions", hash: "#actions", label: "Actions" },
+  { id: "evenements", hash: "#evenements", label: "Événements" },
+  { id: "contact", hash: "#contact", label: "Contact" }
 ];
 
-export default function SiteHeader({ active = "" }: { active?: string }) {
+type AdminAccess = { role: "super_admin" | "publisher"; seat: number } | null;
+type AccessRequestStatus = "pending" | "approved" | "rejected" | null;
+
+export default function SiteHeader({ active = "", logoUrl }: { active?: string; logoUrl?: string | null }) {
+  const pathname = usePathname();
+  const isHome = pathname === "/";
+  const [activeSection, setActiveSection] = useState("accueil");
+  const [nightMode, setNightMode] = useState(false);
+  const [accountEmail, setAccountEmail] = useState("");
+  const [accountName, setAccountName] = useState("");
+  const [adminAccess, setAdminAccess] = useState<AdminAccess>(null);
+  const [accessRequestStatus, setAccessRequestStatus] = useState<AccessRequestStatus>(null);
+  const [googleBusy, setGoogleBusy] = useState(false);
+  const [googleError, setGoogleError] = useState("");
+  const [googleMessage, setGoogleMessage] = useState("");
+
+  useEffect(() => {
+    const savedTheme = window.localStorage.getItem("ajecch-theme");
+    const prefersNight = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const enabled = savedTheme ? savedTheme === "night" : prefersNight;
+    setNightMode(enabled);
+    document.documentElement.dataset.theme = enabled ? "night" : "day";
+  }, []);
+
+  useEffect(() => {
+    const supabase = createClient();
+    let mounted = true;
+
+    async function loadAccount(user: User | null) {
+      if (!user) {
+        if (mounted) {
+          setAccountEmail("");
+          setAccountName("");
+          setAdminAccess(null);
+          setAccessRequestStatus(null);
+        }
+        return;
+      }
+
+      const name = user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split("@")[0] || "Compte connecté";
+      const [adminResult, requestResult] = await Promise.all([
+        supabase
+          .from("ajecch_admins")
+          .select("role,seat")
+          .eq("user_id", user.id)
+          .eq("is_active", true)
+          .maybeSingle(),
+        supabase
+          .from("ajecch_admin_access_requests")
+          .select("status")
+          .eq("user_id", user.id)
+          .maybeSingle()
+      ]);
+
+      if (!mounted) return;
+      setAccountEmail(user.email ?? "");
+      setAccountName(String(name));
+      setAdminAccess((adminResult.data as AdminAccess) ?? null);
+      setAccessRequestStatus((requestResult.data?.status as AccessRequestStatus) ?? null);
+    }
+
+    void supabase.auth.getUser().then(({ data: { user } }) => loadAccount(user));
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+      void loadAccount(session?.user ?? null);
+    });
+
+    return () => {
+      mounted = false;
+      authListener.subscription.unsubscribe();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!isHome || !("IntersectionObserver" in window)) return;
+    const sections = links
+      .map((link) => document.getElementById(link.id))
+      .filter((section): section is HTMLElement => Boolean(section));
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+        if (visible[0]?.target instanceof HTMLElement) setActiveSection(visible[0].target.id);
+      },
+      { rootMargin: "-28% 0px -62% 0px", threshold: 0 }
+    );
+    sections.forEach((section) => observer.observe(section));
+    return () => observer.disconnect();
+  }, [isHome]);
+
+  function toggleTheme() {
+    const next = !nightMode;
+    setNightMode(next);
+    document.documentElement.dataset.theme = next ? "night" : "day";
+    window.localStorage.setItem("ajecch-theme", next ? "night" : "day");
+  }
+
+  async function connectGoogle() {
+    setGoogleError("");
+    setGoogleMessage("");
+    setGoogleBusy(true);
+    const supabase = createClient();
+
+    try {
+      if (accountEmail) {
+        const { error } = await supabase.rpc("ajecch_request_admin_access");
+        if (error) throw error;
+        setAccessRequestStatus("pending");
+        setGoogleMessage("Demande envoyée. Elle sera examinée par un Super Admin.");
+        return;
+      }
+
+      const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || window.location.origin).replace(/\/+$/, "");
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${siteUrl}/auth/callback?next=%2F`,
+          scopes: "openid email profile"
+        }
+      });
+      if (error) throw error;
+    } catch (err) {
+      setGoogleError(err instanceof Error ? err.message : "Connexion Google impossible.");
+    } finally {
+      setGoogleBusy(false);
+    }
+  }
+
+  const accountTitle = accountEmail
+    ? `${accountName} · ${accountEmail}`
+    : "Se connecter avec Google";
+
   return (
-    <>
+    <div className="site-header-stack">
       <div className="topline">
         <div className="container topline-inner">
           <span>Association des Jeunes Chrétiens du Cap-Haïtien</span>
-          <span className="topline-note">Foi · Unité · Engagement</span>
+          <span className="topline-note">Foi · Fraternité · Service</span>
         </div>
       </div>
       <header className="site-header">
         <div className="container nav-wrap">
           <a className="brand" href="/" aria-label="AJECCH, accueil">
-            <span className="brand-mark brand-mark-image"><img src="https://scontent.fpap4-1.fna.fbcdn.net/v/t39.30808-6/764661311_122134184751148120_413651985315372038_n.jpg?stp=c0.169.1536.1536a_dst-jpg_tt6&cstp=mx1536x1536&ctp=s206x206&_nc_cat=103&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=50ad20&_nc_eui2=AeHETjiahjbkRYeddHrcEwLHV4av5SRKKtdXhq_lJEoq19H7ZI3RQAqrN3Ey-ZE_sFzWqboPlMltoL8hFy7wCfWQ&_nc_ohc=XCPsP9COi9gQ7kNvwFZVwVw&_nc_oc=Adpgl3kebf_oC_ZZTe_dMAgNxF8HTKao4NIu-VcJ1kML3mqnoghC_Pk-aMYMF_XBDcg&_nc_zt=23&_nc_ht=scontent.fpap4-1.fna&_nc_gid=VN9LKD53F7yH1QPdVCVNrw&_nc_ss=7b2a8&oh=00_AQTqDuJPU-XFBQk7bxejgT4G1CH76sbJM_Tonf35MT4BMw&oe=6AFDAD91" alt="Logo officiel de l’AJECCH" /></span>
+            <SiteLogo logoUrl={logoUrl} variant="header" />
             <span className="brand-copy">
               <strong>AJECCH</strong>
-              <small>JEUNES CHRÉTIENS · CAP-HAÏTIEN</small>
+              <small>Association des Jeunes Chrétiens<br />du Cap-Haïtien</small>
             </span>
           </a>
           <nav className="main-nav" aria-label="Navigation principale">
-            {links.map((link) => (
-              <a key={link.href} className={active === link.href ? "active" : ""} href={link.href}>
-                {link.label}
-              </a>
-            ))}
-            <a href="/#valeurs">Nos valeurs</a>
-            <a href="/#contact">Contact</a>
+            {links.map((link) => {
+              const href = isHome ? link.hash : `/${link.hash}`;
+              const isActive = isHome && activeSection === link.id;
+              return (
+                <a key={link.id} className={isActive ? "active" : ""} href={href} aria-current={isActive ? "location" : undefined}>
+                  {link.label}
+                </a>
+              );
+            })}
           </nav>
-          <a className="nav-cta" href="/#rejoindre">Rejoindre AJECCH <span>↗</span></a>
+          <div className="nav-actions">
+            <button className="theme-toggle liquid-control" type="button" onClick={toggleTheme} aria-label={nightMode ? "Activer le mode jour" : "Activer le mode nuit"} aria-pressed={nightMode}>
+              <span aria-hidden="true">{nightMode ? "☀" : "☾"}</span>
+              <small>{nightMode ? "Jour" : "Nuit"}</small>
+            </button>
+            {accountEmail && (
+              <a className="nav-cta admin-dashboard-link" href="/administration" title={`${adminAccess ? "Espace de gestion" : "Consulter mon accès AJECCH"} · ${accountEmail}`}>
+                {adminAccess ? "Espace admin" : "Mon espace"} <span>↗</span>
+              </a>
+            )}
+            {!adminAccess && (
+              <button
+                className="google-connect liquid-control"
+                type="button"
+                onClick={connectGoogle}
+                disabled={googleBusy || accessRequestStatus === "pending"}
+                title={accountTitle}
+              >
+                <span className="google-g" aria-hidden="true">{accountEmail ? "✓" : "G"}</span>
+                <small>
+                  {googleBusy
+                    ? "Connexion…"
+                    : accountEmail
+                      ? (accessRequestStatus === "pending"
+                        ? "Demande envoyée"
+                        : accessRequestStatus === "rejected"
+                          ? "Renvoyer la demande"
+                          : "Demander un accès")
+                      : "Connecter Google"}
+                </small>
+              </button>
+            )}
+            <a className="nav-cta" href={isHome ? "#contact" : "/#contact"}>Rejoindre <span>↗</span></a>
+            {googleError && <span className="google-connect-error" role="alert">{googleError}</span>}
+            {googleMessage && <span className="google-connect-message" role="status">{googleMessage}</span>}
+          </div>
         </div>
       </header>
-    </>
+    </div>
   );
 }
