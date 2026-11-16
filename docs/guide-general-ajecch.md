@@ -58,13 +58,14 @@ L'espace **Administration** est privé et ne doit jamais être indexé comme une
 
 Le système actuel prévoit deux sièges ADM et un accès Publication & Médias.
 
-- **ADM — siège 1 :** contrôle les rôles, l'équipe et les contenus ; il est le seul compte autorisé à consulter l'annuaire des personnes inscrites et à désigner ou révoquer le responsable des médias.
-- **ADM — siège 2 :** demande son accès depuis le site, confirme son adresse e-mail et attend la validation du siège 1. Après acceptation, il possède les mêmes droits de publication et de quiz que le siège 1, mais ne peut ni consulter l'annuaire ni gérer les rôles. L'interface ne révèle pas au siège 2 l'identité du premier compte.
+- **ADM — siège 1 :** contrôle les rôles, l'équipe, les candidatures administratives et l'annuaire complet des personnes inscrites.
+- **ADM — siège 2 :** après validation de son inscription, dispose de pouvoirs étendus sur les contenus, les médias, les publications et les quiz. Il peut aussi désigner ou révoquer le responsable des médias à partir d'un annuaire filtré qui exclut les comptes ADM. Il ne peut pas modifier les sièges ADM, traiter les candidatures ni consulter l'identité ou la fiche de l'ADM 1.
 - **Publication & Médias :** gère les actualités, annonces, événements et visuels publics, sans pouvoir attribuer des rôles.
 - Les autorisations doivent être vérifiées côté serveur et par les politiques RLS Supabase.
 - Une simple connexion ne donne pas automatiquement accès à l'administration.
 - Le premier compte peut être créé depuis `/administration/inscription`, lien visible uniquement pendant l'initialisation. Le premier ADM est ensuite activé avec le mécanisme protégé de code unique et après confirmation de l'adresse e-mail.
-- Le compte ADM 1 peut désigner comme responsable des médias une personne déjà inscrite avec une adresse confirmée ; aucun compte en double n'est créé.
+- Les deux comptes ADM peuvent désigner ou révoquer le responsable des médias sans créer de compte en double. Le siège 2 voit uniquement les comptes non-ADM inscrits et confirmés ; il ne peut pas lire la fiche du siège 1.
+- Seul le siège 1 peut gérer les sièges ADM, valider/refuser les candidatures et consulter l'annuaire complet.
 - Les deux ADM peuvent créer des publications avec résumé court, texte long et image, ainsi que des quiz de 1 à 12 questions et 2 à 5 choix par question.
 - Les réponses correctes des quiz sont stockées séparément des questions publiques. Une bonne réponse ajoute 1 point au score du participant connecté, une seule fois par question ; chaque utilisateur ne voit que son propre score.
 
@@ -115,6 +116,7 @@ Une évolution est acceptable uniquement si :
 - Le fond animé ne masque pas le contenu et ne bloque aucun contrôle.
 - Le site reste utilisable sur petit écran et avec réduction des animations.
 - Les comptes non autorisés ne peuvent ni consulter ni modifier les fonctions d'administration.
+- ADM 2 peut gérer le responsable des médias, mais ne peut pas lire la fiche ADM 1 ni les demandes d'accès administratives.
 - Les rôles sont contrôlés dans Supabase, pas seulement dans l'interface.
 - Les publications et quiz non publiés ne sont pas accessibles aux visiteurs anonymes.
 - Les bonnes réponses des quiz ne sont jamais incluses dans le contenu public et les participants ne peuvent consulter que leurs propres réponses.
