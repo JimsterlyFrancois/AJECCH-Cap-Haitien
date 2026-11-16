@@ -624,7 +624,7 @@ h1, h2, h3, .footer-message, .footer-verse-column blockquote {
   position: absolute;
   inset: 0;
   z-index: -3;
-  background-image: url("https://images.unsplash.com/photo-1664975154056-7369ad5ed779?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000");
+  background-image: none;
   background-size: cover;
   background-position: center 48%;
   transform: scale(1.015);
@@ -1015,7 +1015,7 @@ h1, h2, h3, .footer-message, .footer-verse-column blockquote {
   position: absolute;
   inset: 0;
   z-index: -2;
-  background-image: url("https://images.unsplash.com/photo-1743776469194-464913c8d604?auto=format&fit=crop&fm=jpg&ixid=NHwxMjA3fDA%3D&ixlib=rb-4.1.0&q=60&w=3000");
+  background-image: none;
   background-size: cover;
   background-position: center 44%;
   filter: saturate(.82);
@@ -1372,7 +1372,7 @@ h1, h2, h3 { color: #1B3B2B; }
 }
 .nav-cta:hover { background: linear-gradient(135deg, #244855, #315B4A); }
 
-/* Nature-first coastal hero: Labadie, Nord d'Haïti. This is an ambient image, not an AJECCH archive photo. */
+/* Hero visuel géré par les responsables de l’association. */
 .hero-nature {
   min-height: min(900px, 96svh);
   margin-top: -64px;
@@ -1380,7 +1380,7 @@ h1, h2, h3 { color: #1B3B2B; }
   background: #DDE6DC;
 }
 .hero-nature-image {
-  background-image: url("https://images.pexels.com/photos/8868160/pexels-photo-8868160.jpeg?auto=compress&cs=tinysrgb&w=2600");
+  background-image: none;
   background-size: cover;
   background-position: center 54%;
   transform: scale(1.015);
@@ -1719,7 +1719,7 @@ h1, h2, h3 { color: #1B3B2B; }
   flex: 1 1 auto;
   background-image:
     linear-gradient(180deg, rgba(27,59,43,.04), rgba(27,59,43,.12)),
-    url("https://images.pexels.com/photos/8868160/pexels-photo-8868160.jpeg?auto=compress&cs=tinysrgb&w=1400");
+    none;
   background-size: cover;
   background-position: center 60%;
 }
@@ -1737,7 +1737,7 @@ h1, h2, h3 { color: #1B3B2B; }
     linear-gradient(130deg, #244855, #1B3B2B);
 }
 .contact-backdrop {
-  background-image: url("https://images.pexels.com/photos/8868160/pexels-photo-8868160.jpeg?auto=compress&cs=tinysrgb&w=2200");
+  background-image: none;
   background-position: center 55%;
   filter: saturate(.75);
 }
@@ -2934,8 +2934,7 @@ html[data-theme="night"] .theme-toggle[aria-pressed="true"] {
 html[data-theme="night"] .google-connect { color: #edf4eb; }
 html[data-theme="night"] .google-g { color: #9fc2ff; }
 html[data-theme="night"] .hero-bottomline,
-html[data-theme="night"] .hero-bottomline a,
-html[data-theme="night"] .hero-photo-note { color: rgba(250,252,247,.9); text-shadow: 0 1px 12px rgba(0,0,0,.35); }
+html[data-theme="night"] .hero-bottomline a { color: rgba(250,252,247,.9); text-shadow: 0 1px 12px rgba(0,0,0,.35); }
 html[data-theme="night"] .hero-bottomline b { color: #e0bd82; }
 html[data-theme="night"] .nature-feature-overlay,
 html[data-theme="night"] .nature-feature-overlay strong { color: #fff !important; }
@@ -2945,8 +2944,7 @@ html[data-theme="night"] .site-footer .footer-bottom a { color: #aebdaf; }
 
 /* Both themes: keep hierarchy, focus states and motion calm and predictable. */
 html[data-theme="day"] .hero-bottomline,
-html[data-theme="day"] .hero-bottomline a,
-html[data-theme="day"] .hero-photo-note { color: rgba(255,255,255,.94); text-shadow: 0 1px 10px rgba(0,0,0,.35); }
+html[data-theme="day"] .hero-bottomline a { color: rgba(255,255,255,.94); text-shadow: 0 1px 10px rgba(0,0,0,.35); }
 html[data-theme="day"] .hero-bottomline b { color: #f0d39f; }
 html[data-theme="day"] .nature-feature-overlay,
 html[data-theme="day"] .nature-feature-overlay strong { color: #fff !important; }
