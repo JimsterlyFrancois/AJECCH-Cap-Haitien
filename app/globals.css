@@ -2107,7 +2107,7 @@ h1, h2, h3 { color: #1B3B2B; }
 }
 
 
-/* Parallax sky: two lightweight cloud layers drift at different speeds while scrolling. */
+/* Interactive sky canvas — remains behind the site and never blocks page scrolling. */
 body { isolation: isolate; }
 .scroll-sky {
   position: fixed;
@@ -2115,45 +2115,184 @@ body { isolation: isolate; }
   z-index: -1;
   overflow: hidden;
   pointer-events: none;
-  contain: strict;
+  contain: paint;
+  background: linear-gradient(180deg, #0b5ed7 0%, #2b8cee 32%, #6ec1ff 68%, #bfe6ff 92%, #e8f7ff 100%);
 }
-.scroll-sky-clouds {
+.sky-milky-way {
   position: absolute;
-  left: -12%;
-  width: 124%;
-  height: 58vh;
-  min-height: 360px;
-  background-repeat: no-repeat;
-  will-change: transform;
-  transform: translate3d(0, 0, 0);
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(125deg, transparent 20%, rgba(130,165,255,.06) 40%, rgba(200,220,255,.11) 50%, rgba(130,165,255,.05) 60%, transparent 80%);
+  filter: blur(28px);
+  transition: opacity 1s ease;
 }
-.scroll-sky-clouds-distant {
-  top: -9vh;
-  opacity: .36;
-  filter: blur(13px);
-  background-image:
-    radial-gradient(ellipse 19% 17% at 13% 32%, rgba(255,255,255,.78) 0 45%, transparent 78%),
-    radial-gradient(ellipse 16% 14% at 23% 29%, rgba(255,255,255,.68) 0 45%, transparent 78%),
-    radial-gradient(ellipse 22% 18% at 72% 23%, rgba(255,255,255,.76) 0 44%, transparent 78%),
-    radial-gradient(ellipse 17% 15% at 84% 27%, rgba(255,255,255,.68) 0 45%, transparent 78%);
+.sky-stars {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1s ease;
 }
-.scroll-sky-clouds-near {
-  top: 20vh;
-  opacity: .25;
-  filter: blur(19px);
-  background-image:
-    radial-gradient(ellipse 20% 18% at 5% 46%, rgba(255,255,255,.8) 0 42%, transparent 78%),
-    radial-gradient(ellipse 15% 14% at 17% 42%, rgba(255,255,255,.72) 0 45%, transparent 78%),
-    radial-gradient(ellipse 23% 19% at 91% 50%, rgba(255,255,255,.78) 0 43%, transparent 78%),
-    radial-gradient(ellipse 16% 14% at 78% 46%, rgba(255,255,255,.7) 0 44%, transparent 78%);
+.sky-star {
+  position: absolute;
+  display: block;
+  border-radius: 50%;
+  background: #fff;
+  animation: skyTwinkle var(--star-duration, 3s) infinite ease-in-out;
+  animation-delay: var(--star-delay, 0s);
+}
+@keyframes skyTwinkle {
+  0%, 100% { opacity: .2; transform: scale(.8); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+.sky-sun-wrapper {
+  position: absolute;
+  top: clamp(48px, 8vh, 90px);
+  right: clamp(34px, 9vw, 130px);
+  width: clamp(82px, 10vw, 130px);
+  height: clamp(82px, 10vw, 130px);
+  z-index: 1;
+  pointer-events: none;
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 1s ease, transform 1s ease;
+}
+.sky-sun-rays {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: clamp(270px, 39vw, 520px);
+  height: clamp(270px, 39vw, 520px);
+  border-radius: 50%;
+  pointer-events: none;
+  background: conic-gradient(from 0deg, rgba(255,255,240,.18) 0deg, transparent 25deg, rgba(255,245,210,.12) 55deg, transparent 90deg, rgba(255,255,240,.16) 130deg, transparent 175deg, rgba(255,240,190,.14) 220deg, transparent 270deg, rgba(255,255,240,.18) 315deg, transparent 360deg);
+  animation: skySlowRotate 90s linear infinite;
+}
+@keyframes skySlowRotate {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+.sky-sun {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 50%;
+  background: radial-gradient(circle at 33% 28%, #fff 0%, #fff8df 38%, #ffdc87 72%, #f6b84b 100%);
+  box-shadow: 0 0 50px 20px rgba(255,250,220,.78), 0 0 120px 55px rgba(255,215,110,.5), 0 0 240px 110px rgba(255,190,80,.22);
+}
+.sky-sun span {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: rgba(255,255,255,.42);
+  filter: blur(2px);
+}
+.sky-moon {
+  position: absolute;
+  z-index: 1;
+  top: clamp(48px, 8vh, 90px);
+  right: clamp(34px, 9vw, 130px);
+  width: clamp(82px, 10vw, 130px);
+  height: clamp(82px, 10vw, 130px);
+  overflow: hidden;
+  border-radius: 50%;
+  opacity: 0;
+  transform: translateY(16px);
+  pointer-events: none;
+  background: radial-gradient(circle at 32% 24%, #fff 0%, #f1f5fb 48%, #aab9d0 100%);
+  box-shadow: 0 0 35px 10px rgba(235,244,255,.62), 0 0 85px 35px rgba(170,205,255,.28), 0 0 160px 70px rgba(120,165,245,.14);
+  transition: opacity 1s ease, transform 1s ease;
+}
+.sky-moon-sea {
+  position: absolute;
+  inset: 0;
+  opacity: .35;
+  background: radial-gradient(circle at 32% 35%, #94a3b8 0%, transparent 28%), radial-gradient(circle at 65% 58%, #64748b 0%, transparent 32%), radial-gradient(circle at 48% 72%, #94a3b8 0%, transparent 22%), radial-gradient(circle at 72% 28%, #cbd5e1 0%, transparent 18%);
+}
+.sky-moon-crater {
+  position: absolute;
+  display: block;
+  border-radius: 50%;
+  background: rgba(100,116,139,.22);
+  box-shadow: inset 2px 3px 5px rgba(51,65,85,.18);
+}
+.sky-moon-crater-one { width: 13%; height: 13%; top: 25%; left: 28%; }
+.sky-moon-crater-two { width: 19%; height: 19%; bottom: 23%; right: 24%; }
+.sky-moon-crater-three { width: 10%; height: 10%; top: 48%; right: 18%; }
+.sky-clouds-canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.sky-weather-badge {
+  position: fixed;
+  right: 14px;
+  bottom: 14px;
+  z-index: 4;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  max-width: min(300px, calc(100vw - 28px));
+  padding: 8px 12px;
+  border: 1px solid rgba(255,255,255,.35);
+  border-radius: 999px;
+  color: #fff;
+  background: rgba(9,38,77,.24);
+  box-shadow: 0 5px 18px rgba(7,35,70,.12);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .02em;
+  pointer-events: none;
+}
+.sky-weather-dot {
+  width: 8px;
+  height: 8px;
+  flex: 0 0 8px;
+  border-radius: 50%;
+  background: #ffd36c;
+  box-shadow: 0 0 0 4px rgba(255,211,108,.16);
+}
+.sky-wind-speed {
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.18);
+  font-variant-numeric: tabular-nums;
+}
+html[data-theme="night"] .scroll-sky {
+  background: radial-gradient(ellipse at 75% 18%, #162854 0%, #09122b 45%, #030612 100%);
+}
+html[data-theme="night"] .sky-milky-way,
+html[data-theme="night"] .sky-stars { opacity: 1; }
+html[data-theme="night"] .sky-sun-wrapper {
+  opacity: 0;
+  transform: translateY(24px);
+}
+html[data-theme="night"] .sky-moon {
+  opacity: 1;
+  transform: translateY(0);
+}
+html[data-theme="night"] .sky-weather-badge {
+  background: rgba(14,24,62,.38);
+  border-color: rgba(205,220,255,.26);
+}
+html[data-theme="night"] .sky-weather-dot {
+  background: #c8d9ff;
+  box-shadow: 0 0 0 4px rgba(200,217,255,.14);
 }
 @media (max-width: 700px) {
-  .scroll-sky-clouds { height: 46vh; min-height: 280px; }
-  .scroll-sky-clouds-distant { opacity: .29; }
-  .scroll-sky-clouds-near { opacity: .19; }
+  .sky-weather-badge { right: 10px; bottom: 10px; padding: 7px 10px; font-size: 9px; }
+  .sky-sun-rays { width: 270px; height: 270px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .scroll-sky-clouds { will-change: auto; }
+  .sky-star, .sky-sun-rays { animation: none !important; }
+  .sky-milky-way, .sky-stars, .sky-sun-wrapper, .sky-moon { transition: none !important; }
 }
 
 
@@ -2188,24 +2327,6 @@ body { isolation: isolate; }
 /* Night mode: a complete palette change with moonlit parallax clouds */
 html[data-theme="night"] { color-scheme:dark; }
 html[data-theme="night"] body { color:#e8edf7; background:#071329; }
-
-html[data-theme="night"] .scroll-sky { background:linear-gradient(180deg,#071329 0%,#101e3a 48%,#172845 100%); }
-html[data-theme="night"] .scroll-sky-clouds-distant {
-  opacity:.22; filter:blur(16px);
-  background-image:
-    radial-gradient(ellipse 19% 17% at 13% 32%,rgba(178,199,231,.42) 0 45%,transparent 78%),
-    radial-gradient(ellipse 16% 14% at 23% 29%,rgba(156,183,224,.34) 0 45%,transparent 78%),
-    radial-gradient(ellipse 22% 18% at 72% 23%,rgba(180,198,232,.38) 0 44%,transparent 78%),
-    radial-gradient(ellipse 17% 15% at 84% 27%,rgba(151,180,223,.32) 0 45%,transparent 78%);
-}
-html[data-theme="night"] .scroll-sky-clouds-near {
-  opacity:.16; filter:blur(22px);
-  background-image:
-    radial-gradient(ellipse 20% 18% at 5% 46%,rgba(194,207,231,.42) 0 42%,transparent 78%),
-    radial-gradient(ellipse 15% 14% at 17% 42%,rgba(162,186,222,.35) 0 45%,transparent 78%),
-    radial-gradient(ellipse 23% 19% at 91% 50%,rgba(182,199,231,.4) 0 43%,transparent 78%),
-    radial-gradient(ellipse 16% 14% at 78% 46%,rgba(155,181,220,.32) 0 44%,transparent 78%);
-}
 
 html[data-theme="night"] .site-header { background:rgba(10,23,45,.88); border-color:rgba(190,207,233,.16); box-shadow:0 12px 38px rgba(0,0,0,.2); backdrop-filter:blur(22px); }
 html[data-theme="night"] .brand-copy strong,
@@ -3838,16 +3959,7 @@ html[data-theme="day"] body main .contact-glass-panel h2 .contact-title-primary 
 }
 
 
-/* AJECCH — restore the original continuous sky image beneath the scrolling clouds. */
-.scroll-sky {
-  background-image:
-    linear-gradient(180deg, rgba(5, 55, 91, .10), rgba(5, 55, 91, .18)),
-    url("/ajecch-sky-background.webp");
-  background-size: cover;
-  background-position: center 44%;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-}
+/* AJECCH — transparent page surfaces reveal the interactive sky canvas underneath. */
 body { background: transparent !important; }
 
 html[data-theme="day"] body main > section:not(.hero-nature):not(.contact-section) {
@@ -3859,9 +3971,7 @@ html[data-theme="night"] body main > section:not(.hero-nature):not(.contact-sect
 
 .hero-nature { background: transparent !important; }
 .hero-nature-image {
-  background-image: url("/ajecch-sky-background.webp") !important;
-  background-size: cover;
-  background-position: center 48%;
+  background: transparent !important;
   filter: none;
 }
 .hero-nature-shade {
@@ -3870,10 +3980,8 @@ html[data-theme="night"] body main > section:not(.hero-nature):not(.contact-sect
     linear-gradient(90deg, rgba(4, 39, 71, .12), transparent 72%) !important;
 }
 .contact-backdrop {
-  background-image: url("/ajecch-sky-background.webp") !important;
-  background-size: cover;
-  background-position: center 52%;
-  filter: saturate(.92);
+  background: transparent !important;
+  filter: none;
 }
 html[data-theme="day"] .contact-section:before {
   background: linear-gradient(115deg, rgba(6, 43, 77, .34), rgba(24, 104, 155, .28)) !important;
@@ -3902,28 +4010,6 @@ html[data-theme="night"] .site-footer,
 html[data-theme="night"] footer {
   background: linear-gradient(125deg, rgba(2, 12, 26, .97), rgba(4, 28, 51, .96)) !important;
 }
-@media (max-width: 700px) {
-  .scroll-sky { background-attachment: scroll; background-position: center top; }
-}
-/* Night mode keeps the original sky photo, dimmed behind the moving clouds. */
-html[data-theme="night"] .scroll-sky {
-  background-image:
-    linear-gradient(180deg, rgba(2, 13, 29, .66), rgba(3, 21, 41, .78)),
-    url("/ajecch-sky-background.webp");
-  background-size: cover, cover;
-  background-position: center, center 44%;
-  background-repeat: no-repeat, no-repeat;
-  background-attachment: fixed, fixed;
-}
-@media (max-width: 700px) {
-  html[data-theme="night"] .scroll-sky {
-    background-attachment: scroll, scroll;
-    background-position: center, center top;
-  }
-}
-
-
-
 
 /* Official AJECCH emblem: show the full submitted seal, never crop it into a circle. */
 .site-header-stack .brand { gap: 13px; }
