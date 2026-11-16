@@ -40,12 +40,6 @@ export default function SiteFooter({ logoUrl }: { logoUrl?: string | null }) {
       </div>
       <div className="container footer-bottom">
         <span>© 2026 AJECCH. Tous droits réservés.</span>
-        <span className="photo-credit">
-          Visuels d’ambiance :
-          <a href="https://www.pexels.com/photo/drone-shot-of-coastal-area-8868160/" target="_blank" rel="noreferrer"> Kenrick Baksh / Pexels</a>
-          <span> · </span>
-          <a href="https://www.pexels.com/photo/sunlight-in-tropical-forest-17772875/" target="_blank" rel="noreferrer">Pexels</a>
-        </span>
         <a href="#accueil">RETOUR EN HAUT ↑</a>
       </div>
     </footer>
