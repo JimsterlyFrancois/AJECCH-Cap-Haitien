@@ -3788,7 +3788,6 @@ html[data-theme="day"] body main .contact-glass-panel h2 .contact-title-primary 
   background-size: cover;
   background-position: center 44%;
   background-repeat: no-repeat;
-  background-attachment: fixed;
 }
 body { background: transparent !important; }
 
@@ -3850,7 +3849,14 @@ html[data-theme="night"] footer {
 
 
 /* Night mode uses the same bundled sky, dimmed for text and panel contrast. */
-
+html[data-theme="night"] .scroll-sky {
+  background-image:
+    linear-gradient(180deg, rgba(2, 13, 29, .66), rgba(3, 21, 41, .78)),
+    url("/ajecch-sky-background.webp");
+  background-size: cover, cover;
+  background-position: center, center 44%;
+  background-repeat: no-repeat, no-repeat;
+}
 @media (max-width: 700px) {
   html[data-theme="night"] .scroll-sky { background-position: center, center top; }
 }
