@@ -131,7 +131,7 @@ export default async function Home() {
                     <span>UNE DYNAMIQUE COLLECTIVE</span>
                     <strong>Grandir, transmettre<br />et agir ensemble.</strong>
                   </div>
-                  <figcaption>Visuel d’ambiance · Photographies officielles AJECCH à venir</figcaption>
+                  <figcaption>Visuel associé aux actions de l’AJECCH.</figcaption>
                 </figure>
 
                 <aside className="impact-strip glass-card" data-reveal>
@@ -215,7 +215,7 @@ export default async function Home() {
         <div className="contact-backdrop" aria-hidden="true" />
         <div className="contact-container container">
           <div className="contact-glass-panel" data-reveal>
-            <span className="section-kicker">05 / PRENONS CONTACT</span>
+            <span className="section-kicker">04 / PRENONS CONTACT</span>
             <h2><span className="contact-title-primary">Une idée, une envie de servir,</span><br /><em>un pas à faire ensemble.</em></h2>
             <p>
               Vous souhaitez rejoindre l’AJECCH, en savoir plus sur ses initiatives ou proposer un appui ?
