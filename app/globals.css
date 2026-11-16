@@ -741,15 +741,6 @@ h1, h2, h3, .footer-message, .footer-verse-column blockquote {
 }
 .hero-bottomline a { color: #fff; }
 .hero-bottomline b { margin-left: 8px; color: #efd3a0; font-size: 13px; }
-.hero-photo-note {
-  position: absolute;
-  right: 30px;
-  bottom: 18px;
-  color: rgba(255,255,255,.76);
-  font-size: 8px;
-  letter-spacing: .08em;
-}
-
 /* Shared section rhythm */
 .section-shell {
   position: relative;
@@ -1089,8 +1080,6 @@ h1, h2, h3, .footer-message, .footer-verse-column blockquote {
   letter-spacing: .06em;
 }
 .footer-bottom a { color: #e8c78e; }
-.photo-credit a { color: #e8c78e; }
-
 /* Micro-interactions: limited to important focal points */
 @keyframes nature-orb-drift {
   0%, 100% { transform: translate3d(0,0,0) scale(1); }
@@ -1157,7 +1146,6 @@ h1, h2, h3, .footer-message, .footer-verse-column blockquote {
   .button { min-height: 46px; padding: 0 17px; font-size: 10px; }
   .hero-location { margin-top: 24px; font-size: 8px; }
   .hero-bottomline { margin-top: 20px; font-size: 7px; }
-  .hero-photo-note { right: 14px; bottom: 9px; font-size: 7px; }
   .section-shell { padding: 76px 0; }
   .section-intro { margin-bottom: 34px; }
   .section-intro h2, .section-heading-wide h2, .voices-copy h2 { font-size: clamp(31px, 9vw, 42px); }
@@ -1199,8 +1187,7 @@ h1, h2, h3, .footer-message, .footer-verse-column blockquote {
   .footer-link-column, .footer-verse-column { gap: 10px; }
   .footer-verse-column blockquote { font-size: 20px; }
   .footer-bottom { justify-content: space-between; min-height: 72px; padding: 14px 0; font-size: 7px; }
-  .photo-credit { display: none; }
-}
+  }
 @media (max-width: 380px) {
   .hero-glass-panel h1 { font-size: 37px; }
   .agenda-event { grid-template-columns: 74px 1fr; }
@@ -1451,7 +1438,6 @@ h1, h2, h3 { color: #1B3B2B; }
 .hero-bottomline a { color: #1B3B2B; }
 .hero-bottomline b { color: #A97735; }
 .discover-link b { display: inline-block; animation: discover-nudge 2.8s ease-in-out infinite; }
-.hero-photo-note { color: rgba(30,36,33,.68); text-shadow: none; }
 .button-gold {
   background: linear-gradient(135deg, #D4A359, #C18C45);
   color: #1E2421;
@@ -1802,7 +1788,6 @@ h1, h2, h3 { color: #1B3B2B; }
   .hero-overline { border-radius: 18px; font-size: 7px; letter-spacing: .08em; }
   .hero-glass-panel h1 { font-size: clamp(39px, 10.5vw, 54px); }
   .hero-bottomline { flex-direction: column; align-items: flex-start; gap: 11px; line-height: 1.7; }
-  .hero-photo-note { right: 13px; bottom: 9px; font-size: 7px; }
   .foundation-connector { height: 70px; }
   .pillar-card { min-height: 0; padding: 24px; }
   .pillar-card h3 { margin-top: 22px; }
@@ -2229,42 +2214,6 @@ body { isolation: isolate; }
   height: 100%;
   pointer-events: none;
 }
-.sky-weather-badge {
-  position: fixed;
-  right: 14px;
-  bottom: 14px;
-  z-index: 4;
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  max-width: min(300px, calc(100vw - 28px));
-  padding: 8px 12px;
-  border: 1px solid rgba(255,255,255,.35);
-  border-radius: 999px;
-  color: #fff;
-  background: rgba(9,38,77,.24);
-  box-shadow: 0 5px 18px rgba(7,35,70,.12);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: .02em;
-  pointer-events: none;
-}
-.sky-weather-dot {
-  width: 8px;
-  height: 8px;
-  flex: 0 0 8px;
-  border-radius: 50%;
-  background: #ffd36c;
-  box-shadow: 0 0 0 4px rgba(255,211,108,.16);
-}
-.sky-wind-speed {
-  padding: 2px 7px;
-  border-radius: 999px;
-  background: rgba(255,255,255,.18);
-  font-variant-numeric: tabular-nums;
-}
 html[data-theme="night"] .scroll-sky {
   background: radial-gradient(ellipse at 75% 18%, #162854 0%, #09122b 45%, #030612 100%);
 }
@@ -2278,16 +2227,7 @@ html[data-theme="night"] .sky-moon {
   opacity: 1;
   transform: translateY(0);
 }
-html[data-theme="night"] .sky-weather-badge {
-  background: rgba(14,24,62,.38);
-  border-color: rgba(205,220,255,.26);
-}
-html[data-theme="night"] .sky-weather-dot {
-  background: #c8d9ff;
-  box-shadow: 0 0 0 4px rgba(200,217,255,.14);
-}
-@media (max-width: 700px) {
-  .sky-weather-badge { right: 10px; bottom: 10px; padding: 7px 10px; font-size: 9px; }
+html[data-theme="night"] html[data-theme="night"] @media (max-width: 700px) {
   .sky-sun-rays { width: 270px; height: 270px; }
 }
 @media (prefers-reduced-motion: reduce) {
