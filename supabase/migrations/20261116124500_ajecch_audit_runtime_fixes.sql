@@ -189,6 +189,34 @@ $function$;
 revoke all on function private.ajecch_save_quiz(uuid,text,text,jsonb,jsonb,text) from public, anon;
 grant execute on function private.ajecch_save_quiz(uuid,text,text,jsonb,jsonb,text) to authenticated;
 
+-- Supabase RPC resolves functions in the exposed public schema.
+-- Keep the public endpoint and route it to the validated private implementation.
+create or replace function public.ajecch_save_quiz(
+  p_quiz_id uuid,
+  p_title text,
+  p_description text,
+  p_questions jsonb,
+  p_answer_keys jsonb,
+  p_status text
+)
+returns uuid
+language sql
+security invoker
+set search_path = ''
+as $function$
+  select private.ajecch_save_quiz(
+    p_quiz_id,
+    p_title,
+    p_description,
+    p_questions,
+    p_answer_keys,
+    p_status
+  );
+$function$;
+
+revoke all on function public.ajecch_save_quiz(uuid,text,text,jsonb,jsonb,text) from public, anon;
+grant execute on function public.ajecch_save_quiz(uuid,text,text,jsonb,jsonb,text) to authenticated;
+
 -- Drop the public wrapper first because it depends on the private function.
 -- The return table is deliberately changed so the answer key index is never returned.
 drop function if exists public.ajecch_submit_quiz_answer(uuid,text,integer);
