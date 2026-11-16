@@ -2107,55 +2107,15 @@ h1, h2, h3 { color: #1B3B2B; }
 }
 
 
-/* Parallax sky: two lightweight cloud layers drift at different speeds while scrolling. */
+/* Lightweight fixed sky layer. The wrapper itself stays in place; no scroll listener is needed. */
 body { isolation: isolate; }
 .scroll-sky {
   position: fixed;
   inset: 0;
   z-index: -1;
-  overflow: hidden;
   pointer-events: none;
-  contain: strict;
+  contain: paint;
 }
-.scroll-sky-clouds {
-  position: absolute;
-  left: -12%;
-  width: 124%;
-  height: 58vh;
-  min-height: 360px;
-  background-repeat: no-repeat;
-  will-change: transform;
-  transform: translate3d(0, 0, 0);
-}
-.scroll-sky-clouds-distant {
-  top: -9vh;
-  opacity: .36;
-  filter: blur(13px);
-  background-image:
-    radial-gradient(ellipse 19% 17% at 13% 32%, rgba(255,255,255,.78) 0 45%, transparent 78%),
-    radial-gradient(ellipse 16% 14% at 23% 29%, rgba(255,255,255,.68) 0 45%, transparent 78%),
-    radial-gradient(ellipse 22% 18% at 72% 23%, rgba(255,255,255,.76) 0 44%, transparent 78%),
-    radial-gradient(ellipse 17% 15% at 84% 27%, rgba(255,255,255,.68) 0 45%, transparent 78%);
-}
-.scroll-sky-clouds-near {
-  top: 20vh;
-  opacity: .25;
-  filter: blur(19px);
-  background-image:
-    radial-gradient(ellipse 20% 18% at 5% 46%, rgba(255,255,255,.8) 0 42%, transparent 78%),
-    radial-gradient(ellipse 15% 14% at 17% 42%, rgba(255,255,255,.72) 0 45%, transparent 78%),
-    radial-gradient(ellipse 23% 19% at 91% 50%, rgba(255,255,255,.78) 0 43%, transparent 78%),
-    radial-gradient(ellipse 16% 14% at 78% 46%, rgba(255,255,255,.7) 0 44%, transparent 78%);
-}
-@media (max-width: 700px) {
-  .scroll-sky-clouds { height: 46vh; min-height: 280px; }
-  .scroll-sky-clouds-distant { opacity: .29; }
-  .scroll-sky-clouds-near { opacity: .19; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .scroll-sky-clouds { will-change: auto; }
-}
-
 
 /* Persistent liquid-glass controls in the site navigation */
 .nav-actions { display:flex; align-items:center; justify-content:flex-end; gap:8px; flex-shrink:0; }
@@ -2188,23 +2148,7 @@ body { isolation: isolate; }
 /* Night mode: a complete palette change with moonlit parallax clouds */
 html[data-theme="night"] { color-scheme:dark; }
 html[data-theme="night"] body { color:#e8edf7; background:#071329; }
-html[data-theme="night"] .scroll-sky { background:linear-gradient(180deg,#071329 0%,#101e3a 48%,#172845 100%); }
-html[data-theme="night"] .scroll-sky-clouds-distant {
-  opacity:.22; filter:blur(16px);
-  background-image:
-    radial-gradient(ellipse 19% 17% at 13% 32%,rgba(178,199,231,.42) 0 45%,transparent 78%),
-    radial-gradient(ellipse 16% 14% at 23% 29%,rgba(156,183,224,.34) 0 45%,transparent 78%),
-    radial-gradient(ellipse 22% 18% at 72% 23%,rgba(180,198,232,.38) 0 44%,transparent 78%),
-    radial-gradient(ellipse 17% 15% at 84% 27%,rgba(151,180,223,.32) 0 45%,transparent 78%);
-}
-html[data-theme="night"] .scroll-sky-clouds-near {
-  opacity:.16; filter:blur(22px);
-  background-image:
-    radial-gradient(ellipse 20% 18% at 5% 46%,rgba(194,207,231,.42) 0 42%,transparent 78%),
-    radial-gradient(ellipse 15% 14% at 17% 42%,rgba(162,186,222,.35) 0 45%,transparent 78%),
-    radial-gradient(ellipse 23% 19% at 91% 50%,rgba(182,199,231,.4) 0 43%,transparent 78%),
-    radial-gradient(ellipse 16% 14% at 78% 46%,rgba(155,181,220,.32) 0 44%,transparent 78%);
-}
+
 html[data-theme="night"] .site-header { background:rgba(10,23,45,.88); border-color:rgba(190,207,233,.16); box-shadow:0 12px 38px rgba(0,0,0,.2); backdrop-filter:blur(22px); }
 html[data-theme="night"] .brand-copy strong,
 html[data-theme="night"] .main-nav a,
@@ -2620,29 +2564,7 @@ html[data-theme="night"] body {
   background: #101a18;
   color: var(--ui-text);
 }
-html[data-theme="night"] .scroll-sky {
-  background:
-    radial-gradient(ellipse at 18% 3%, rgba(125, 157, 145, .11), transparent 32rem),
-    linear-gradient(180deg, #111e1b 0%, #15231f 52%, #101a18 100%);
-}
-html[data-theme="night"] .scroll-sky-clouds-distant {
-  opacity: .17;
-  filter: blur(18px);
-  background-image:
-    radial-gradient(ellipse 19% 17% at 13% 32%, rgba(221,235,220,.34) 0 45%, transparent 78%),
-    radial-gradient(ellipse 16% 14% at 23% 29%, rgba(179,205,186,.29) 0 45%, transparent 78%),
-    radial-gradient(ellipse 22% 18% at 72% 23%, rgba(220,231,215,.32) 0 44%, transparent 78%),
-    radial-gradient(ellipse 17% 15% at 84% 27%, rgba(171,197,181,.27) 0 45%, transparent 78%);
-}
-html[data-theme="night"] .scroll-sky-clouds-near {
-  opacity: .12;
-  filter: blur(23px);
-  background-image:
-    radial-gradient(ellipse 20% 18% at 5% 46%, rgba(213,225,211,.32) 0 42%, transparent 78%),
-    radial-gradient(ellipse 15% 14% at 17% 42%, rgba(174,201,181,.26) 0 45%, transparent 78%),
-    radial-gradient(ellipse 23% 19% at 91% 50%, rgba(216,229,213,.3) 0 43%, transparent 78%),
-    radial-gradient(ellipse 16% 14% at 78% 46%, rgba(172,197,178,.25) 0 44%, transparent 78%);
-}
+
 html[data-theme="night"] .topline {
   color: #e9eee8;
   background: rgba(9, 19, 16, .96);
@@ -3827,29 +3749,7 @@ html[data-theme="night"] .site-header-stack .nav-cta {
   box-shadow: 0 7px 20px rgba(0,0,0,.24);
 }
 html[data-theme="night"] .site-header-stack .nav-cta:hover { background: linear-gradient(135deg, #b5e5ff, #78c2ef); }
-html[data-theme="night"] .scroll-sky {
-  background:
-    radial-gradient(ellipse at 15% 3%, rgba(97,163,211,.16), transparent 32rem),
-    linear-gradient(180deg, #07182d 0%, #0c2340 48%, #123454 100%);
-}
-html[data-theme="night"] .scroll-sky-clouds-distant {
-  opacity: .18;
-  filter: blur(17px);
-  background-image:
-    radial-gradient(ellipse 19% 17% at 13% 32%, rgba(194,224,247,.43) 0 45%, transparent 78%),
-    radial-gradient(ellipse 16% 14% at 23% 29%, rgba(151,204,238,.35) 0 45%, transparent 78%),
-    radial-gradient(ellipse 22% 18% at 72% 23%, rgba(194,224,247,.4) 0 44%, transparent 78%),
-    radial-gradient(ellipse 17% 15% at 84% 27%, rgba(151,204,238,.32) 0 45%, transparent 78%);
-}
-html[data-theme="night"] .scroll-sky-clouds-near {
-  opacity: .13;
-  filter: blur(22px);
-  background-image:
-    radial-gradient(ellipse 20% 18% at 5% 46%, rgba(194,224,247,.35) 0 42%, transparent 78%),
-    radial-gradient(ellipse 15% 14% at 17% 42%, rgba(151,204,238,.3) 0 45%, transparent 78%),
-    radial-gradient(ellipse 23% 19% at 91% 50%, rgba(194,224,247,.34) 0 43%, transparent 78%),
-    radial-gradient(ellipse 16% 14% at 78% 46%, rgba(151,204,238,.29) 0 44%, transparent 78%);
-}
+
 html[data-theme="night"] .hero-bottomline b,
 html[data-theme="night"] .nature-feature-overlay span,
 html[data-theme="night"] .site-footer .footer-label,
@@ -3890,7 +3790,6 @@ html[data-theme="day"] body main .contact-glass-panel h2 .contact-title-primary 
   background-repeat: no-repeat;
   background-attachment: fixed;
 }
-.scroll-sky-clouds { display: none; }
 body { background: transparent !important; }
 
 html[data-theme="day"] body main > section:not(.hero-nature):not(.contact-section) {
@@ -3946,22 +3845,14 @@ html[data-theme="night"] footer {
   background: linear-gradient(125deg, rgba(2, 12, 26, .97), rgba(4, 28, 51, .96)) !important;
 }
 @media (max-width: 700px) {
-  .scroll-sky { background-attachment: scroll; background-position: center top; }
+  .scroll-sky { background-position: center top; }
 }
 
 
 /* Night mode uses the same bundled sky, dimmed for text and panel contrast. */
-html[data-theme="night"] .scroll-sky {
-  background-image:
-    linear-gradient(180deg, rgba(2, 13, 29, .66), rgba(3, 21, 41, .78)),
-    url("/ajecch-sky-background.webp");
-  background-size: cover, cover;
-  background-position: center, center 44%;
-  background-repeat: no-repeat, no-repeat;
-  background-attachment: fixed, fixed;
-}
+
 @media (max-width: 700px) {
-  html[data-theme="night"] .scroll-sky { background-attachment: scroll, scroll; }
+  html[data-theme="night"] .scroll-sky { background-position: center, center top; }
 }
 
 
@@ -4471,3 +4362,28 @@ body .ajecch-home .contact-section {
   .public-news-image-link .public-news-cover { transition: none; }
 }
 
+
+
+/* Media-library references: protect assets used by published content. */
+.admin-media-usage {
+  margin: 2px 0 12px;
+  padding: 10px 12px;
+  border: 1px solid rgba(27, 85, 144, .16);
+  border-radius: 10px;
+  background: rgba(221, 240, 252, .46);
+  color: #21486b;
+  font-size: 12px;
+  line-height: 1.55;
+}
+.admin-media-usage.is-unused {
+  color: #5b6d7c;
+  background: rgba(225, 235, 242, .35);
+}
+html[data-theme="night"] .admin-media-usage {
+  color: #d7eaff;
+  border-color: rgba(142, 195, 233, .2);
+  background: rgba(18, 48, 75, .52);
+}
+html[data-theme="night"] .admin-media-usage.is-unused {
+  color: #b3c4d2;
+}
